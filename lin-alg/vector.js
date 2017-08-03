@@ -66,7 +66,7 @@ module.exports = {
      * @param {vector} b
      */
     dot(a, b) {
-        return a.reduce((sum, a_i, i) => sum + a_i * b[i])
+        return a.reduce((sum, a_i, i) => sum + a_i * b[i], 0)
     },
 
     /**
@@ -76,7 +76,7 @@ module.exports = {
      * 
      */
     sum_squares(v) {
-        return dot(v, v)
+        return this.dot(v, v)
     },
 
     /**

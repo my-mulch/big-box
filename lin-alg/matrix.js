@@ -56,13 +56,9 @@ function eye(rows, cols) {
 }
 
 /**
- 
- * 
- * 
  *                                                           A matrix can be used to 
  *                                                           transform a vector dim N to K
- *                                                           and back
- *                                                           
+ *                                                           and back                                                          
  *  [1,2,3,4,5]          K   
  *                 [[1,2,3,4,5,6],                                   
  *                  [1,2,3,4,5,6],
@@ -70,7 +66,6 @@ function eye(rows, cols) {
  *                  [1,2,3,4,5,6],
  *                  [1,2,3,4,5,6]]
  *
- 
  * Multiplies two matrices
  * 
  * @param {matrix} A
