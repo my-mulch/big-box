@@ -13,7 +13,7 @@ module.exports = {
      * @param {vector} b 
      */
 
-    vec_add(a, b) {
+    add(a, b) {
         return a.map((a_i, i) => a_i + b[i])
     },
 
@@ -25,7 +25,7 @@ module.exports = {
      * @param {vector} a 
      * @param {vector} b 
      */
-    vec_subtract(a, b) {
+    subtract(a, b) {
         return a.map((a_i, i) => a_i - b[i])
     },
 
@@ -35,8 +35,8 @@ module.exports = {
      * @param {array} vectors 
      * 
      */
-    vec_elementwise_sum(vectors) {
-        return vectors.reduce(v_add)
+    element_sum(vectors) {
+        return vectors.reduce(add)
     },
 
     /**
@@ -45,7 +45,7 @@ module.exports = {
      * @param {vector} v 
      * @param {scalar} c 
      */
-    vec_scalar_multiply(v, c) {
+    scalar_mult(v, c) {
         return v.map(v_i => v_i * c)
     },
 
@@ -55,8 +55,8 @@ module.exports = {
      * @param {array} vectors
      * 
      */
-    vec_elementwise_mean(vectors) {
-        return v_scalar_multiply(v_elementwise_sum(vectors), 1 / vectors.length)
+    element_mean(vectors) {
+        return scalar_mult(v_elementwise_sum(vectors), 1 / vectors.length)
     },
 
     /**
@@ -65,7 +65,7 @@ module.exports = {
      * @param {vector} a 
      * @param {vector} b
      */
-    vec_dot(a, b) {
+    dot(a, b) {
         return a.reduce((sum, a_i, i) => sum + a_i * b[i])
     },
 
@@ -75,8 +75,8 @@ module.exports = {
      * @param {vector} v 
      * 
      */
-    vec_sum_squares(v) {
-        return vec_dot(v, v)
+    sum_squares(v) {
+        return dot(v, v)
     },
 
     /**
@@ -85,8 +85,8 @@ module.exports = {
      * @param {vector} v 
      * 
      */
-    vec_magnitude(v) {
-        return Math.sqrt(vec_sum_squares(v))
+    magnitude(v) {
+        return Math.sqrt(sum_squares(v))
     },
 
     /**
@@ -96,8 +96,8 @@ module.exports = {
      * @param {vector} b 
      * 
      */
-    vec_distance(a, b) {
-        return vec_magnitude(vec_subtract(a, b))
+    distance(a, b) {
+        return magnitude(subtract(a, b))
     }
 }
 

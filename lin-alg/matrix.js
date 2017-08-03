@@ -4,7 +4,7 @@
 
 */
 
-const v = require('./vector')
+const vector = require('./vector')
 
 /**
  * 
@@ -36,7 +36,7 @@ function column(A, i) {
  * @param {int} cols
  */
 function zeros(rows, cols) {
-    return Array(rows).fill(null).map(_ => [])
+    return Array(rows).fill(null).map(_ => Array(cols).fill(0))
 }
 
 /**
@@ -56,7 +56,21 @@ function eye(rows, cols) {
 }
 
 /**
+ 
  * 
+ * 
+ *                                                           A matrix can be used to 
+ *                                                           transform a vector dim N to K
+ *                                                           and back
+ *                                                           
+ *  [1,2,3,4,5]          K   
+ *                 [[1,2,3,4,5,6],                                   
+ *                  [1,2,3,4,5,6],
+ *        N         [1,2,3,4,5,6],       =   [15,30,45,60,75,90] 
+ *                  [1,2,3,4,5,6],
+ *                  [1,2,3,4,5,6]]
+ *
+ 
  * Multiplies two matrices
  * 
  * @param {matrix} A
@@ -64,26 +78,6 @@ function eye(rows, cols) {
  */
 function dot(A, B) {
     return A.map((row, i) => {
-        return B[0].map((_, j) => v.vec_dot(column(B, j), row))
+        return B[0].map((_, j) => vector.dot(column(B, j), row))
     })
-        
 }
-
-
-
-
-`
-                                                            A matrix can be used to 
-                                                            transform a vector dim N to K
-                                                            and back
-                                                            
-[1,2,3,4,5]              K   
-                  [[1,2,3,4,5,6],                                   
-                   [1,2,3,4,5,6],
-         N         [1,2,3,4,5,6],       =   [15,30,45,60,75,90] 
-                   [1,2,3,4,5,6],
-                   [1,2,3,4,5,6]]
-
-
-`
-
