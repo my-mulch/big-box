@@ -4,6 +4,8 @@
 
 */
 
+const v = require('./vector')
+
 /**
  * 
  * Returns the shape of a given matrix
@@ -45,13 +47,30 @@ function zeros(rows, cols) {
  * @param {int} cols
  */
 function eye(rows, cols) {
-    return Array(rows).fill(null).map((_, x_i) => [
+    return Array(rows).fill(null).map((_, i) => [
         // spread syntax https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_operator
-        ...Array(cols).fill(null).map((_, y_i) => (
-            x_i === y_i ? 1 : 0
+        ...Array(cols).fill(null).map((_, j) => (
+            i === j ? 1 : 0
         ))
     ])
 }
+
+/**
+ * 
+ * Multiplies two matrices
+ * 
+ * @param {matrix} A
+ * @param {matrix} B
+ */
+function dot(A, B) {
+    return A.map((row, i) => {
+        return B[0].map((_, j) => v.vec_dot(column(B, j), row))
+    })
+        
+}
+
+
+
 
 `
                                                             A matrix can be used to 
@@ -65,4 +84,6 @@ function eye(rows, cols) {
                    [1,2,3,4,5,6],
                    [1,2,3,4,5,6]]
 
+
 `
+
