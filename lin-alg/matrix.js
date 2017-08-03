@@ -28,7 +28,7 @@ function column(A, i) {
 
 /**
  * 
- * Returns the column for a given matrix
+ * Creates a rows x cols matrix of zeros
  * 
  * @param {int} rows
  * @param {int} cols
