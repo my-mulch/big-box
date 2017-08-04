@@ -36,7 +36,7 @@ module.exports = {
      * 
      */
     element_sum(vectors) {
-        return vectors.reduce(add)
+        return vectors.reduce(this.add)
     },
 
     /**
@@ -56,7 +56,7 @@ module.exports = {
      * 
      */
     element_mean(vectors) {
-        return scalar_mult(v_elementwise_sum(vectors), 1 / vectors.length)
+        return this.scalar_mult(this.element_sum(vectors), 1 / vectors.length)
     },
 
     /**
@@ -86,7 +86,18 @@ module.exports = {
      * 
      */
     magnitude(v) {
-        return Math.sqrt(sum_squares(v))
+        return Math.sqrt(this.sum_squares(v))
+    },
+
+    /**
+     * 
+     * Computes the direction of a vector
+     * @param {vector} v 
+     * 
+     */
+    direction(v) {
+        const m = this.magnitude(v)
+        return v.map(v_i => v_i / m)
     },
 
     /**
@@ -97,7 +108,7 @@ module.exports = {
      * 
      */
     distance(a, b) {
-        return magnitude(subtract(a, b))
+        return this.magnitude(this.subtract(a, b))
     }
 }
 
