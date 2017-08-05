@@ -1,45 +1,34 @@
 /* 
    
-           These methods provide basic operations for vectors
+           These methods provide basic operations for matrices
    
 */
-
-function elementwise(a, b, c = [], f = (a, b) => a - b) {
+function elementwise(a, b, f, c = []) {
     for (let i = 0; i < a.length; i++)
+        // null for elementwise over only one matrix
         if (Array.isArray(a[i]))
-            elementwise(a[i], b[i], c[i] = [])
-        else c[i] = f(a[i], b[i])
+            elementwise(a[i], b ? b[i] : null, f)
+        else c[i] = f(a[i], b ? b[i] : null)
     return c
 }
 
-function addIterative(a, b) {
-
-    for (let i = 0; i < a.length; i++) {
-
-        for (let j = 0; j < a[0].length; j++) {
-            a[i][j] + b[i][j]
-        }
-    }
-
+function norm(m) {
+    const accumulator = (m_i) => accumulator.total += m_i * m_i
+    accumulator.total = 0
+    elementwise(m, null, accumulator)
+    console.log(Math.sqrt(accumulator.total))
 }
 
 
-const start = new Date().getTime()
-console.log(elementwise([[[1, 2, 3], [1, 2, 3], [1, 2, 3]],
-[[1, 2, 3], [1, 2, 3], [1, 2, 3]],
-[[1, 2, 3], [1, 2, 3], [1, 2, 3]]],
 
-    [[[89, 7, 5], [2, 7, 5], [2, 7, 5]],
-    [[2, 7, 5], [4, 1, 2], [4, 1, 2]],
-    [[4, 1, 2], [4, 1, 2], [4, 1, 2]]]))
+
+const start = new Date().getTime()
+norm([1, 2, 3])
 const end = new Date().getTime()
 console.log((end - start) / 1000)
 
 
-const NDarray = require('../types/array').NDarray
-
 module.exports = {
-
 
     /**
      * 
@@ -47,15 +36,17 @@ module.exports = {
      * 
      * @param {any} a input matrix
      * @param {any} b input matrix
-     * @param {matrix} c result matrix of same size as inputs 
+     * @param {matrix} c result matrix of same size as inputs or empty
      * @param {function} f function to apply 
      * @returns {matrix} matrix with f applied elementwise
      */
-    elementwise(a, b, c = [], f) {
+
+    elementwise(a, b, f, c = []) {
         for (let i = 0; i < a.length; i++)
+            // null for elementwise over only one matrix
             if (Array.isArray(a[i]))
-                elementwise(a[i], b[i], c[i] = [])
-            else c[i] = f(a[i], b[i])
+                elementwise(a[i], b ? b[i] : null, f)
+            else c[i] = f(a[i], b ? b[i] : null)
         return c
     },
 
@@ -69,49 +60,32 @@ module.exports = {
      */
 
     add(a, b) {
-        return this.elementwise(a, b, [], (a_i, b_i) => a_i + b_i)
+        return this.elementwise(a, b, (a_i, b_i) => a_i + b_i)
     },
 
     /**
      * 
-     * Vectors must be of an equal dimension
-     * It subtracts b from a
+     * Computes elementwise subtraction on two matrices
      * 
-     * @param {vector} a 
-     * @param {vector} b 
+     * @param {matrix} a input matrix
+     * @param {matrix} b input matrix
+     * @returns {matrix}
      */
+
     sub(a, b) {
-        return a.map((a_i, i) => a_i - b[i])
+        return this.elementwise(a, b, (a_i, b_i) => a_i - b_i)
     },
 
     /**
      * 
-     * Vectors must be equal in dimension
-     * @param {array} vectors 
+     * Mulitplies input matrix by a scalar
      * 
-     */
-    element_sum(vectors) {
-        return vectors.reduce(this.add)
-    },
-
-    /**
-     * 
-     * Mulitplies our vector elementwise by a scalar
-     * @param {vector} v 
+     * @param {matrix} m
      * @param {scalar} c 
+     * @returns {matrix} 
      */
-    scalar_mult(v, c) {
-        return v.map(v_i => v_i * c)
-    },
-
-    /**
-     * 
-     * Computes the mean elementwise of many vectors all the same dimension
-     * @param {array} vectors
-     * 
-     */
-    element_mean(vectors) {
-        return this.scalar_mult(this.element_sum(vectors), 1 / vectors.length)
+    scale(m, c) {
+        return this.elementwise(m, null, (m_i) => m_i * c)
     },
 
     /**
@@ -119,29 +93,36 @@ module.exports = {
      * Computes the dot product of two vectors
      * @param {vector} a 
      * @param {vector} b
+     * @returns {scalar} The dot product
      */
     dot(a, b) {
-        return a.reduce((sum, a_i, i) => sum + a_i * b[i], 0)
+        // return this.norm(a) * this.norm(b) * 
     },
 
     /**
      * 
-     * Computes the sum of squares of a vector elementwise
-     * @param {vector} v 
-     * 
+     * Computes the squares of a vector elementwise
+     * @param {matrix} m 
+     * @returns {matrix} 
      */
-    sum_squares(v) {
-        return this.dot(v, v)
+    square(m) {
+        return this.elementwise(m, null, (m_i) => m_i * m_i)
     },
 
     /**
      * 
-     * Computes the magnitude of a vector
-     * @param {vector} v 
-     * 
+     * Computes frobenius norm of a matrix, L2 of vector
+     * @param {matrix} m
+     * @returns {matrix}
      */
-    magnitude(v) {
-        return Math.sqrt(this.sum_squares(v))
+    norm(m) {
+        // the accumulator heads through each element and gathers squares
+        const accumulator = (m_i) => accumulator.total += m_i * m_i
+        accumulator.total = 0
+        this.elementwise(m, null, accumulator)
+        // we take the root of these accumulated squares
+        // such is the definition of the frobenius
+        return Math.sqrt(accumulator.total)
     },
 
     /**
