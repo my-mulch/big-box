@@ -4,41 +4,72 @@
    
 */
 
+function elementwise(a, b, c = [], f = (a, b) => a - b) {
+    for (let i = 0; i < a.length; i++)
+        if (Array.isArray(a[i]))
+            elementwise(a[i], b[i], c[i] = [])
+        else c[i] = f(a[i], b[i])
+    return c
+}
+
+function addIterative(a, b) {
+
+    for (let i = 0; i < a.length; i++) {
+
+        for (let j = 0; j < a[0].length; j++) {
+            a[i][j] + b[i][j]
+        }
+    }
+
+}
+
+
+const start = new Date().getTime()
+console.log(elementwise([[[1, 2, 3], [1, 2, 3], [1, 2, 3]],
+[[1, 2, 3], [1, 2, 3], [1, 2, 3]],
+[[1, 2, 3], [1, 2, 3], [1, 2, 3]]],
+
+    [[[89, 7, 5], [2, 7, 5], [2, 7, 5]],
+    [[2, 7, 5], [4, 1, 2], [4, 1, 2]],
+    [[4, 1, 2], [4, 1, 2], [4, 1, 2]]]))
+const end = new Date().getTime()
+console.log((end - start) / 1000)
+
+
 const NDarray = require('../types/array').NDarray
 
 module.exports = {
 
+
     /**
      * 
-     * Inputs must be of an equal dimension
-     * @param {vector_or_matrix} a 
-     * @param {vector_or_matrix} b 
+     * Computes f elementwise on two matrices
+     * 
+     * @param {any} a input matrix
+     * @param {any} b input matrix
+     * @param {matrix} c result matrix of same size as inputs 
+     * @param {function} f function to apply 
+     * @returns {matrix} matrix with f applied elementwise
+     */
+    elementwise(a, b, c = [], f) {
+        for (let i = 0; i < a.length; i++)
+            if (Array.isArray(a[i]))
+                elementwise(a[i], b[i], c[i] = [])
+            else c[i] = f(a[i], b[i])
+        return c
+    },
+
+    /**
+     * 
+     * Computes elementwise addition on two matrices
+     * 
+     * @param {matrix} a input matrix
+     * @param {matrix} b input matrix
+     * @returns {matrix}
      */
 
     add(a, b) {
-
-        let an = a
-        let bn = b
-
-        if (typeof an === 'number' && typeof bn === 'number') return an + bn
-        else if (!(an instanceof NDarray && bn instanceof NDarray)) {
-            an = new NDarray(a)
-            bn = new NDarray(b)
-        }
-
-        if (an.shape.toString() !== bn.shape.toString()) throw 'ShapeError'
-
-        const sum = []
-        for (let i = 0; i < an.shape[0]; i++) {
-            if (an.shape[1] > 1) {
-                sum[i] = Array(an.shape[1])
-                for (let j = 0; j < an.shape[1]; j++) {
-                    sum[i][j] = an._(i,j) + bn._(i,j)
-                }
-            } else sum[i] = an._(i) + bn._(i)
-        }
-
-        return new NDarray(sum)
+        return this.elementwise(a, b, [], (a_i, b_i) => a_i + b_i)
     },
 
     /**
@@ -49,7 +80,7 @@ module.exports = {
      * @param {vector} a 
      * @param {vector} b 
      */
-    subtract(a, b) {
+    sub(a, b) {
         return a.map((a_i, i) => a_i - b[i])
     },
 
