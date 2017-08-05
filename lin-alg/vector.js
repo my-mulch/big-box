@@ -4,17 +4,41 @@
    
 */
 
+const NDarray = require('../types/array').NDarray
+
 module.exports = {
 
     /**
      * 
-     * Vectors must be of an equal dimension
-     * @param {vector} a 
-     * @param {vector} b 
+     * Inputs must be of an equal dimension
+     * @param {vector_or_matrix} a 
+     * @param {vector_or_matrix} b 
      */
 
     add(a, b) {
-        return a.map((a_i, i) => a_i + b[i])
+
+        let an = a
+        let bn = b
+
+        if (typeof an === 'number' && typeof bn === 'number') return an + bn
+        else if (!(an instanceof NDarray && bn instanceof NDarray)) {
+            an = new NDarray(a)
+            bn = new NDarray(b)
+        }
+
+        if (an.shape.toString() !== bn.shape.toString()) throw 'ShapeError'
+
+        const sum = []
+        for (let i = 0; i < an.shape[0]; i++) {
+            if (an.shape[1] > 1) {
+                sum[i] = Array(an.shape[1])
+                for (let j = 0; j < an.shape[1]; j++) {
+                    sum[i][j] = an._(i,j) + bn._(i,j)
+                }
+            } else sum[i] = an._(i) + bn._(i)
+        }
+
+        return new NDarray(sum)
     },
 
     /**
