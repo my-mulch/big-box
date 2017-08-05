@@ -5,7 +5,7 @@
 */
 
 const vector = require('./vector')
-const ndarray = require('./transpose')
+const ndarray = require('./ndarray')
 
 module.exports = {
 
@@ -26,7 +26,7 @@ module.exports = {
      * @param {matrix} B
      */
     dot(A,B){
-
+        
     }
 }
 

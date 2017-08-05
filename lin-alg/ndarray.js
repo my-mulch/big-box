@@ -4,6 +4,8 @@
    
 */
 
+
+
 module.exports = {
     /**
      * 
@@ -19,7 +21,7 @@ module.exports = {
     elementwise(A, B, f, C = []) {
         for (let i = 0; i < A.length; i++)
             if (Array.isArray(A[i]))
-                elementwise(A[i], B ? B[i] : null, f)
+                this.elementwise(A[i], B ? B[i] : null, f, C[i] = [])
             else C[i] = f(A[i], B ? B[i] : null)
         return C
     },
@@ -154,5 +156,16 @@ module.exports = {
     sub(A, B) {
         return this.elementwise(A, B, (A_i, B_i) => A_i - B_i)
     },
+
+    /**
+     * 
+     * Computes the transpose of A
+     * 
+     * @param {ndarray} A 
+     * @returns {ndarray} the transpose of A
+     */
+    transpose(A) {
+
+    }
 
 }
