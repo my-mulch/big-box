@@ -24,8 +24,9 @@ module.exports = {
      * 
      * @param {matrix} A
      * @param {matrix} B
+     * @returns {matrix} The dot product of two vectors
      */
-    dot(A,B){
+    dot(A, B) {
         
     }
 }

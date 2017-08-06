@@ -4,9 +4,8 @@
    
 */
 
-
-
 module.exports = {
+
     /**
      * 
      * Computes f elementwise on two matrices
@@ -17,7 +16,6 @@ module.exports = {
      * @param {function} f function to apply 
      * @returns {matrix} matrix with f applied elementwise
      */
-
     elementwise(A, B, f, C = []) {
         for (let i = 0; i < A.length; i++)
             if (Array.isArray(A[i]))
@@ -164,8 +162,37 @@ module.exports = {
      * @param {ndarray} A 
      * @returns {ndarray} the transpose of A
      */
-    transpose(A) {
-
+    T(A) {
+        const shapeA = this.shape(A).reverse().slice(0, -1)
+        if (shapeA.length) {
+            const shapeT = tShape(shapeA)
+            return fill(A, shapeT)
+        } else return A
     }
 
+}
+
+
+function tShape(S, B = []) {
+    for (let i = 0; i < S[0]; i++) {
+        B.push([])
+        tShape(S.slice(1), B[i])
+    }
+    return B
+}
+
+function fill(A, T, indx = []) {
+
+    for (let i = 0; i < A.length; i++)
+        if (Array.isArray(A[i])) {
+            indx.push(i)
+            fill(A[i], T, indx)
+            indx.pop()
+        } else {
+            let cur_pos = T[i]
+            indx.slice(1).reverse().forEach(i => cur_pos = cur_pos[i])
+            cur_pos.push(A[i])
+        }
+
+    return T
 }
