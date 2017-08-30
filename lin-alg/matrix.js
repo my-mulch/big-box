@@ -7,6 +7,11 @@
 const vector = require('./vector')
 const ndarray = require('./ndarray')
 
+
+function ndimdot(A,B){
+    
+}
+
 module.exports = {
 
     /**
