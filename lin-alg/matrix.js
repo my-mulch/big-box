@@ -1,40 +1,39 @@
 /* 
-
-        These methods provide basic operations for matrices
-
+   
+           These methods provide basic operations for matrices
+   
 */
 
-/**
- * 
- * Returns the shape of a given matrix
- * @param {matrix} A
- * 
- */
+const vector = require('./vector')
+const ndarray = require('./ndarray')
 
-function shape(A) {
-    return [A.length, A[0].length]
+
+function ndimdot(A,B){
+    
 }
 
-/**
- * 
- * Returns the column for a given matrix
- * 
- * @param {matrix} A
- * @param {int} j 
- */
-function column(A, i) {
-    return A.map(a => a[i])
-}
+module.exports = {
 
-/**
- * 
- * Creates a rows x cols matrix of zeros
- * 
- * @param {int} rows
- * @param {int} cols
- */
-function zeros(rows, cols) {
-    return Array(rows).fill(null).map(_ => [])
+    /**
+     *                                            A matrix can be used to 
+     *                                            transform a vector dim N to K
+     *                                            and back                                                          
+     *  [1,2,3,4,5]          K   
+     *                 [[1,2,3,4,5,6],                                   
+     *                  [1,2,3,4,5,6],
+     *        N         [1,2,3,4,5,6],       =   [15,30,45,60,75,90] 
+     *                  [1,2,3,4,5,6],
+     *                  [1,2,3,4,5,6]]
+     *
+     * Multiplies two matrices
+     * 
+     * @param {matrix} A
+     * @param {matrix} B
+     * @returns {matrix} The dot product of two vectors
+     */
+    dot(A, B) {
+        
+    }
 }
 
 
