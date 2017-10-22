@@ -9,15 +9,19 @@ module.exports = {
     /**
      * 
      * Computes the dot product of two vectors
-     * @param {vector} a 
-     * @param {vector} b
+     * @param {vector} u
+     * @param {vector} v
      * @returns {scalar} The dot product
      */
-    dot(a, b) {
-        const accumulator = (a_i, b_i) => accumulator.total += a_i * b_i
-        accumulator.total = 0
-        this.elementwise(a, b, accumulator)
-        return accumulator.total
+    dot(u, v) {
+        if(u.length != v.length)
+            throw new Error('Vectors must share same dimension')
+        
+        return u.reduce((partial, ui, i) => {
+            return partial + ui * v[i]
+        }, 0)
     },
     
 }
+
+console.log(module.exports.dot([4,3,2], [3,4,-2]))

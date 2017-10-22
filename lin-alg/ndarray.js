@@ -4,8 +4,19 @@
    
 */
 
-module.exports = {
+const vector = require('./vector')
+const utils = require('./utils')
 
+class NDarray extends Array {
+
+    /**
+     * Creates an instance of NDarray.
+     * @memberof NDarray
+     */
+    constructor(array) {
+        super(array)
+        this.shape = internalMethods.shape(this[0])
+    }
     /**
      * 
      * Computes f elementwise on two matrices
@@ -22,21 +33,42 @@ module.exports = {
                 this.elementwise(A[i], B ? B[i] : null, f, C[i] = [])
             else C[i] = f(A[i], B ? B[i] : null)
         return C
-    },
+    }
+
+    static arrayFrom(shape) {
+        for (let i = 0; i < S[0]; i++) {
+            A.push([])
+            worker(shape.slice(1), A[i])
+        }
+        return A
+    }
 
     /**
-    * 
-    * Returns the shape of a given matrix
-    * @param {matrix} A
-    * @returns {tuple} shape of the matrix
-    */
-    shape(A) {
-        const s = []
-        while (A) { s.push(A.length); A = A[0] }
-        s.pop()
-        return s
-    },
+     * 
+     * Computes the dot product of two vectors/arrays
+     * 
+     * @memberof array
+     */
+    dot(v) {
+        const v = new ndarray(v)
 
+        if (this.shape.length > 2 || v.shape.length > 2)
+            throw new Error('Dot not defined for dim > 2')
+        if (this.shape[0] != v.shape[1])
+            throw new Error('Matrix dimensions must agree')
+        if (this.shape.length === 1 && v.shape.length === 1)
+            return vector.dot(this, v)
+
+        const dotProduct = NDarray.arrayFrom([this.shape[0], v.shape[1]])
+
+        for (let i = 0; i < this.shape[0]; i++) {
+            for (let j = 0; j < v.shape[1]; j++) {
+                dotProduct[i][j] = vector.dot(this[i], v.cols(j))
+            }
+        }
+
+        return dotProduct
+    }
     /**
      * 
      * Computes frobenius norm of a matrix, L2 of vector
@@ -51,7 +83,11 @@ module.exports = {
         // we take the root of these accumulated squares
         // such is the definition of the frobenius
         return Math.sqrt(accumulator.total)
-    },
+    }
+
+    cols(){
+        
+    }
 
     /**
      * 
@@ -63,7 +99,7 @@ module.exports = {
      */
     dist(A, B) {
         return this.norm(A) - this.norm(B)
-    },
+    }
 
     /**
     * 
@@ -74,7 +110,7 @@ module.exports = {
     */
     zeros(rows, cols) {
         return Array(rows).fill(null).map(_ => Array(cols).fill(0))
-    },
+    }
 
     /**
      * 
@@ -83,14 +119,14 @@ module.exports = {
      * @param {int} rows
      * @param {int} cols
      */
-    eye: function (rows, cols) {
+    eye(rows, cols) {
         return Array(rows).fill(null).map((_, i) => [
             // spread syntax https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_operator
             ...Array(cols).fill(null).map((_, j) => (
                 i === j ? 1 : 0
             ))
         ])
-    },
+    }
 
     /**
      * 
@@ -100,7 +136,7 @@ module.exports = {
      */
     square(A) {
         return this.elementwise(A, null, (A_i) => A_i * A_i)
-    },
+    }
 
     /**
      * 
@@ -115,7 +151,7 @@ module.exports = {
         accumulator.total = 0
         this.elementwise(A, null, accumulator)
         return accumulator.total
-    },
+    }
 
     /**
      * 
@@ -127,7 +163,7 @@ module.exports = {
      */
     scale(A, c) {
         return this.elementwise(A, null, (A_i) => A_i * c)
-    },
+    }
 
     /**
      * 
@@ -140,7 +176,7 @@ module.exports = {
 
     add(A, B) {
         return this.elementwise(A, B, (A_i, B_i) => A_i + B_i)
-    },
+    }
 
     /**
      * 
@@ -153,7 +189,7 @@ module.exports = {
 
     sub(A, B) {
         return this.elementwise(A, B, (A_i, B_i) => A_i - B_i)
-    },
+    }
 
     /**
      * 
@@ -172,13 +208,22 @@ module.exports = {
 
 }
 
+const internalMethods = {
+    /**
+    * 
+    * Returns the shape of a given matrix
+    * @param {matrix} A
+    * @returns {tuple} shape of the matrix
+    */
 
-function tShape(S, B = []) {
-    for (let i = 0; i < S[0]; i++) {
-        B.push([])
-        tShape(S.slice(1), B[i])
+    shape: function (dim, result = []) {
+        if (Array.isArray(dim)) {
+            result.push(dim.length)
+            this._internalShape(dim[0], result)
+        }
+
+        return result
     }
-    return B
 }
 
 function fill(A, T, indx = []) {
@@ -196,3 +241,5 @@ function fill(A, T, indx = []) {
 
     return T
 }
+
+module.exports = array
