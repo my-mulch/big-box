@@ -15,7 +15,7 @@ class NDarray extends Array {
      */
     constructor(array) {
         super(array)
-        this.shape = internalMethods.shape(this[0])
+        this.shape = internalMethods.shape(this)
     }
     /**
      * 
@@ -27,12 +27,15 @@ class NDarray extends Array {
      * @param {function} f function to apply 
      * @returns {matrix} matrix with f applied elementwise
      */
-    elementwise(A, B, f, C = []) {
+    elementwise(A, loc = []) {
+        const A = new NDarray(A)
+        if (A.shape !== this.shape)
+            throw new Error('Matrix dimensions must agree')
+
         for (let i = 0; i < A.length; i++)
             if (Array.isArray(A[i]))
-                this.elementwise(A[i], B ? B[i] : null, f, C[i] = [])
-            else C[i] = f(A[i], B ? B[i] : null)
-        return C
+                this.elementwise(A[i], loc.concat(i))
+            else console.log(loc.concat(i))
     }
 
     static arrayFrom(shape) {
@@ -83,10 +86,6 @@ class NDarray extends Array {
         // we take the root of these accumulated squares
         // such is the definition of the frobenius
         return Math.sqrt(accumulator.total)
-    }
-
-    cols(){
-        
     }
 
     /**
@@ -191,19 +190,9 @@ class NDarray extends Array {
         return this.elementwise(A, B, (A_i, B_i) => A_i - B_i)
     }
 
-    /**
-     * 
-     * Computes the transpose of A
-     * 
-     * @param {ndarray} A 
-     * @returns {ndarray} the transpose of A
-     */
-    T(A) {
-        const shapeA = this.shape(A).reverse().slice(0, -1)
-        if (shapeA.length) {
-            const shapeT = tShape(shapeA)
-            return fill(A, shapeT)
-        } else return A
+    transpose() {
+        const T = NDarray.arrayFrom(this.shape.reverse())
+
     }
 
 }
@@ -217,29 +206,11 @@ const internalMethods = {
     */
 
     shape: function (dim, result = []) {
-        if (Array.isArray(dim)) {
+        if (Array.isArray(dim = dim[0])) {
             result.push(dim.length)
-            this._internalShape(dim[0], result)
+            internalMethods.shape(dim[0], result)
         }
 
         return result
     }
 }
-
-function fill(A, T, indx = []) {
-
-    for (let i = 0; i < A.length; i++)
-        if (Array.isArray(A[i])) {
-            indx.push(i)
-            fill(A[i], T, indx)
-            indx.pop()
-        } else {
-            let cur_pos = T[i]
-            indx.slice(1).reverse().forEach(i => cur_pos = cur_pos[i])
-            cur_pos.push(A[i])
-        }
-
-    return T
-}
-
-module.exports = array
