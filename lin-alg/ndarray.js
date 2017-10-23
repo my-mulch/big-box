@@ -17,41 +17,50 @@ class NDarray extends Array {
         super(array)
         this.shape = internalMethods.shape(this)
     }
+
     /**
      * 
-     * Computes f elementwise on two matrices
+     * A generator function designed to produce indices 
      * 
-     * @param {function} fn function to apply 
-     * @param {matrix} A an optional second matrix
-     * @returns {matrix} matrix with f applied elementwise
+     * @param {any} structure 
+     * @param {any} path 
+     * @memberof NDarray
      */
-    elementwise(fn, A) {
-        if (A) A = new NDarray(A)
-        if (A.shape !== this.shape)
-            throw new Error('Matrix dimensions must agree')
+    *traverse(path = []) {
+        for (let i = 0; i < structure.length; i++)
+            if (Array.isArray(this[i]))
+                yield* this.traverse(this[i], path.concat(i))
+            else yield path.concat(i)
+    }
 
-        function worker(A, indx = []) {
-            for (let i = 0; i < A.length; i++) {
-                if (Array.isArray(A[i]))
-                    worker(A[i], indx.concat(i))
-                else {
-                    indices = indx.concat(i)
-                    fn(indices, A)
-                }
-            }
+    transpose() {
+        const indices = this.traverse()
+        const shape = this.shape.reverse()
+        const transpose = NDarray.with(shape)
+
+        let idx
+        while (idx = indices.next().value) {
+            transpose.assign( // assign the value at the current 
+                idx.reverse(), // index to the reversed index in tranpose
+                this.retrieve(idx))
         }
-
     }
-
-    seek(indices, value) {
-
-    }
-
-    seek(indices) {
+    /**
+     * 
+     * Helper function to seek data-structure
+     * to arbitrary point within
+     * 
+     * @param {any} indices 
+     * @param {any} structure 
+     * @returns 
+     * @memberof NDarray
+     */
+    seek(indices, structure = this) {
         if (indices.length === 1)
-            return indices
+            return [indices, structure]
 
-        return seek(indices, structure[indices.shift()])
+        const i = indices.shift()
+        return seek(indices, structure[i])
     }
 
     /**
@@ -63,22 +72,33 @@ class NDarray extends Array {
      * @memberof NDarray
      */
     assign(indices, value) {
-        
+        if (indices.length > structure.shape.length)
+            throw new Error('Indices out of bounds!')
+
+        const [i, structure] = seek(indices)
+        structure[i] = value
     }
 
     /**
      * 
+     * Retrieves value from multi-dim array
      * 
      * @param {array} indices
      * @memberof NDarray
      */
     retrieve(indices) {
+        const structure = this
+        if (indices.length > structure.shape.length)
+            throw new Error('Indices out of bounds!')
 
+        const [i] = seek(indices, structure)
+        return structure[i]
     }
 
 
     static arrayFrom(shape) {
-        for (let i = 0; i < S[0]; i++) {
+        const A
+        for (let i = 0; i < shape[0]; i++) {
             A.push([])
             worker(shape.slice(1), A[i])
         }
@@ -127,97 +147,7 @@ class NDarray extends Array {
         return Math.sqrt(accumulator.total)
     }
 
-    /**
-     * 
-     * Computes the distance between two matrices
-     * @param {matrix} A
-     * @param {matrix} B
-     * @returns {scalar} a scalar representing the distance
-     * 
-     */
-    dist(A, B) {
-        return this.norm(A) - this.norm(B)
-    }
 
-
-    /**
-     * 
-     * Creates an identity matrix size rows x cols
-     * 
-     * @param {int} rows
-     * @param {int} cols
-     */
-    eye(rows, cols) {
-        return Array(rows).fill(null).map((_, i) => [
-            // spread syntax https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_operator
-            ...Array(cols).fill(null).map((_, j) => (
-                i === j ? 1 : 0
-            ))
-        ])
-    }
-
-    /**
-     * 
-     * Computes the squares of a vector elementwise
-     * @param {matrix} A 
-     * @returns {matrix} 
-     */
-    square(A) {
-        return this.elementwise(A, null, (A_i) => A_i * A_i)
-    }
-
-    /**
-     * 
-     * Computes the sum of all elements
-     * 
-     * @param {matrix} A 
-     * @returns {scalar} the sum of all elements
-     */
-    sum(A) {
-        // the accumulator heads through each element and gathers each
-        const accumulator = (A_i) => accumulator.total += A_i
-        accumulator.total = 0
-        this.elementwise(A, null, accumulator)
-        return accumulator.total
-    }
-
-    /**
-     * 
-     * Mulitplies input matrix by a scalar
-     * 
-     * @param {matrix} A
-     * @param {scalar} c 
-     * @returns {matrix} Multiplied elementwise by a scalar
-     */
-    scale(A, c) {
-        return this.elementwise(A, null, (A_i) => A_i * c)
-    }
-
-    /**
-     * 
-     * Computes elementwise addition on two matrices
-     * 
-     * @param {matrix} A input matrix
-     * @param {matrix} B input matrix
-     * @returns {matrix}
-     */
-
-    add(A, B) {
-        return this.elementwise(A, B, (A_i, B_i) => A_i + B_i)
-    }
-
-    /**
-     * 
-     * Computes elementwise subtraction on two matrices
-     * 
-     * @param {matrix} A input matrix
-     * @param {matrix} B input matrix
-     * @returns {matrix}
-     */
-
-    sub(A, B) {
-        return this.elementwise(A, B, (A_i, B_i) => A_i - B_i)
-    }
 
     transpose() {
         const T = NDarray.arrayFrom(this.shape.reverse())
