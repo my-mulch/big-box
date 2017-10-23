@@ -21,22 +21,61 @@ class NDarray extends Array {
      * 
      * Computes f elementwise on two matrices
      * 
-     * @param {matrix} A input matrix
-     * @param {matrix} B input matrix or null (for elementwise over only A)
-     * @param {matrix} C result matrix of same size as inputs or empty
-     * @param {function} f function to apply 
+     * @param {function} fn function to apply 
+     * @param {matrix} A an optional second matrix
      * @returns {matrix} matrix with f applied elementwise
      */
-    elementwise(A, loc = []) {
-        const A = new NDarray(A)
+    elementwise(fn, A) {
+        if (A) A = new NDarray(A)
         if (A.shape !== this.shape)
             throw new Error('Matrix dimensions must agree')
 
-        for (let i = 0; i < A.length; i++)
-            if (Array.isArray(A[i]))
-                this.elementwise(A[i], loc.concat(i))
-            else console.log(loc.concat(i))
+        function worker(A, indx = []) {
+            for (let i = 0; i < A.length; i++) {
+                if (Array.isArray(A[i]))
+                    worker(A[i], indx.concat(i))
+                else {
+                    indices = indx.concat(i)
+                    fn(indices, A)
+                }
+            }
+        }
+
     }
+
+    seek(indices, value) {
+
+    }
+
+    seek(indices) {
+        if (indices.length === 1)
+            return indices
+
+        return seek(indices, structure[indices.shift()])
+    }
+
+    /**
+     * 
+     * Assign a value to position in multi-dim array
+     * 
+     * @param {array} indices 
+     * @param {any} value 
+     * @memberof NDarray
+     */
+    assign(indices, value) {
+        
+    }
+
+    /**
+     * 
+     * 
+     * @param {array} indices
+     * @memberof NDarray
+     */
+    retrieve(indices) {
+
+    }
+
 
     static arrayFrom(shape) {
         for (let i = 0; i < S[0]; i++) {
@@ -100,16 +139,6 @@ class NDarray extends Array {
         return this.norm(A) - this.norm(B)
     }
 
-    /**
-    * 
-    * Creates a rows x cols matrix of zeros
-    * 
-    * @param {int} rows
-    * @param {int} cols
-    */
-    zeros(rows, cols) {
-        return Array(rows).fill(null).map(_ => Array(cols).fill(0))
-    }
 
     /**
      * 
@@ -192,6 +221,9 @@ class NDarray extends Array {
 
     transpose() {
         const T = NDarray.arrayFrom(this.shape.reverse())
+        this.elementwise((indices) => {
+            this.assign(indices.reverse(), )
+        }, T)
 
     }
 
