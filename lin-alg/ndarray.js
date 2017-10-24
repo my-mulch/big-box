@@ -26,10 +26,10 @@ class NDarray extends Array {
      * @param {any} path 
      * @memberof NDarray
      */
-    *traverse(path = []) {
+    *traverse(structure, path = []) {
         for (let i = 0; i < structure.length; i++)
-            if (Array.isArray(this[i]))
-                yield* this.traverse(this[i], path.concat(i))
+            if (Array.isArray(structure[i]))
+                yield* this.traverse(structure[i], path.concat(i))
             else yield path.concat(i)
     }
 
@@ -44,6 +44,8 @@ class NDarray extends Array {
                 idx.reverse(), // index to the reversed index in tranpose
                 this.retrieve(idx))
         }
+
+        return transpose
     }
     /**
      * 
@@ -131,32 +133,6 @@ class NDarray extends Array {
 
         return dotProduct
     }
-    /**
-     * 
-     * Computes frobenius norm of a matrix, L2 of vector
-     * @param {matrix} A
-     * @returns {matrix}
-     */
-    norm(A) {
-        // the accumulator heads through each element and gathers squares
-        const accumulator = (A_i) => accumulator.total += A_i * A_i
-        accumulator.total = 0
-        this.elementwise(A, null, accumulator)
-        // we take the root of these accumulated squares
-        // such is the definition of the frobenius
-        return Math.sqrt(accumulator.total)
-    }
-
-
-
-    transpose() {
-        const T = NDarray.arrayFrom(this.shape.reverse())
-        this.elementwise((indices) => {
-            this.assign(indices.reverse(), )
-        }, T)
-
-    }
-
 }
 
 const internalMethods = {
