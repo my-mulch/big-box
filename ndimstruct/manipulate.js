@@ -1,6 +1,9 @@
 
-function shape(array){
-    
+function shape(array, size = []) {
+    if (!array.length)
+        return size
+
+    return shape(array[0], size.concat(array.length))
 }
 
 function cycle(array, n) {
