@@ -7,7 +7,8 @@ function shape(array, size = []) {
 }
 
 function cycle(array, n) {
-    return array.splice(-n % array.length).concat(array)
+    const copy = [...array]
+    return copy.splice(-n % copy.length).concat(copy)
 }
 
 function seek(index, structure) {
@@ -47,6 +48,7 @@ function transpose(arr) {
 }
 
 module.exports = {
+    shape,
     cycle,
     seek,
     insert,
