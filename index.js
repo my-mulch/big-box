@@ -94,6 +94,7 @@ module.exports = {
     insert,
     traverse,
     transpose,
+    construct
 }
 
 
