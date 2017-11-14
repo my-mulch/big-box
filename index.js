@@ -55,26 +55,28 @@ function transpose(structure) {
     return T
 }
 
-function reshape(structure, shape) {
-    const oldValues = traverse(structure, VALUES)
-    const newStruct = construct(shape)
-    const newIndices = traverse(newStruct, INDICES)
+// UNDER CONSTRUCTION
 
-    let i
-    while (i = newIndices.next().value) {
-        const val = oldValues.next().value
-        insert(i, val, newStruct)
-    }
+// function reshape(structure, shape) {
+//     const oldValues = traverse(structure, VALUES)
+//     const newStruct = construct(shape)
+//     const newIndices = traverse(newStruct, INDICES)
 
-    return newStruct
-}
+//     let i
+//     while (i = newIndices.next().value) {
+//         const val = oldValues.next().value
+//         insert(i, val, newStruct)
+//     }
 
-function construct(shape) {
-    if (!shape.length) return null
+//     return newStruct
+// }
+
+function construct(shape, value = null) {
+    if (!shape.length) return value
 
     const structure = new Array(shape[0])
     for (let i = 0; i < shape[0]; i++)
-        structure[i] = construct(shape.slice(1))
+        structure[i] = construct(shape.slice(1), value)
 
     return structure
 }
