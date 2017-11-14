@@ -1,7 +1,4 @@
 
-const INDICES = 'indices'
-const VALUES = 'values'
-
 function shape(array, size = []) {
     if (!array.length)
         return size
@@ -30,24 +27,18 @@ function insert(index, value, structure) {
     insert(index, value, structure[i])
 }
 
-function values(structure) {
-    return traverse(structure, VALUES)
-}
-
-function indices(structure) {
-    return traverse(structure, INDICES)
-}
-
-function* traverse(structure, type, ind = []) {
-    // GENERATOR FUNCTION RETURNS IMPLICITLY
+function* traverse(structure, ind = []) {
+    // GENERATOR FUNCTION YIELD VS RETURN
     for (let i = 0; i < structure.length; i++)
         if (Array.isArray(structure[i]))
-            yield*
-                traverse(structure[i], type, ind.concat(i))
-        else
-            yield type === INDICES
-                ? ind.concat(i)
-                : structure[i]
+            yield* traverse(structure[i], ind.concat(i))
+        // this else block indicates we are finally traversing
+        // over elements themselves. The trick is to gererate
+        // all cycles of the indices. In this way, we traverse
+        // the structure in all possible directions
+        else yield ind.concat(i).map(function (_, dim, coordinates) {
+            return this.cycle(coordinates, dim)
+        }, this)
 }
 
 function transpose(structure) {
