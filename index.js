@@ -36,9 +36,10 @@ function* traverse(structure, ind = []) {
         // over elements themselves. The trick is to gererate
         // all cycles of the indices. In this way, we traverse
         // the structure in all possible directions
-        else yield ind.concat(i).map(function (_, dim, coordinates) {
-            return this.cycle(coordinates, dim)
-        }, this)
+        else yield {
+            coord: ind.concat(i),
+            value: structure[i]
+        }
 }
 
 function transpose(structure) {
