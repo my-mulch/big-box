@@ -17,7 +17,7 @@ function seek(index, structure) {
     return seek(index.slice(1), structure[index[0]])
 }
 
-function insert(index, value, structure) {
+function insert(index = index.slice(), value, structure) {
     if (!index.length) return
 
     const i = index.shift()
