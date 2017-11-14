@@ -17,14 +17,14 @@ function seek(index, structure) {
     return seek(index.slice(1), structure[index[0]])
 }
 
-function insert(index = index.slice(), value, structure) {
+function insert(index, value, structure) {
     if (!index.length) return
 
-    const i = index.shift()
-    if (!index.length) structure[i] = value
+    const i = index[0]
+    if (index.length === 1) structure[i] = value
     else structure[i] = structure[i] || []
 
-    insert(index, value, structure[i])
+    insert(index.slice(1), value, structure[i])
 }
 
 function* traverse(structure, ind = []) {
