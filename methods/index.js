@@ -56,7 +56,7 @@ function transpose(structure) {
 }
 
 function generalReduce(structure, fn) {
-    const schematic = ndim.traverse(structure)
+    const schematic = traverse(structure)
 
     let next, acc = 0
     while (next = schematic.next().value) {
