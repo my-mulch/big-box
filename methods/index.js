@@ -82,7 +82,8 @@ module.exports = {
     insert,
     traverse,
     transpose,
-    construct
+    construct,
+    generalReduce
 }
 
 
