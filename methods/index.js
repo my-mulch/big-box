@@ -14,6 +14,18 @@ function cycle(array, n) {
 function seek(index, structure) {
     if (!index.length) return structure
 
+    // Allows for a slice along dimension
+    // -1 is the secret take all similiar to ':' 
+    // in python
+    if (index[0] === -1) {
+        let i = 0, data = []
+        while (structure[i]) {
+            data.push(seek(index.slice(1), structure[i]))
+            i++
+        }
+        return data
+    }
+
     return seek(index.slice(1), structure[index[0]])
 }
 
@@ -43,14 +55,11 @@ function* traverse(structure, ind = []) {
 }
 
 function transpose(structure) {
-    const indices = traverse(structure, INDICES)
+    const indices = traverse(structure)
 
-    let i, T = []
-    while (i = indices.next().value) {
-        const value = seek(i, structure)
-        const ti = i.reverse()
-        insert(ti, value, T)
-    }
+    let next, T = []
+    while (next = indices.next().value)
+        insert(next.coord.reverse(), next.value, T)
 
     return T
 }
@@ -65,8 +74,8 @@ function generalReduce(structure, fn) {
     return acc
 }
 
-function construct(shape, value = null) {
-    if (!shape.length) return value
+function construct(shape, value = () => null) {
+    if (!shape.length) return value()
 
     const structure = new Array(shape[0])
     for (let i = 0; i < shape[0]; i++)
