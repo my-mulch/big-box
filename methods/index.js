@@ -85,14 +85,12 @@ function generalReduce(A, fn) {
     return res
 }
 
-
-
 function array(shape, fn = () => null) {
     if (!shape.length) return fn()
 
     const A = new Array(shape[0])
     for (let i = 0; i < shape[0]; i++)
-        A[i] = array(shape.slice(1), value)
+        A[i] = array(shape.slice(1), fn)
 
     return A
 }
@@ -106,11 +104,12 @@ module.exports = {
     cycle,
     seek,
     insert,
-    traverse,
+    indices,
     transpose,
     array,
     generalReduce,
-    generalElementwise
+    generalElementwise,
+    arrayLike
 }
 
 
