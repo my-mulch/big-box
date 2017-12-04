@@ -108,6 +108,10 @@ function array(shape, fn = () => null) {
     return A
 }
 
+function ones(shape) {
+    return array(shape, () => 1)
+}
+
 function arrayLike(A) {
     return array(shape(A))
 }
