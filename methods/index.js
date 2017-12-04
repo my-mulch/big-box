@@ -1,87 +1,94 @@
 
-function shape(array, size = []) {
-    if (!array.length)
+function shape(A, size = []) {
+    if (!A.length)
         return size
 
-    return shape(array[0], size.concat(array.length))
+    return shape(A[0], size.concat(A.length))
 }
 
-function cycle(array, n) {
-    const copy = [...array]
+function cycle(A, n) {
+    const copy = [...A]
     return copy.splice(-n % copy.length).concat(copy)
 }
 
-function seek(index, structure) {
-    if (!index.length) return structure
+function seek(A, index) {
+    if (!index.length) return A
 
-    // Allows for a slice along dimension
-    // -1 is the secret take all similiar to ':' 
-    // in python
+    // Allows for a slice along dimension -1 is the 
+    // secret take all similiar to ':' in python
     if (index[0] === -1) {
         let i = 0, data = []
-        while (structure[i]) {
-            data.push(seek(index.slice(1), structure[i]))
+        while (A[i]) {
+            data.push(seek(A[i], index.slice(1)))
             i++
         }
         return data
     }
 
-    return seek(index.slice(1), structure[index[0]])
+    return seek(A[index[0]], index.slice(1))
 }
 
-function insert(index, value, structure) {
+function insert(A, index, value) {
     if (!index.length) return
 
     const i = index[0]
-    if (index.length === 1) structure[i] = value
-    else structure[i] = structure[i] || []
+    if (index.length === 1) A[i] = value
+    else A[i] = A[i] || []
 
-    insert(index.slice(1), value, structure[i])
+    insert(A[i], index.slice(1), value)
 }
 
-function* traverse(structure, ind = []) {
-    // GENERATOR FUNCTION YIELD VS RETURN
-    for (let i = 0; i < structure.length; i++)
-        if (Array.isArray(structure[i]))
-            yield* traverse(structure[i], ind.concat(i))
-        // this else block indicates we are finally traversing
-        // over elements themselves. The trick is to gererate
-        // all cycles of the indices. In this way, we traverse
-        // the structure in all possible directions
-        else yield {
-            coord: ind.concat(i),
-            value: structure[i]
-        }
+function* indices(A, ind = []) {
+    for (let i = 0; i < A.length; i++)
+        if (Array.isArray(A[i]))
+            yield* traverse(A[i], ind.concat(i))
+        // This method yields the indices of a given shape
+        // Allows for general elementwise operations
+        // on multiple arrays
+        else yield ind.concat(i)
 }
 
-function transpose(structure) {
-    const indices = traverse(structure)
+function transpose(A) {
+    const T = arrayLike(shape(A).reverse())
+    const indxs = indices(A)
 
-    let next, T = []
-    while (next = indices.next().value)
-        insert(next.coord.reverse(), next.value, T)
+    let i
+    while (i = indxs.next().value)
+        insert(T, i.reverse(), seek(A, i))
 
     return T
 }
 
-function generalReduce(structure, fn) {
-    const schematic = traverse(structure)
 
-    let next, acc = 0
-    while (next = schematic.next().value) {
-        acc = fn(acc, next.value)
+function generalElementwise(A, B, fn) {
+    const C = []
+    const indxs = indices(A)
+
+    let i
+    while (i = indxs.next().value) {
+        const ai = seek(A, i)
+        const bi = seek(B, i)
+        insert(C, i, fn(ai, bi))
     }
-    return acc
+
+    return C
 }
 
-function construct(shape, value = () => null) {
-    if (!shape.length) return value()
 
-    const structure = new Array(shape[0])
+
+
+function array(shape, fn = () => null) {
+    if (!shape.length) return fn()
+
+    const A = new Array(shape[0])
     for (let i = 0; i < shape[0]; i++)
-        structure[i] = construct(shape.slice(1), value)
+        A[i] = array(shape.slice(1), value)
 
-    return structure
+    return A
+}
+
+function arrayLike(A) {
+    return array(shape(A))
 }
 
 module.exports = {
@@ -91,8 +98,9 @@ module.exports = {
     insert,
     traverse,
     transpose,
-    construct,
-    generalReduce
+    array,
+    generalReduce,
+    generalElementwise
 }
 
 
