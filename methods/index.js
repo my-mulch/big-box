@@ -63,11 +63,11 @@ function transpose(A) {
 function generalElementwise(A, B, fn) {
     const C = []
     const indxs = indices(A)
-
+    
     let i
     while (i = indxs.next().value) {
         const ai = seek(A, i)
-        const bi = seek(B, i)
+        const bi = B ? seek(B, i) : null
         insert(C, i, fn(ai, bi))
     }
 
