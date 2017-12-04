@@ -74,6 +74,16 @@ function generalElementwise(A, B, fn) {
     return C
 }
 
+function generalReduce(A, fn) {
+    const indxs = indices(A)
+
+    let i, res = 0
+    while (i = indxs.next().value) {
+        res = fn(res, seek(A, i))
+    }
+
+    return res
+}
 
 
 
