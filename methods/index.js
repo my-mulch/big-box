@@ -41,7 +41,7 @@ function insert(A, index, value) {
 function* indices(A, ind = []) {
     for (let i = 0; i < A.length; i++)
         if (Array.isArray(A[i]))
-            yield* traverse(A[i], ind.concat(i))
+            yield* indices(A[i], ind.concat(i))
         // This method yields the indices of a given shape
         // Allows for general elementwise operations
         // on multiple arrays
