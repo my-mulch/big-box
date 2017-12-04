@@ -59,11 +59,24 @@ function transpose(A) {
     return T
 }
 
+function verticalConcat(A, B) {
+    const indxs = indices(B)
+    const C = deepCopy(A)
+
+    let i
+    while (i = indxs.next().value)
+        // Seek returns the array above the final
+        // layer so we can push into it!
+        seek(C, i.slice(0, -1))
+            .push(seek(B, i))
+
+    return C
+}
 
 function generalElementwise(A, B, fn) {
     const C = []
     const indxs = indices(A)
-    
+
     let i
     while (i = indxs.next().value) {
         const ai = seek(A, i)
@@ -99,6 +112,17 @@ function arrayLike(A) {
     return array(shape(A))
 }
 
+function deepCopy(A) {
+    const indxs = indices(A)
+    const C = []
+
+    let i
+    while (i = indxs.next().value)
+        insert(C, i, seek(A, i))
+
+    return C
+}
+
 module.exports = {
     shape,
     cycle,
@@ -109,8 +133,7 @@ module.exports = {
     array,
     generalReduce,
     generalElementwise,
-    arrayLike
+    arrayLike,
+    verticalConcat,
+    deepCopy
 }
-
-
-
