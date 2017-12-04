@@ -1,8 +1,0 @@
-function insert(index, structure = []){
-    if(!index.length) return
-
-			  const i = index.shift()
-			  structure[i] = structure[i] || []
-			  insert(index, structure[i])
-			  return structure
-			  }
