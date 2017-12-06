@@ -14,20 +14,20 @@ function createHeaderFromArray(A) {
     return header
 }
 
-function trim(shape, index) {
-    
-}
-
-function subShape(shape, index) {
-    return shape.reduce(function (acc, si, i) {
+function trim(descriptor, index) {
+    return descriptor.reduce(function (acc, si, i) {
         if (index[i] === -1 || !index[i])
             acc.push(si)
         return acc
     }, [])
 }
 
-function subBases(bases, index) {
+function subShape(shape, index) {
+    return trim(shape, index)
+}
 
+function subBases(bases, index) {
+    return trim(bases, index)
 }
 
 function getShape(A, size = []) {
