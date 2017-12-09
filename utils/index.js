@@ -1,33 +1,14 @@
 const matmat = require('mat-mat')
 
-function updateHeader(oldHeader, attrs) {
-    return { ...oldHeader, ...attrs }
-}
-
 function createHeaderFromArray(A) {
     const header = {}
+
     header.shape = getShape(A)
-    header.bases = getBases(header.shape)
+    header.stride = getStride(header.shape)
     header.numElements = matmat.prod(header.shape)
     header.array = createTypedArray(A, Float64Array, header)
 
     return header
-}
-
-function trim(descriptor, index) {
-    return descriptor.reduce(function (acc, di, i) {
-        if (index[i] < 0 || index[i] === undefined)
-            acc.push(di)
-        return acc
-    }, [])
-}
-
-function subShape(shape, index) {
-    return trim(shape, index)
-}
-
-function subBases(bases, index) {
-    return trim(bases, index)
 }
 
 function getShape(A, size = []) {
@@ -37,7 +18,7 @@ function getShape(A, size = []) {
 }
 
 
-function getBases(shape) {
+function getStride(shape) {
     return shape.reduceRight(function (acc, _, i) {
         if (i === shape.length - 1) acc.unshift(1)
         else acc.unshift(acc[0] * shape[i + 1])
@@ -64,9 +45,9 @@ function* traverse(A) {
         else yield A[i]
 }
 
-function findLocalIndex(index, bases) {
+function findLocalIndex(index, stride) {
     return index.reduce(function (acc, value, dim) {
-        return acc + bases[dim] * value
+        return acc + stride[dim] * value
     }, 0)
 }
 

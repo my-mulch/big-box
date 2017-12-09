@@ -14,7 +14,7 @@ class MultiDimArray {
     reshape(...shape) {
         return new MultiDimArray(null, {
             shape: shape,
-            stride: utils.strideFor(shape)
+            stride: utils.getStride(shape)
             array: this.header.array
         })
     }
