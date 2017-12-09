@@ -1,12 +1,12 @@
 const matmat = require('mat-mat')
 
-function createHeaderFromArray(A) {
+function createHeader(A) {
     const header = {}
 
     header.shape = getShape(A)
     header.stride = getStride(header.shape)
     header.numElements = matmat.prod(header.shape)
-    header.array = createTypedArray(A, Float64Array, header)
+    header.array = copyTyped(A, Float64Array)
 
     return header
 }
@@ -26,23 +26,25 @@ function getStride(shape) {
     }, [])
 }
 
-function createTypedArray(A, TypedArray, header) {
-    const flattenedTypedArray = new TypedArray(header.numElements)
-    const traversal = traverse(A)
+function copyTyped(A, TypedArray) {
+    const buffer = new TypedArray()
 
-    for (let i = 0; i < header.numElements; i++)
-        flattenedTypedArray[i] = traversal.next().value
+    traverse(A, function (elem, i) {
+        buffer[i] = elem
+    })
 
-    return flattenedTypedArray
+    return buffer
 }
 
-function* traverse(A) {
-    for (let i = 0; i < A.length; i++)
+function traverse(A, action, elementCount = 0) {
+    for (let i = 0; i < A.length; i++) {
         if (Array.isArray(A[i]))
-            yield* traverse(A[i])
-        // This method yields the value at index of an arbitrary shape
-        // Helpful because we dont need to pass in the array(s) we are copying to.
-        else yield A[i]
+            elementCount = traverse(A[i], action, elementCount)
+        // Depth first recursion to hit each element
+        else action(A[i], elementCount++)
+    }
+    // Must return elementCount to continue the count
+    return elementCount
 }
 
 function findLocalIndex(index, stride) {
@@ -54,12 +56,8 @@ function findLocalIndex(index, stride) {
 
 module.exports = {
     getShape,
-    getBases,
+    getStride,
     createTypedArray,
-    traverse,
     findLocalIndex,
-    updateHeader,
-    subShape,
-    subBases,
     createHeaderFromArray
 } 

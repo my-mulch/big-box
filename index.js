@@ -8,7 +8,7 @@ class MultiDimArray {
         if (A && header) throw new Error('Cannot specify both header and Array')
 
         if (header) this.header = header
-        else if (A) this.header = utils.createHeaderFromArray(A)
+        else if (A) this.header = utils.createHeader(A)
     }
 
     reshape(...shape) {
@@ -42,6 +42,10 @@ class MultiDimArray {
 
     generalMap(fn) {
         return this.header.array.map(fn)
+    }
+
+    toString() {
+
     }
 }
 
