@@ -15,9 +15,9 @@ function createHeaderFromArray(A) {
 }
 
 function trim(descriptor, index) {
-    return descriptor.reduce(function (acc, si, i) {
-        if (index[i] === -1 || !index[i])
-            acc.push(si)
+    return descriptor.reduce(function (acc, di, i) {
+        if (index[i] < 0 || index[i] === undefined)
+            acc.push(di)
         return acc
     }, [])
 }
@@ -79,5 +79,6 @@ module.exports = {
     findLocalIndex,
     updateHeader,
     subShape,
+    subBases,
     createHeaderFromArray
 } 

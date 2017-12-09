@@ -12,23 +12,19 @@ class MultiDimArray {
     }
 
     reshape(...shape) {
-        const attrs = {
+        return new MultiDimArray(null, {
             shape: shape,
-            bases: utils.getBases(shape)
-        }
-        const newHeader = utils.updateHeader(this.header, attrs)
-
-        return new MultiDimArray(null, newHeader)
+            stride: utils.strideFor(shape)
+            array: this.header.array
+        })
     }
 
     T() {
-        const attrs = {
-            shape: this.header.shape.slice().reverse(),
-            bases: this.header.bases.slice().reverse()
-        }
-        const newHeader = utils.updateHeader(this.header, attrs)
-
-        return new MultiDimArray(null, newHeader)
+        return new MultiDimArray(null, {
+            shape: this.header.shape.reverse(),
+            stride: this.header.stride.reverse(),
+            array: this.header.array
+        })
     }
 
     generalReduce(fn) {
@@ -39,14 +35,12 @@ class MultiDimArray {
         return this.header.array.map(fn)
     }
 
-    _(...index) {
-        const attrs = {}
-        attrs.shape = utils.subShape(this.header.shape, index)
-        attrs.numElements = matmat.prod(attrs.shape)
-
-        const newHeader = utils.updateHeader(this.header, attrs)
-
-        return new MultiDimArray(null, newHeader)
+    get(...index) {
+        return new MultiDimArray(null, {
+            shape: utils.shapeFor(index),
+            stride: this.header.stride
+            array: this.header.array,
+        })
     }
 }
 
