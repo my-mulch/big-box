@@ -5,7 +5,7 @@ const utils = require('./utils')
 class MultiDimArray {
 
     constructor(A, header) {
-        this.header = {}
+        if (A && header) throw new Error('Cannot specify both header and Array')
 
         if (header) this.header = header
         else if (A) this.header = utils.createHeaderFromArray(A)
@@ -27,13 +27,6 @@ class MultiDimArray {
         })
     }
 
-    generalReduce(fn) {
-        return this.header.array.reduce(fn)
-    }
-
-    generalMap(fn) {
-        return this.header.array.map(fn)
-    }
 
     get(...index) {
         return new MultiDimArray(null, {
@@ -41,6 +34,14 @@ class MultiDimArray {
             stride: this.header.stride
             array: this.header.array,
         })
+    }
+
+    generalReduce(fn) {
+        return this.header.array.reduce(fn)
+    }
+
+    generalMap(fn) {
+        return this.header.array.map(fn)
     }
 }
 
