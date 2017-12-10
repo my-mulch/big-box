@@ -29,16 +29,14 @@ class MultiDimArray {
 
 
     slice(...index) {
-        if (utils.isFullySpecified(index))
-            return this.header.array[
-                utils.findLocalIndex(index, this.header.stride)
-            ]
+        const localIndex = utils.findLocalIndex(index, this.header.stride)
 
-        const newShape = utils.getSlice(index, this.header.shape)
-        const offset = utils.getOffset(index, this.header)
+        if (utils.isFullySpecified(index))
+            return this.header.array[localIndex]
 
         return new MultiDimArray(null, {
-            shape: newShape,
+            shape: utils.getSlice(index, this.header.shape),
+            offset: localIndex,
             stride: this.header.stride,
             array: this.header.array,
         })
