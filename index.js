@@ -60,26 +60,8 @@ class MultiDimArray {
         return this.header.array.map(fn)
     }
 
-    toString(dims = this.header.shape.slice(), coord = []) {
-
-        const elements = []
-        const entirety = []
-
-        for (let i = 0; i < dims[0]; i++) {
-            if (dims.length === 1)
-                elements.push(this.slice(...coord))
-            else {
-                const subArrStr = toString(dims.slice(1), coord.concat(i))
-                entirety.push(subArrStr)
-            }
-
-            if (i + 1 === dims[0] && entirety.length) {
-                const newLines = '\n'.repeat(dims.length - 1)
-                return `[${entirety.join(',' + newLines)}]`
-            }
-        }
-
-        if (elements.length) return `[${elements.join(', ')}]`
+    toString() {
+        return utils.helperToString(this.header)
     }
 }
 

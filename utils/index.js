@@ -5,7 +5,6 @@ function getShape(A, size = []) {
     return getShape(A[0], size.concat(A.length))
 }
 
-
 function getStride(shape) {
     return shape.reduceRight(function (acc, _, i) {
         if (i === shape.length - 1) acc.unshift(1)
@@ -22,17 +21,14 @@ function getSlice(index, shape) {
 
 function traverse(A, action) {
     for (let i = 0; i < A.length; i++)
-        if (Array.isArray(A[i]))
-            traverse(A[i], action)
-        // Depth first recursion to hit each element
+        if (Array.isArray(A[i])) traverse(A[i], action)
         else action(A[i])
 }
 
 function flatten(A) {
     const flat = []
-    traverse(A, function (element) {
-        flat.push(element)
-    })
+    // I figured flatten should be flat ;)
+    traverse(A, function (element) { flat.push(element) })
     return flat
 }
 
@@ -49,12 +45,40 @@ function isFullySpecified(index) {
     })
 }
 
+function wrapperString(wrap, meat) {
+    return wrap.split('$').join(meat)
+}
+
+function helperToString(header, index = []) {
+    const elements = []
+    const entirety = []
+
+    for (let i = 0; i < header.shape[0]; i++) {
+        if (header.shape.length === 1) {
+            const newHeader = { shape: header.shape.slice(1), stride: header.stride }
+            elements.push(findLocalIndex(newHeader, index))
+        } else {
+            const subArrStr = helperToString(header.shape.slice(1), index.concat(i))
+            entirety.push(subArrStr)
+        }
+
+        if (i + 1 === header.shape[0] && entirety.length) {
+            const newLines = '\n'.repeat(header.shape.length - 1)
+            return wrapperString('[$]', entirety.join(',' + newLines))
+        }
+    }
+
+    if (elements.length) return wrapperString('[$]', elements.join(', '))
+}
+
+
 
 module.exports = {
     getShape,
     getStride,
     getSlice,
     findLocalIndex,
-    createHeader,
-    isFullySpecified
+    flatten,
+    isFullySpecified,
+    helperToString
 } 
