@@ -36,12 +36,6 @@ function copyTyped(A, TypedArray, header) {
     return buffer
 }
 
-function flatten(A) {
-    traverse(A, function (elem) {
-        
-    })
-}
-
 function traverse(A, action) {
     for (let i = 0; i < A.length; i++)
         if (Array.isArray(A[i]))
@@ -54,6 +48,12 @@ function findLocalIndex(index, stride) {
     return index.reduce(function (acc, value, dim) {
         return acc + stride[dim] * value
     }, 0)
+}
+
+function isFullySpecified(index) {
+    return index.every(function (element) {
+        return element >= 0
+    })
 }
 
 

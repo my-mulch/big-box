@@ -15,7 +15,7 @@ class MultiDimArray {
         return new MultiDimArray(null, {
             shape: shape,
             stride: utils.getStride(shape),
-            array: this.header.array
+            array: this.header.array,
         })
     }
 
@@ -23,14 +23,20 @@ class MultiDimArray {
         return new MultiDimArray(null, {
             shape: this.header.shape.reverse(),
             stride: this.header.stride.reverse(),
-            array: this.header.array
+            array: this.header.array,
         })
     }
 
 
     slice(...index) {
+        if (utils.isFullySpecified(index))
+            return this.header.array[
+                utils.findLocalIndex(index, this.header.stride)
+            ]
+        
+
         return new MultiDimArray(null, {
-            shape: utils.shapeFor(index),
+            shape: utils.newShape(index),
             stride: this.header.stride,
             array: this.header.array,
         })
@@ -44,26 +50,26 @@ class MultiDimArray {
         return this.header.array.map(fn)
     }
 
-    toString() {
+    toString(dims = this.header.shape.slice(), coord = []) {
 
         const elements = []
-        let entirety = []
+        const entirety = []
 
         for (let i = 0; i < dims[0]; i++) {
             if (dims.length === 1)
-                elements.push(A[i])
+                elements.push(this.slice(coord))
             else {
-                const subArr = p(A[i], dims.slice(1), orig)
-                entirety.push(`[${subArr.join(', ')}]`)
+                const subArrStr = toString(dims.slice(1), coord.concat(i))
+                entirety.push(subArrStr)
             }
 
             if (i + 1 === dims[0] && entirety.length) {
-                const newLines = `${'\n'.repeat(dims.length - 1)}`
+                const newLines = '\n'.repeat(dims.length - 1)
                 return `[${entirety.join(',' + newLines)}]`
             }
         }
 
-        if (elements.length) return elements
+        if (elements.length) return `[${elements.join(', ')}]`
     }
 }
 
