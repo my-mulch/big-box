@@ -7,6 +7,7 @@ function createHeader(A) {
     header.stride = getStride(header.shape)
     header.numElements = matmat.prod(header.shape)
     header.array = copyTyped(A, Float64Array, header)
+    header.offset = 0
 
     return header
 }
@@ -52,6 +53,7 @@ function traverse(A, action) {
 
 function findLocalIndex(index, stride) {
     return index.reduce(function (acc, value, dim) {
+        if (value === -1) return acc
         return acc + stride[dim] * value
     }, 0)
 }

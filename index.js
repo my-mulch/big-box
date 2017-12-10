@@ -35,6 +35,7 @@ class MultiDimArray {
             ]
 
         const newShape = utils.getSlice(index, this.header.shape)
+        const offset = utils.getOffset(index, this.header)
 
         return new MultiDimArray(null, {
             shape: newShape,
