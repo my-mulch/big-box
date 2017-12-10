@@ -57,7 +57,7 @@ class MultiDimArray {
 
         for (let i = 0; i < dims[0]; i++) {
             if (dims.length === 1)
-                elements.push(this.slice(coord))
+                elements.push(this.slice(...coord))
             else {
                 const subArrStr = toString(dims.slice(1), coord.concat(i))
                 entirety.push(subArrStr)

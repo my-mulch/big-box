@@ -33,14 +33,8 @@ function getSlice(index, shape) {
     })
 }
 
-function copyTyped(A, TypedArray, header) {
-    const buffer = new TypedArray(header.numElements)
-
-    traverse(A, function (elem, i) {
-        buffer[i] = elem
-    })
-
-    return buffer
+function copyTyped(A, TypedArray) {
+    return new TypedArray(flatten(A))
 }
 
 function traverse(A, action) {
@@ -49,6 +43,14 @@ function traverse(A, action) {
             traverse(A[i], action)
         // Depth first recursion to hit each element
         else action(A[i])
+}
+
+function flatten(A) {
+    const flat = []
+    traverse(A, function (element) {
+        flat.push(element)
+    })
+    return flat
 }
 
 function findLocalIndex(index, stride) {
