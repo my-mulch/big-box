@@ -33,10 +33,11 @@ class MultiDimArray {
             return this.header.array[
                 utils.findLocalIndex(index, this.header.stride)
             ]
-        
+
+        const newShape = utils.getSlice(index, this.header.shape)
 
         return new MultiDimArray(null, {
-            shape: utils.newShape(index),
+            shape: newShape,
             stride: this.header.stride,
             array: this.header.array,
         })

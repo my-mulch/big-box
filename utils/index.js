@@ -26,6 +26,12 @@ function getStride(shape) {
     }, [])
 }
 
+function getSlice(index, shape) {
+    return shape.filter(function (element, i) {
+        return index[i] === undefined || index[i] === -1
+    })
+}
+
 function copyTyped(A, TypedArray, header) {
     const buffer = new TypedArray(header.numElements)
 
@@ -60,6 +66,8 @@ function isFullySpecified(index) {
 module.exports = {
     getShape,
     getStride,
+    getSlice,
     findLocalIndex,
-    createHeader
+    createHeader,
+    isFullySpecified
 } 
