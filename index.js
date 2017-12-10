@@ -41,13 +41,15 @@ class MultiDimArray {
     slice(...index) {
         const localIndex = utils.findLocalIndex(index, this.header.stride)
 
-        if (utils.isFullySpecified(index))
+        if (utils.isFullySpecified(index, this.header.shape))
             return this.header.array[localIndex]
 
+        const [newStride, newShape] = utils.getSlice(index, this.header)
+
         return new MultiDimArray(null, {
-            shape: utils.getSlice(index, this.header.shape),
+            shape: newShape,
             offset: localIndex,
-            stride: this.header.stride,
+            stride: newStride,
             array: this.header.array,
         })
     }
@@ -61,7 +63,8 @@ class MultiDimArray {
     }
 
     toString() {
-        return utils.helperToString(this.header)
+        // tribute to the greats ====>
+        return utils.wrapperString('array($)', utils.helperToString(this.header))
     }
 }
 

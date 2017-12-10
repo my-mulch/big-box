@@ -13,10 +13,11 @@ function getStride(shape) {
     }, [])
 }
 
-function getSlice(index, shape) {
-    return shape.filter(function (element, i) {
-        return index[i] === undefined || index[i] === -1
-    })
+function getSlice(index, header) {
+    return [
+        header.shape.filter(specifiedDimensions(index)),
+        header.stride.filter(specifiedDimensions(index))
+    ]
 }
 
 function traverse(A, action) {
@@ -39,10 +40,16 @@ function findLocalIndex(index, stride) {
     }, 0)
 }
 
-function isFullySpecified(index) {
-    return index.every(function (element) {
+function isFullySpecified(index, shape) {
+    return index.length === shape.length && index.every(function (element) {
         return element >= 0
     })
+}
+
+function specifiedDimensions(index) {
+    return function filter(element, i) {
+        return index[i] === undefined || index[i] === -1
+    }
 }
 
 function wrapperString(wrap, meat) {
@@ -55,10 +62,11 @@ function helperToString(header, index = []) {
 
     for (let i = 0; i < header.shape[0]; i++) {
         if (header.shape.length === 1) {
-            const newHeader = { shape: header.shape.slice(1), stride: header.stride }
-            elements.push(findLocalIndex(newHeader, index))
+            const localIndex = findLocalIndex(index.concat(i), header.stride)
+            elements.push(header.array[localIndex])
         } else {
-            const subArrStr = helperToString(header.shape.slice(1), index.concat(i))
+            const newHeader = { ...header, shape: header.shape.slice(1) }
+            const subArrStr = helperToString(newHeader, index.concat(i))
             entirety.push(subArrStr)
         }
 
@@ -80,5 +88,6 @@ module.exports = {
     findLocalIndex,
     flatten,
     isFullySpecified,
-    helperToString
+    helperToString,
+    wrapperString
 } 
