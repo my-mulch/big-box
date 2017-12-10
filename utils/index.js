@@ -6,7 +6,7 @@ function createHeader(A) {
     header.shape = getShape(A)
     header.stride = getStride(header.shape)
     header.numElements = matmat.prod(header.shape)
-    header.array = copyTyped(A, Float64Array)
+    header.array = copyTyped(A, Float64Array, header)
 
     return header
 }
@@ -26,8 +26,8 @@ function getStride(shape) {
     }, [])
 }
 
-function copyTyped(A, TypedArray) {
-    const buffer = new TypedArray()
+function copyTyped(A, TypedArray, header) {
+    const buffer = new TypedArray(header.numElements)
 
     traverse(A, function (elem, i) {
         buffer[i] = elem
@@ -36,15 +36,18 @@ function copyTyped(A, TypedArray) {
     return buffer
 }
 
-function traverse(A, action, elementCount = 0) {
-    for (let i = 0; i < A.length; i++) {
+function flatten(A) {
+    traverse(A, function (elem) {
+        
+    })
+}
+
+function traverse(A, action) {
+    for (let i = 0; i < A.length; i++)
         if (Array.isArray(A[i]))
-            elementCount = traverse(A[i], action, elementCount)
+            traverse(A[i], action)
         // Depth first recursion to hit each element
-        else action(A[i], elementCount++)
-    }
-    // Must return elementCount to continue the count
-    return elementCount
+        else action(A[i])
 }
 
 function findLocalIndex(index, stride) {
@@ -57,7 +60,6 @@ function findLocalIndex(index, stride) {
 module.exports = {
     getShape,
     getStride,
-    createTypedArray,
     findLocalIndex,
-    createHeaderFromArray
+    createHeader
 } 
