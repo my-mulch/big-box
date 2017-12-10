@@ -1,12 +1,10 @@
-const matmat = require('mat-mat')
 
 function createHeader(A) {
     const header = {}
 
     header.shape = getShape(A)
     header.stride = getStride(header.shape)
-    header.numElements = matmat.prod(header.shape)
-    header.array = copyTyped(A, Float64Array, header)
+    header.array = new Float64Array(flatten(A))
     header.offset = 0
 
     return header
@@ -31,10 +29,6 @@ function getSlice(index, shape) {
     return shape.filter(function (element, i) {
         return index[i] === undefined || index[i] === -1
     })
-}
-
-function copyTyped(A, TypedArray) {
-    return new TypedArray(flatten(A))
 }
 
 function traverse(A, action) {
