@@ -1,15 +1,4 @@
 
-function createHeader(A) {
-    const header = {}
-
-    header.shape = getShape(A)
-    header.stride = getStride(header.shape)
-    header.array = new Float64Array(flatten(A))
-    header.offset = 0
-
-    return header
-}
-
 function getShape(A, size = []) {
     if (!A.length) return size
 

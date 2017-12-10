@@ -5,10 +5,20 @@ const utils = require('./utils')
 class MultiDimArray {
 
     constructor(A, header) {
-        if (A && header) throw new Error('Cannot specify both header and Array')
+        this.header = {}
 
-        if (header) this.header = header
-        else if (A) this.header = utils.createHeader(A)
+        if (A && header)
+            throw new Error('Cannot specify both header and Array')
+
+        if (header)
+            this.header = header
+
+        if (A) {
+            this.header.shape = utils.getShape(A)
+            this.header.stride = utils.getStride(this.header.shape)
+            this.header.array = new Float64Array(utils.flatten(A))
+            this.header.offset = 0
+        }
     }
 
     reshape(...shape) {
