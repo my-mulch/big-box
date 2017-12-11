@@ -44,7 +44,7 @@ class MultiDimArray {
         if (utils.isFullySpecified(index, this.header.shape))
             return this.header.array[localIndex]
 
-        const [newStride, newShape] = utils.getSlice(index, this.header)
+        const [newShape, newStride] = utils.getSlice(index, this.header)
 
         return new MultiDimArray(null, {
             shape: newShape,
@@ -65,6 +65,10 @@ class MultiDimArray {
     toString() {
         // tribute to the greats ====>
         return utils.wrapperString('array($)', utils.helperToString(this.header))
+    }
+
+    valueOf(){
+        return this.toString()
     }
 }
 
