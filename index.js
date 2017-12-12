@@ -48,6 +48,16 @@ class MultiDimArray {
         })
     }
 
+    minus(array) {
+        return new MultiDimArray(null, {
+            ...this.header,
+            array: new Float64Array(
+                utils.ndim.elementwise(this, array, function (ti, ai) {
+                    return ti - ai;
+                }))
+        })
+    }
+
     reshape(...shape) {
         return new MultiDimArray(null, {
             ...this.header,
