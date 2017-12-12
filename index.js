@@ -14,19 +14,30 @@ class MultiDimArray {
             this.header = header
 
         if (A) {
-            this.header.shape = utils.getShape(A)
-            this.header.stride = utils.getStride(this.header.shape)
-            this.header.array = new Float64Array(utils.flatten(A))
+            this.header.shape = utils.raw.getShape(A)
+            this.header.stride = utils.ndim.getStride(this.header.shape)
+            this.header.array = new Float64Array(utils.raw.flatten(A))
             this.header.offset = 0
         }
     }
 
-    add(array) {
+    plus(array) {
         return new MultiDimArray(null, {
             ...this.header,
-            array: utils.elementwise(this, array, function (ti, ai) {
-                return ti + ai;
-            })
+            array: new Float64Array(
+                utils.ndim.elementwise(this, array, function (ti, ai) {
+                    return ti + ai;
+                }))
+        })
+    }
+
+    times(array) {
+        return new MultiDimArray(null, {
+            ...this.header,
+            array: new Float64Array(
+                utils.ndim.elementwise(this, array, function (ti, ai) {
+                    return ti * ai;
+                }))
         })
     }
 
@@ -34,7 +45,7 @@ class MultiDimArray {
         return new MultiDimArray(null, {
             ...this.header,
             shape: shape,
-            stride: utils.getStride(shape),
+            stride: utils.ndim.getStride(shape),
         })
     }
 
@@ -47,12 +58,12 @@ class MultiDimArray {
     }
 
     slice(...index) {
-        const localIndex = utils.findLocalIndex(index, this.header)
+        const localIndex = utils.ndim.findLocalIndex(index, this.header)
 
-        if (utils.isFullySpecified(index, this.header.shape))
+        if (utils.ndim.isFullySpecified(index, this.header.shape))
             return this.header.array[localIndex]
 
-        const [newShape, newStride] = utils.getSlice(index, this.header)
+        const [newShape, newStride] = utils.ndim.getSlice(index, this.header)
 
         return new MultiDimArray(null, {
             shape: newShape,
@@ -71,8 +82,10 @@ class MultiDimArray {
     }
 
     toString() {
-        // tribute to the greats ====>
-        return utils.wrapperString('array($)', utils.helperToString(this.header))
+        return utils.ndim.wrapperString(
+            'array($)',
+            utils.ndim.helperToString(this.header)
+        )
     }
 
     inspect() {

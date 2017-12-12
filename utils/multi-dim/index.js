@@ -16,12 +16,12 @@ function getSlice(index, header) {
 
 function elementwise(array1, array2, fn) {
     const result = []
-    const indices = traverse(array1)
+    const indices = traverse(array1, array1.header.shape)
 
     let nextValue, i = 0
     while (nextValue = indices.next().value) {
-        const val1 = array1.slice(nextValue)
-        const val2 = array2.slice(nextValue)
+        const val1 = array1.slice(...nextValue)
+        const val2 = array2.slice(...nextValue)
         result.push(fn(val1, val2))
     }
 
@@ -33,8 +33,6 @@ function* traverse(array, shape, index = []) {
         if (shape.length === 1) yield index.concat(i)
         else yield* traverse(array, shape.slice(1), index.concat(i))
 }
-
-
 
 function findLocalIndex(index, header) {
     return header.offset + index.reduce(function (acc, value, dim) {
@@ -90,5 +88,6 @@ module.exports = {
     findLocalIndex,
     isFullySpecified,
     helperToString,
-    wrapperString
+    wrapperString,
+    elementwise
 } 
