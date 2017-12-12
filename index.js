@@ -21,6 +21,15 @@ class MultiDimArray {
         }
     }
 
+    add(array) {
+        return new MultiDimArray(null, {
+            ...this.header,
+            array: utils.elementwise(this, array, function (ti, ai) {
+                return ti + ai;
+            })
+        })
+    }
+
     reshape(...shape) {
         return new MultiDimArray(null, {
             ...this.header,
@@ -36,7 +45,6 @@ class MultiDimArray {
             stride: this.header.stride.slice().reverse(),
         })
     }
-
 
     slice(...index) {
         const localIndex = utils.findLocalIndex(index, this.header)

@@ -1,10 +1,4 @@
 
-function getShape(A, size = []) {
-    if (!A.length) return size
-
-    return getShape(A[0], size.concat(A.length))
-}
-
 function getStride(shape) {
     return shape.reduceRight(function (acc, _, i) {
         if (i === shape.length - 1) acc.unshift(1)
@@ -20,18 +14,27 @@ function getSlice(index, header) {
     ]
 }
 
-function traverse(A, action) {
-    for (let i = 0; i < A.length; i++)
-        if (Array.isArray(A[i])) traverse(A[i], action)
-        else action(A[i])
+function elementwise(array1, array2, fn) {
+    const result = []
+    const indices = traverse(array1)
+
+    let nextValue, i = 0
+    while (nextValue = indices.next().value) {
+        const val1 = array1.slice(nextValue)
+        const val2 = array2.slice(nextValue)
+        result.push(fn(val1, val2))
+    }
+
+    return result
 }
 
-function flatten(A) {
-    const flat = []
-    // I figured flatten should be flat ;)
-    traverse(A, function (element) { flat.push(element) })
-    return flat
+function* traverse(array, shape, index = []) {
+    for (let i = 0; i < shape[0]; i++)
+        if (shape.length === 1) yield index.concat(i)
+        else yield* traverse(array, shape.slice(1), index.concat(i))
 }
+
+
 
 function findLocalIndex(index, header) {
     return header.offset + index.reduce(function (acc, value, dim) {
@@ -82,11 +85,9 @@ function helperToString(header, index = []) {
 
 
 module.exports = {
-    getShape,
     getStride,
     getSlice,
     findLocalIndex,
-    flatten,
     isFullySpecified,
     helperToString,
     wrapperString
