@@ -41,6 +41,13 @@ class MultiDimArray {
         })
     }
 
+    copy() {
+        return new MultiDimArray(null, {
+            ...this.header,
+            array: new Float64Array(this.header.array)
+        })
+    }
+
     reshape(...shape) {
         return new MultiDimArray(null, {
             ...this.header,
