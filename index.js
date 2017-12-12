@@ -23,9 +23,9 @@ class MultiDimArray {
 
     reshape(...shape) {
         return new MultiDimArray(null, {
+            ...this.header,
             shape: shape,
             stride: utils.getStride(shape),
-            array: this.header.array,
         })
     }
 
@@ -42,13 +42,13 @@ class MultiDimArray {
         const localIndex = utils.findLocalIndex(index, this.header)
 
         if (utils.isFullySpecified(index, this.header.shape))
-            return this.header.array[this.header.offset + localIndex]
+            return this.header.array[localIndex]
 
         const [newShape, newStride] = utils.getSlice(index, this.header)
 
         return new MultiDimArray(null, {
             shape: newShape,
-            offset: this.header.offset + localIndex,
+            offset: localIndex,
             stride: newStride,
             array: this.header.array,
         })
