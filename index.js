@@ -31,24 +31,24 @@ class MultiDimArray {
 
     T() {
         return new MultiDimArray(null, {
-            shape: this.header.shape.reverse(),
-            stride: this.header.stride.reverse(),
-            array: this.header.array,
+            ...this.header,
+            shape: this.header.shape.slice().reverse(),
+            stride: this.header.stride.slice().reverse(),
         })
     }
 
 
     slice(...index) {
-        const localIndex = utils.findLocalIndex(index, this.header.stride)
+        const localIndex = utils.findLocalIndex(index, this.header)
 
         if (utils.isFullySpecified(index, this.header.shape))
-            return this.header.array[localIndex]
+            return this.header.array[this.header.offset + localIndex]
 
         const [newShape, newStride] = utils.getSlice(index, this.header)
 
         return new MultiDimArray(null, {
             shape: newShape,
-            offset: localIndex,
+            offset: this.header.offset + localIndex,
             stride: newStride,
             array: this.header.array,
         })
@@ -67,7 +67,7 @@ class MultiDimArray {
         return utils.wrapperString('array($)', utils.helperToString(this.header))
     }
 
-    valueOf(){
+    inspect() {
         return this.toString()
     }
 }

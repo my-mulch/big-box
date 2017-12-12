@@ -33,10 +33,10 @@ function flatten(A) {
     return flat
 }
 
-function findLocalIndex(index, stride) {
-    return index.reduce(function (acc, value, dim) {
+function findLocalIndex(index, header) {
+    return header.offset + index.reduce(function (acc, value, dim) {
         if (value === -1) return acc
-        return acc + stride[dim] * value
+        return acc + header.stride[dim] * value
     }, 0)
 }
 
@@ -62,7 +62,7 @@ function helperToString(header, index = []) {
 
     for (let i = 0; i < header.shape[0]; i++) {
         if (header.shape.length === 1) {
-            const localIndex = findLocalIndex(index.concat(i), header.stride)
+            const localIndex = findLocalIndex(index.concat(i), header)
             elements.push(header.array[localIndex])
         } else {
             const newHeader = { ...header, shape: header.shape.slice(1) }
@@ -72,7 +72,7 @@ function helperToString(header, index = []) {
 
         if (i + 1 === header.shape[0] && entirety.length) {
             const newLines = '\n'.repeat(header.shape.length - 1)
-            return wrapperString('[$]', entirety.join(',' + newLines))
+            return wrapperString('[$]', entirety.join(',' + newLines + '\t'))
         }
     }
 
