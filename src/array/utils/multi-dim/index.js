@@ -60,18 +60,11 @@ function helperToString(header, index = []) {
     if (elements.length) return wrapperString('[$]', elements.join(', '))
 }
 
-function dotShape(A, B) {
-    return [A.header.shape[0], B.header.shape[1]]
-}
-
-
 module.exports = {
     getStride,
     getSlice,
-    dotShape,
     findLocalIndex,
     isFullySpecified,
     helperToString,
     wrapperString,
-    elementwise
 } 

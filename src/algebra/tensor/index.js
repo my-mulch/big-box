@@ -14,7 +14,7 @@ function elementwiseTensorOperation(A, B, fn) {
     for (let idx of traverse(A.header.shape)) {
         const ai = A.slice(...idx)
         const bi = B.slice(...idx)
-        C.set([fn(ai, bi)], ...idx)
+        C.set('=', [fn(ai, bi)], ...idx)
     }
 
     return C
@@ -36,3 +36,9 @@ function divide(A, B) {
     return elementwiseTensorOperation(A, B, ops.div)
 }
 
+module.exports = {
+    add,
+    subtract,
+    multiply,
+    divide
+}

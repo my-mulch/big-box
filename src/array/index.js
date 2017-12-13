@@ -1,5 +1,5 @@
 const utils = require('./utils')
-const algebra = require('../algebra')
+const { ops, tensor, linear } = require('../algebra')
 
 class MultiDimArray {
 
@@ -16,7 +16,7 @@ class MultiDimArray {
             this.header.shape = utils.raw.getShape(A)
             this.header.stride = utils.ndim.getStride(this.header.shape)
             this.header.array = new Float64Array(utils.raw.flatten(A))
-            this.header.size = algebra.ops.product(this.header.shape)
+            this.header.size = ops.product(this.header.shape)
             this.header.offset = 0
         }
     }
@@ -26,7 +26,7 @@ class MultiDimArray {
     }
 
     static empty(shape) {
-        const size = algebra.ops.product(shape)
+        const size = ops.product(shape)
 
         return new MultiDimArray(null, {
             shape: shape,
@@ -38,7 +38,7 @@ class MultiDimArray {
     }
 
     static random(shape) {
-        const size = algebra.ops.product(shape)
+        const size = ops.product(shape)
 
         return new MultiDimArray(null, {
             array: new Float64Array(size),
@@ -50,7 +50,7 @@ class MultiDimArray {
     }
 
     static ones(shape) {
-        const size = algebra.ops.product(shape)
+        const size = ops.product(shape)
 
         return new MultiDimArray(null, {
             array: new Float64Array(size).fill(1),
@@ -62,7 +62,7 @@ class MultiDimArray {
     }
 
     static zeros(shape) {
-        const size = algebra.ops.product(shape)
+        const size = ops.product(shape)
 
         return new MultiDimArray(null, {
             array: new Float64Array(size).fill(0),
@@ -97,19 +97,19 @@ class MultiDimArray {
     }
 
     dot(B) {
-        return algebra.linear.matrixProduct(this, B)
+        return linear.matrixProduct(this, B)
     }
 
     plus(B) {
-        return algebra.tensor.add(this, B)
+        return tensor.add(this, B)
     }
 
     times(B) {
-        return algebra.tensor.multiply(this, B)
+        return tensor.multiply(this, B)
     }
 
     minus(B) {
-        return algebra.tensor.subtract(this, B)
+        return tensor.subtract(this, B)
     }
 
     copy() {
