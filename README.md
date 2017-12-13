@@ -14,7 +14,7 @@ npm install multi-dim
 ```
 
 ```js
-const ndim = require('multi-dim');
+const {ndim} = require('multi-dim');
 ...
 ```
 ## Basics
@@ -22,10 +22,10 @@ const ndim = require('multi-dim');
 ### Array Creation
 
 ```js
-> const a = new ndim.Array([2,3,4]);
+> const a = ndim.array([2,3,4]);
 > a
 array([ 2, 3, 4])
-> const b = new ndim.Array([[1,2,3], [4,5,6]]);
+> const b = ndim.array([[1,2,3], [4,5,6]]);
 > b
 array([[ 1, 2, 3],
        [ 4, 5, 6]])
