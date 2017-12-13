@@ -43,15 +43,6 @@ class MultiDimArray {
         })
     }
 
-    static ones(shape) {
-        return new MultiDimArray(null, {
-            array: new Float64Array(matmat.prod(shape)).fill(1),
-            shape: shape,
-            offset: 0,
-            stride: utils.ndim.getStride(shape)
-        })
-    }
-
     static zeros(shape) {
         return new MultiDimArray(null, {
             array: new Float64Array(matmat.prod(shape)).fill(0),
@@ -59,6 +50,16 @@ class MultiDimArray {
             offset: 0,
             stride: utils.ndim.getStride(shape)
         })
+    }
+
+    static arange(n) {
+        return new MultiDimArray(
+            new Array(n)
+                .fill(null)
+                .map(function (_, i) {
+                    return i
+                })
+        )
     }
 
     plus(B) {
