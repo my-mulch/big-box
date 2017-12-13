@@ -31,23 +31,13 @@ array([[ 1, 2, 3],
        [ 4, 5, 6]])
 ```
 
-__Note__: Default data container is Javascript `Array` object. If needed, you can also use typed array such as `Uint8Array`:
-
-```js
-> var a = nj.uint8([1,2,3]);
-> a
-array([ 1, 2, 3], dtype=uint8)
-```
-
-__Note__: possible types are int8, uint8, int16, uint16, int32, uint32, float32, float64 and array (the default)
-
 To create arrays with a given shape, you can use `zeros`, `ones` or `random` functions:
 
 ```js
-> nj.zeros([2,3]);
+> ndim.zeros([2,3]);
 array([[ 0, 0, 0],
        [ 0, 0, 0]])
-> nj.ones([2,3,4], 'int32')     // dtype can also be specified
+> ndim.ones([2,3,4])     // dtype can also be specified
 array([[[ 1, 1, 1, 1],
         [ 1, 1, 1, 1],
         [ 1, 1, 1, 1]],
@@ -55,7 +45,7 @@ array([[[ 1, 1, 1, 1],
         [ 1, 1, 1, 1],
         [ 1, 1, 1, 1]]], dtype=int32)
 
-> nj.random([4,3])
+> ndim.random([4,3])
 array([[ 0.9182 , 0.85176, 0.22587],
        [ 0.50088, 0.74376, 0.84024],
        [ 0.74045, 0.23345, 0.20289],
