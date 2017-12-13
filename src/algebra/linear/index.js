@@ -30,12 +30,13 @@ function rref(A) {
 function matrixProduct(A, B) {
     const [dim1, shared] = A.header.shape
     const [_, dim2] = B.header.shape
-    const result = ndim.array([dim1, dim2])
+    const dotShape = [dim1, dim2]
+    const result = ndim.empty(dotShape)
 
     for (let i = 0; i < dim1; i++)
         for (let j = 0; j < dim2; j++)
             for (let k = 0; k < shared; k++)
-                result[i][j] += A[i][k] * B[k][j]
+                result.set('+=', [A.slice(i, k) * B.slice(k, j)], i, j)
 
     return result
 }

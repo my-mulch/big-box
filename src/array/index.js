@@ -1,5 +1,4 @@
 const utils = require('./utils')
-const linAlg = require('../linear-algebra')
 const algebra = require('../algebra')
 
 class MultiDimArray {
@@ -17,7 +16,7 @@ class MultiDimArray {
             this.header.shape = utils.raw.getShape(A)
             this.header.stride = utils.ndim.getStride(this.header.shape)
             this.header.array = new Float64Array(utils.raw.flatten(A))
-            this.header.size = algebra.prod(this.header.shape)
+            this.header.size = algebra.ops.product(this.header.shape)
             this.header.offset = 0
         }
     }
@@ -26,36 +25,49 @@ class MultiDimArray {
         return new MultiDimArray(A)
     }
 
-    static emptyLike(A) {
+    static empty(shape) {
+        const size = algebra.ops.product(shape)
+
         return new MultiDimArray(null, {
-            ...A.header,
-            array: new Float64Array(A.header.size),
+            shape: shape,
+            stride: utils.ndim.getStride(shape),
+            array: new Float64Array(size),
+            size: size,
             offset: 0,
         })
     }
 
     static random(shape) {
+        const size = algebra.ops.product(shape)
+
         return new MultiDimArray(null, {
-            array: new Float64Array(algebra.prod(shape)).fill(null).map(Math.random),
+            array: new Float64Array(size),
             shape: shape,
+            size: size,
             offset: 0,
             stride: utils.ndim.getStride(shape)
-        })
+        }).generalMap(Math.random)
     }
 
     static ones(shape) {
+        const size = algebra.ops.product(shape)
+
         return new MultiDimArray(null, {
-            array: new Float64Array(algebra.prod(shape)).fill(1),
+            array: new Float64Array(size).fill(1),
             shape: shape,
+            size: size,
             offset: 0,
             stride: utils.ndim.getStride(shape)
         })
     }
 
     static zeros(shape) {
+        const size = algebra.ops.product(shape)
+
         return new MultiDimArray(null, {
-            array: new Float64Array(algebra.prod(shape)).fill(0),
+            array: new Float64Array(size).fill(0),
             shape: shape,
+            size: size,
             offset: 0,
             stride: utils.ndim.getStride(shape)
         })
@@ -85,34 +97,19 @@ class MultiDimArray {
     }
 
     dot(B) {
-        const newShape = utils.ndim.dotShape(this, B)
-
-        return new MultiDimArray(null, {
-            shape: newShape,
-            offset: 0,
-            stride: utils.ndim.getStride(newShape),
-            array: new Float64Array(linAlg.matrixProduct(this, B))
-        })
+        return algebra.linear.matrixProduct(this, B)
     }
 
     plus(B) {
-        return new MultiDimArray(null, {
-            ...this.header,
-            array: new Float64Array(
-                utils.ndim.elementwise(this, array, function (ti, ai) {
-                    return ti + ai;
-                }))
-        })
+        return algebra.tensor.add(this, B)
     }
 
     times(B) {
-        return new MultiDimArray(null, {
-            ...this.header,
-            array: new Float64Array(
-                utils.ndim.elementwise(this, B, function (ti, bi) {
-                    return ti * bi;
-                }))
-        })
+        return algebra.tensor.multiply(this, B)
+    }
+
+    minus(B) {
+        return algebra.tensor.subtract(this, B)
     }
 
     copy() {
@@ -122,15 +119,6 @@ class MultiDimArray {
         })
     }
 
-    minus(B) {
-        return new MultiDimArray(null, {
-            ...this.header,
-            array: new Float64Array(
-                utils.ndim.elementwise(this, B, function (ti, bi) {
-                    return ti - bi;
-                }))
-        })
-    }
 
     reshape(...shape) {
         return new MultiDimArray(null, {
@@ -164,19 +152,24 @@ class MultiDimArray {
         })
     }
 
-    set(value, ...index) {
+    set(type, value, ...index) {
+
         const [val] = value
         const localIndex = utils.ndim.findLocalIndex(index, this.header)
 
-        return this.header.array[localIndex] = val
-    }
+        switch (type) {
+            case "+=": return this.header.array[localIndex] += val
+            case "-=": return this.header.array[localIndex] -= val
+            case "*=": return this.header.array[localIndex] *= val
+            case "/=": return this.header.array[localIndex] /= val
+            default: return this.header.array[localIndex] = val
+        }
 
-    generalReduce(fn) {
-        return this.header.array.reduce(fn)
     }
 
     generalMap(fn) {
-        return this.header.array.map(fn)
+        this.header.array.map(fn)
+        return this
     }
 
     toString() {
