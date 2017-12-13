@@ -21,7 +21,61 @@ class MultiDimArray {
         }
     }
 
-    plus(array) {
+    static array(A) {
+        return new MultiDimArray(A)
+    }
+
+    static random(shape) {
+        return new MultiDimArray(null, {
+            array: new Float64Array(matmat.prod(shape)).fill(null).map(Math.random),
+            shape: shape,
+            offset: 0,
+            stride: utils.ndim.getStride(shape)
+        })
+    }
+
+    static ones(shape) {
+        return new MultiDimArray(null, {
+            array: new Float64Array(matmat.prod(shape)).fill(1),
+            shape: shape,
+            offset: 0,
+            stride: utils.ndim.getStride(shape)
+        })
+    }
+
+    static zeros(shape) {
+        return new MultiDimArray(null, {
+            array: new Float64Array(matmat.prod(shape)).fill(0),
+            shape: shape,
+            offset: 0,
+            stride: utils.ndim.getStride(shape)
+        })
+    }
+
+    static arange(start, end, step = 1) {
+
+        let arraySize
+        switch (arguments.length) {
+            case 1:
+                arraySize = start
+                start = 0
+                break
+            case 2: arraySize = end - start
+                break
+            case 3: arraySize = Math.ceil((end - start) / step)
+                break
+        }
+
+        return new MultiDimArray(
+            new Array(arraySize)
+                .fill(null)
+                .map(function (_, i) {
+                    return start + i * step
+                })
+        )
+    }
+
+    plus(B) {
         return new MultiDimArray(null, {
             ...this.header,
             array: new Float64Array(
@@ -31,12 +85,12 @@ class MultiDimArray {
         })
     }
 
-    times(array) {
+    times(B) {
         return new MultiDimArray(null, {
             ...this.header,
             array: new Float64Array(
-                utils.ndim.elementwise(this, array, function (ti, ai) {
-                    return ti * ai;
+                utils.ndim.elementwise(this, B, function (ti, bi) {
+                    return ti * bi;
                 }))
         })
     }
@@ -48,12 +102,12 @@ class MultiDimArray {
         })
     }
 
-    minus(array) {
+    minus(B) {
         return new MultiDimArray(null, {
             ...this.header,
             array: new Float64Array(
-                utils.ndim.elementwise(this, array, function (ti, ai) {
-                    return ti - ai;
+                utils.ndim.elementwise(this, B, function (ti, bi) {
+                    return ti - bi;
                 }))
         })
     }
@@ -110,4 +164,4 @@ class MultiDimArray {
     }
 }
 
-module.exports = { Array: MultiDimArray }
+module.exports = { ndim: MultiDimArray }
