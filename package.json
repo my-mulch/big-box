@@ -1,6 +1,6 @@
 {
   "name": "multi-dim",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "A suite of methods to manipulate MDA",
   "main": "index.js",
   "scripts": {
