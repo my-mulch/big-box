@@ -1,11 +1,5 @@
 
-class Equation {
 
-    constructor() {
-        // variable: /\d*\w+(\^\d+)*\s*/g,
-        this.unknowns = {}
-    }
-}
 
 function parse(equation) {
     const unknowns = /\d*\w+(\^\d+)*\s*/g

@@ -16,7 +16,5 @@
     "url": "https://github.com/llltsp/Multi-Dim/issues"
   },
   "homepage": "https://github.com/llltsp/Multi-Dim#readme",
-  "dependencies": {
-    "mat-mat": "^1.0.9"
-  }
+  "dependencies": {}
 }
