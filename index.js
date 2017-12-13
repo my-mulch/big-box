@@ -31,6 +31,24 @@ class MultiDimArray {
         })
     }
 
+    ones(shape) {
+        return new MultiDimArray(null, {
+            array: new Array(matmat.prod(shape)).fill(1),
+            shape: shape,
+            offset: 0,
+            stride: utils.ndim.getStride(shape)
+        })
+    }
+
+    zeros(shape) {
+        return new MultiDimArray(null, {
+            array: new Array(matmat.prod(shape)).fill(0),
+            shape: shape,
+            offset: 0,
+            stride: utils.ndim.getStride(shape)
+        })
+    }
+
     times(array) {
         return new MultiDimArray(null, {
             ...this.header,
