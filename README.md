@@ -1,6 +1,6 @@
 ## Multi-Dim
 
-__Multi-Dim__ is a npm package for scientific computing with JavaScript. It contains among other things:
+An npm package for scientific computing with JavaScript. It contains among other things:
  - a powerful N-dimensional array object
  - linear algebra function
  - more to come
