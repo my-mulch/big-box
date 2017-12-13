@@ -55,13 +55,13 @@ array([[ 0.9182 , 0.85176, 0.22587],
 To create sequences of numbers, __NumJs__ provides a function called `arange`:
 
 ```js
-> nj.arange(4);
+> ndim.arange(4);
 array([ 0, 1, 2, 3])
 
-> nj.arange( 10, 30, 5 )
+> ndim.arange( 10, 30, 5 )
 array([ 10, 15, 20, 25])
 
-> nj.arange(1, 5, 'uint8');
+> ndim.arange(1, 5);
 array([ 1, 2, 3, 4], dtype=uint8)
 ```
 

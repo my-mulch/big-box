@@ -52,12 +52,25 @@ class MultiDimArray {
         })
     }
 
-    static arange(n) {
+    static arange(start, end, step = 1) {
+
+        let arraySize
+        switch (arguments.length) {
+            case 1:
+                arraySize = start
+                start = 0
+                break
+            case 2: arraySize = end - start
+                break
+            case 3: arraySize = Math.ceil((end - start) / step)
+                break
+        }
+
         return new MultiDimArray(
-            new Array(n)
+            new Array(arraySize)
                 .fill(null)
                 .map(function (_, i) {
-                    return i
+                    return start + i * step
                 })
         )
     }
