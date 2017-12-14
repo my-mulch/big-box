@@ -1,3 +1,4 @@
+const { elementwiseTensorOperation } = require('../../utils/algebra/tensor')
 const ops = require('../ops')
 
 function add(...arrays) {

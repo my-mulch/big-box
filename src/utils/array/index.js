@@ -24,7 +24,7 @@ function* getIndices(shape, index = []) {
             yield index.concat(i)
 }
 
-function* traverse(action, arrays) {
+function* traverse(action, ...arrays) {
     // arrays must have same shape
     const template = arrays[0]
     const shape = getShape(template)
@@ -33,7 +33,17 @@ function* traverse(action, arrays) {
         yield arrays.reduce(access(index, action))
 }
 
+function flatten(A) {
+    const flat = []
+    for (let value of traverse(ops.noop, A))
+        flat.push(value)
+
+    return A
+}
+
 module.exports = {
     raw: rawArrayUtils,
     ndim: ndimArrayUtils,
+    traverse,
+    flatten
 }
