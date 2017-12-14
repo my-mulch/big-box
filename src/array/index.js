@@ -25,6 +25,15 @@ class MultiDimArray {
         return new MultiDimArray(A)
     }
 
+    static emptyLike(A) {
+        return new MultiDimArray(null, {
+            ...A.header,
+            offset: 0,
+            stride: utisl.getStride(A.shape),
+            array: new Float64Array(A.size)
+        })
+    }
+
     static empty(shape) {
         const size = ops.product(shape)
 

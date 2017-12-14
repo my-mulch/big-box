@@ -9,7 +9,7 @@ function* traverse(shape, index = []) {
 }
 
 function elementwiseTensorOperation(A, B, fn) {
-    const C = ndim.arrayLike(A)
+    const C = ndim.emptyLike(A)
 
     for (let idx of traverse(A.header.shape)) {
         const ai = A.slice(...idx)
