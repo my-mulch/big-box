@@ -1,6 +1,6 @@
 const ops = require('../ops')
 
-function* traverse(shape, index = []) {
+function* getIndices(shape, index = []) {
     for (let i = 0; i < shape[0]; i++)
         if (shape.length > 1)
             yield* traverse(shape.slice(1), index.concat(i))
@@ -8,6 +8,7 @@ function* traverse(shape, index = []) {
             yield index.concat(i)
 }
 
+function traverse()
 function elementwiseTensorOperation(A, B, fn) {
     const C = ndim.emptyLike(A)
 

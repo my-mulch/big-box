@@ -6,9 +6,6 @@ class MultiDimArray {
     constructor(A, header, shape) {
         this.header = {}
 
-        if (arguments.length > 1)
-            throw new Error('Cannot specify more than one field!')
-
         if (header)
             this.header = header
 
@@ -54,7 +51,9 @@ class MultiDimArray {
     }
 
     map(fn) {
-        this.header.array.map(fn)
+        for (let i = 0; i < this.header.size; i++)
+            this.header.array[i] = fn()
+
         return this
     }
 
@@ -66,24 +65,18 @@ class MultiDimArray {
     static arange(start, end, step = 1) {
 
         let arraySize
-        switch (arguments.length) {
-            case 1:
-                arraySize = start
-                start = 0
-                break
-            case 2: arraySize = end - start
-                break
-            case 3: arraySize = Math.ceil((end - start) / step)
-                break
-        }
 
-        return new MultiDimArray(
-            new Array(arraySize)
-                .fill(null)
-                .map(function (_, i) {
-                    return start + i * step
-                })
-        )
+        if (arguments.length === 1) {
+            arraySize = start
+            start = 0
+        } else if (arguments.length === 2)
+            arraySize = end - start
+        else
+            arraySize = Math.ceil((end - start) / step)
+
+        return new MultiDimArray(null, null, [arraySize]).map(function (_, i) {
+            return start + i * step
+        })
     }
 
     dot(B) {
@@ -109,7 +102,7 @@ class MultiDimArray {
         })
     }
 
-
+    
     reshape(...shape) {
         return new MultiDimArray(null, {
             ...this.header,

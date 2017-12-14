@@ -34,5 +34,6 @@ module.exports = {
     add,
     mult,
     div,
-    sub
+    sub,
+    noop
 }
