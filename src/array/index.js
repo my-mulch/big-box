@@ -3,11 +3,11 @@ const { ops, tensor, linear } = require('../algebra')
 
 class MultiDimArray {
 
-    constructor(A, header) {
+    constructor(A, header, shape) {
         this.header = {}
 
-        if (A && header)
-            throw new Error('Cannot specify both header and Array')
+        if (arguments.length > 1)
+            throw new Error('Cannot specify more than one field!')
 
         if (header)
             this.header = header
@@ -19,6 +19,14 @@ class MultiDimArray {
             this.header.size = ops.product(this.header.shape)
             this.header.offset = 0
         }
+
+        if (shape) {
+            this.header.shape = shape
+            this.header.stride = utils.ndim.getStride(shape)
+            this.header.size = ops.product(shape)
+            this.header.offset = 0
+            this.header.array = new Float64Array(this.header.size)
+        }
     }
 
     static array(A) {
@@ -26,60 +34,33 @@ class MultiDimArray {
     }
 
     static emptyLike(A) {
-        return new MultiDimArray(null, {
-            ...A.header,
-            offset: 0,
-            stride: utisl.getStride(A.shape),
-            array: new Float64Array(A.size)
-        })
+        return new MultiDimArray(null, null, A.header.shape)
     }
 
     static empty(shape) {
-        const size = ops.product(shape)
-
-        return new MultiDimArray(null, {
-            shape: shape,
-            stride: utils.ndim.getStride(shape),
-            array: new Float64Array(size),
-            size: size,
-            offset: 0,
-        })
+        return new MultiDimArray(null, null, shape)
     }
 
     static random(shape) {
-        const size = ops.product(shape)
-
-        return new MultiDimArray(null, {
-            array: new Float64Array(size),
-            shape: shape,
-            size: size,
-            offset: 0,
-            stride: utils.ndim.getStride(shape)
-        }).generalMap(Math.random)
+        return new MultiDimArray(null, null, shape).map(Math.random)
     }
 
     static ones(shape) {
-        const size = ops.product(shape)
-
-        return new MultiDimArray(null, {
-            array: new Float64Array(size).fill(1),
-            shape: shape,
-            size: size,
-            offset: 0,
-            stride: utils.ndim.getStride(shape)
-        })
+        return new MultiDimArray(null, null, shape).fill(1)
     }
 
     static zeros(shape) {
-        const size = ops.product(shape)
+        return new MultiDimArray(null, null, shape)
+    }
 
-        return new MultiDimArray(null, {
-            array: new Float64Array(size).fill(0),
-            shape: shape,
-            size: size,
-            offset: 0,
-            stride: utils.ndim.getStride(shape)
-        })
+    map(fn) {
+        this.header.array.map(fn)
+        return this
+    }
+
+    fill(value) {
+        this.header.array.fill(value)
+        return this
     }
 
     static arange(start, end, step = 1) {
@@ -174,11 +155,6 @@ class MultiDimArray {
             default: return this.header.array[localIndex] = val
         }
 
-    }
-
-    generalMap(fn) {
-        this.header.array.map(fn)
-        return this
     }
 
     toString() {
