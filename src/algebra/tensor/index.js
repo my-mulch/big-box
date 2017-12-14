@@ -1,3 +1,4 @@
+const { ndim } = require('../../array/utils')
 const ops = require('../ops')
 
 function* getIndices(shape, index = []) {
@@ -8,33 +9,38 @@ function* getIndices(shape, index = []) {
             yield index.concat(i)
 }
 
-function traverse()
-function elementwiseTensorOperation(A, B, fn) {
+function* traverse(op, arrays) {
+    // arrays must have same shape
+    const commonShape = arrays[0].header.shape
+
+    for (let idx of getIndices(commonShape))
+        yield arrays.reduce(ndim.slice).reduce(op)
+
+}
+
+function elementwiseTensorOperation(fn, arrays) {
     const C = ndim.emptyLike(A)
 
-    for (let idx of traverse(A.header.shape)) {
-        const ai = A.slice(...idx)
-        const bi = B.slice(...idx)
-        C.set('=', [fn(ai, bi)], ...idx)
-    }
+    for (let [result, idx] of traverse(fn, arrays))
+        C.set('=', [result], ...idx)
 
     return C
 }
 
-function add(A, B) {
-    return elementwiseTensorOperation(A, B, ops.add)
+function add(...arrays) {
+    return elementwiseTensorOperation(ops.add, arrays)
 }
 
-function subtract(A, B) {
-    return elementwiseTensorOperation(A, B, ops.sub)
+function subtract(...arrays) {
+    return elementwiseTensorOperation(ops.sub, arrays)
 }
 
-function multiply(A, B) {
-    return elementwiseTensorOperation(A, B, ops.mult)
+function multiply(...arrays) {
+    return elementwiseTensorOperation(ops.mult, arrays)
 }
 
-function divide(A, B) {
-    return elementwiseTensorOperation(A, B, ops.div)
+function divide(...arrays) {
+    return elementwiseTensorOperation(ops.div, arrays)
 }
 
 module.exports = {
