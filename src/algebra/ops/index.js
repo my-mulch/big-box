@@ -19,10 +19,15 @@ function product(array) {
     return array.reduce(mult)
 }
 
+function noop(ai, bi) {
+    return bi
+}
+
 module.exports = {
     product,
     add,
     mult,
     div,
     sub,
+    noop
 }

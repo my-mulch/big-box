@@ -4,8 +4,10 @@ function specifiedDimensions(index) {
     }
 }
 
-function isFullySpecified(index, shape) {
-    return index.length === shape.length && index.every(function (element) {
+function indexIsFullySpecified(index, header) {
+    const fullLength = index.length === header.shape.length
+    
+    return fullLength && index.every(function (element) {
         return element >= 0
     })
 }
@@ -36,5 +38,5 @@ module.exports = {
     getStride,
     getSlice,
     findLocalIndex,
-    isFullySpecified,
+    indexIsFullySpecified,
 }

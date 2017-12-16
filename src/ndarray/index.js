@@ -1,4 +1,4 @@
-const utils = require('./utils')
+const utils = require('../utils')
 const { ops, tensor, linear } = require('../algebra')
 
 class MultiDimArray {
@@ -10,16 +10,16 @@ class MultiDimArray {
             this.header = header
 
         if (A) {
-            this.header.shape = utils.raw.getShape(A)
-            this.header.stride = utils.ndim.getStride(this.header.shape)
-            this.header.array = new Float64Array(utils.raw.flatten(A))
+            this.header.shape = utils.getShape(A)
+            this.header.stride = utils.getStride(this.header.shape)
+            this.header.array = new Float64Array(utils.flatten(A))
             this.header.size = ops.product(this.header.shape)
             this.header.offset = 0
         }
 
         if (shape) {
             this.header.shape = shape
-            this.header.stride = utils.ndim.getStride(shape)
+            this.header.stride = utils.getStride(shape)
             this.header.size = ops.product(shape)
             this.header.offset = 0
             this.header.array = new Float64Array(this.header.size)
@@ -52,7 +52,7 @@ class MultiDimArray {
 
     map(fn) {
         for (let i = 0; i < this.header.size; i++)
-            this.header.array[i] = fn()
+            this.header.array[i] = fn(this.header.array[i])
 
         return this
     }
@@ -107,7 +107,7 @@ class MultiDimArray {
         return new MultiDimArray(null, {
             ...this.header,
             shape: shape,
-            stride: utils.ndim.getStride(shape),
+            stride: utils.getStride(shape),
         })
     }
 
@@ -120,12 +120,12 @@ class MultiDimArray {
     }
 
     slice(...index) {
-        const localIndex = utils.ndim.findLocalIndex(index, this.header)
+        const localIndex = utils.findLocalIndex(index, this.header)
 
-        if (utils.ndim.isFullySpecified(index, this.header.shape))
+        if (utils.indexIsFullySpecified(index, this.header))
             return this.header.array[localIndex]
 
-        const [newShape, newStride] = utils.ndim.getSlice(index, this.header)
+        const [newShape, newStride] = utils.getSlice(index, this.header)
 
         return new MultiDimArray(null, {
             shape: newShape,
@@ -138,7 +138,7 @@ class MultiDimArray {
     set(type, value, ...index) {
 
         const [val] = value
-        const localIndex = utils.ndim.findLocalIndex(index, this.header)
+        const localIndex = utils.findLocalIndex(index, this.header)
 
         switch (type) {
             case "+=": return this.header.array[localIndex] += val
@@ -151,9 +151,9 @@ class MultiDimArray {
     }
 
     toString() {
-        return utils.ndim.wrapperString(
+        return utils.wrapperString(
             'array($)',
-            utils.ndim.helperToString(this.header)
+            utils.helperToString(this.header)
         )
     }
 
@@ -162,4 +162,4 @@ class MultiDimArray {
     }
 }
 
-module.exports = { ndim: MultiDimArray }
+module.exports = MultiDimArray

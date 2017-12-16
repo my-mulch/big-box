@@ -1,1 +1,1 @@
-module.exports = require('./src/array')
+module.exports = require('./src/ndarray')

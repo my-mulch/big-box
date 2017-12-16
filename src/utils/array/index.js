@@ -1,18 +1,25 @@
 
 const rawArrayUtils = require('./raw')
 const ndimArrayUtils = require('./ndim')
+const ops = require('../../algebra/ops')
 
 function getShape(A) {
-    if (A instanceof MultiDimArray) return A.header.shape
-    if (A instanceof Array) return rawArrayUtils.getShape(A)
+    if (A instanceof require('../../ndarray'))
+        return A.header.shape
+
+    if (A instanceof Array)
+        return rawArrayUtils.getShape(A)
 }
 
 function access(index, action) {
-    return function (acc, A) {
-        if (A instanceof MultiDimArray) A = A.slice(...index)
-        if (A instanceof Array) A = rawArrayUtils.slice(index)
+    return function (accumulated, A) {
+        if (A instanceof require('../../ndarray'))
+            A = A.slice(...index)
 
-        return action(acc, A)
+        if (A instanceof Array)
+            A = rawArrayUtils.slice(A,index)
+
+        return !accumulated ? A : action(accumulated, A)
     }
 }
 
@@ -29,21 +36,23 @@ function* traverse(action, ...arrays) {
     const template = arrays[0]
     const shape = getShape(template)
 
-    for (let index of getIndices(shape))
-        yield arrays.reduce(access(index, action))
+    for (let index of getIndices(shape)) 
+        // reduction begins with null to protect case of single array
+        yield [index, arrays.reduce(access(index, action), null)]
+    
 }
 
 function flatten(A) {
     const flat = []
-    for (let value of traverse(ops.noop, A))
+    for (let [_, value] of traverse(ops.noop, A))
         flat.push(value)
 
-    return A
+    return flat
 }
 
 module.exports = {
-    raw: rawArrayUtils,
-    ndim: ndimArrayUtils,
+    ...rawArrayUtils,
+    ...ndimArrayUtils,
     traverse,
     flatten
 }

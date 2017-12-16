@@ -1,3 +1,4 @@
+const { findLocalIndex } = require('./access')
 
 function wrapperString(wrap, meat) {
     return wrap.split('$').join(meat)

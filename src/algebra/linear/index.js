@@ -3,7 +3,7 @@ const {
     findPivot,
     swapRows,
     zeroOutColumn
-} = require('./utils/rref-utils')
+} = require('../../utils')
 
 function rref(A) {
     const matrix = [...A]
