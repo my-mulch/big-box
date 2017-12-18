@@ -26,10 +26,10 @@ function getSlice(index, header) {
     ]
 }
 
-function getStride(header) {
-    return header.shape.reduceRight(function (acc, _, i) {
-        if (i === header.shape.length - 1) acc.unshift(1)
-        else acc.unshift(acc[0] * header.shape[i + 1])
+function getStride(shape) {
+    return shape.reduceRight(function (acc, _, i) {
+        if (i === shape.length - 1) acc.unshift(1)
+        else acc.unshift(acc[0] * shape[i + 1])
         return acc
     }, [])
 }

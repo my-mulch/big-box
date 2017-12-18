@@ -1,6 +1,5 @@
 const rawArrayUtils = require('./raw')
 const ndimArrayUtils = require('./ndim')
-const ops = require('../../algebra/ops')
 
 function getShape(A) {
     return A instanceof Array
@@ -8,15 +7,12 @@ function getShape(A) {
         : A.header.shape
 }
 
-function access(index, action) {
-    return function (accumulated, A) {
+function valueAt(A, index) {
+    if (!A) return null
 
-        const valueAtIndex = A instanceof Array
-            ? rawArrayUtils.slice(A, index)
-            : A.slice(...index)
-
-        return !accumulated ? valueAtIndex : action(accumulated, valueAtIndex)
-    }
+    return A instanceof Array
+        ? rawArrayUtils.slice(A, index)
+        : A.slice(...index)
 }
 
 function* getPossibleIndices(shape, index = []) {
@@ -26,25 +22,16 @@ function* getPossibleIndices(shape, index = []) {
             : yield index.concat(i)
 }
 
-function* traverse(action, arrays) {
+function* elementwiseTraverse(action, A, B) {
     // arrays must have same shape
-    const template = arrays[0]
-    const shape = getShape(template)
-
-    for (let index of getPossibleIndices(shape))
+    for (let index of getPossibleIndices(getShape(A)))
         // reduction begins with null to protect case of single array
-        yield arrays.reduce(access(index, action), null)
-
-}
-
-function flatten(A) {
-    return [...traverse(ops.noop, [A])]
+        yield action(valueAt(A, index), valueAt(B, index))
 }
 
 module.exports = {
     ...rawArrayUtils,
     ...ndimArrayUtils,
-    traverse,
-    flatten,
+    elementwiseTraverse,
     getShape
 }

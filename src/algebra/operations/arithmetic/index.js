@@ -20,7 +20,7 @@ function product(array) {
 }
 
 function noop(ai, bi) {
-    return bi
+    return ai
 }
 
 module.exports = {

@@ -1,127 +1,62 @@
-const { ops, tensor, linear } = require('../algebra')
-const utils = require('../utils')
+const { matrix, arithmetic, tensor } = require('../algebra/operations')
+const utils = require('../utils/array')
+const Header = require('./header')
 
 class MultiDimArray {
 
-    constructor(A, header, shape) {
-        this.header = {}
+    constructor(A, headerOpts) {
+        if (A) this.header = new Header(A)
 
-        if (header)
-            this.header = header
+        if (headerOpts)
+            this.header = new Header(headerOpts)
 
-        if (A) {
-            this.header.shape = utils.getShape(A)
-            this.header.stride = utils.getStride(this.header)
-            this.header.array = new Float64Array(utils.flatten(A))
-            this.header.size = ops.product(this.header.shape)
-            this.header.offset = 0
-        }
+    
+        this.header.exposeProperties(this)
 
-        if (shape) {
-            this.header.shape = shape
-            this.header.stride = utils.getStride(this.header)
-            this.header.size = ops.product(shape)
-            this.header.offset = 0
-            this.header.array = new Float64Array(this.header.size)
-        }
     }
 
     static array(A) {
         return new MultiDimArray(A)
     }
 
-    static emptyLike(A) {
-        return new MultiDimArray(null, null, A.header.shape)
-    }
-
-    static empty(shape) {
-        return new MultiDimArray(null, null, shape)
-    }
-
-    static random(shape) {
-        return new MultiDimArray(null, null, shape).map(Math.random)
-    }
-
-    static ones(shape) {
-        return new MultiDimArray(null, null, shape).fill(1)
-    }
-
-    static zeros(shape) {
-        return new MultiDimArray(null, null, shape)
-    }
-
-    map(fn) {
-        for (let i = 0; i < this.header.size; i++)
-            this.header.array[i] = fn(this.header.array[i])
-
-        return this
-    }
-
-    fill(value) {
-        this.header.array.fill(value)
-        return this
-    }
-
-    static arange(start, end, step = 1) {
-
-        let arraySize
-
-        if (arguments.length === 1) {
-            arraySize = start
-            start = 0
-        } else if (arguments.length === 2)
-            arraySize = end - start
-        else
-            arraySize = Math.ceil((end - start) / step)
-
-        return new MultiDimArray(null, null, [arraySize]).map(function (_, i) {
-            return start + i * step
-        })
-    }
-
-    ravel() {
-        return new MultiDimArray(null, {
-            ...this.header,
-            array: new Float64Array(utils.flatten(this)),
-            shape: [this.header.size],
-            stride: [1],
-            offset: 0
-        })
-    }
-
     dot(B) {
-        return linear.matrixProduct(this, B)
+        return this.times(B).sum()
     }
 
     plus(B) {
-        return new MultiDimArray(null, {
-            ...this.header,
-            array: new Float64Array(tensor.add(this, B))
-        })
+        return new MultiDimArray(tensor.add(this, B))
     }
 
     times(B) {
-        return tensor.multiply(this, B)
+        return new MultiDimArray(tensor.multiply(this, B))
     }
 
     minus(B) {
-        return tensor.subtract(this, B)
+        return new MultiDimArray(tensor.subtract(this, B))
+    }
+
+    sum() {
+        return this.header.array.reduce(arithmetic.add)
+    }
+
+    matMult(B) {
+        const newShape = [this.shape[0], B.shape[1]]
+
+        return new MultiDimArray(null, {
+            array: [...matrix.matMult(this, B)],
+            shape: newShape,
+            stride: utils.getStride(newShape),
+            offset: 0,
+            size: newShape[0] * newShape[1]
+        })
     }
 
     copy() {
-        return new MultiDimArray(null, {
-            ...this.header,
-            array: new Float64Array(this.header.array)
-        })
+        return new MultiDimArray()
     }
 
-
     reshape(...shape) {
-        return new MultiDimArray(null, {
-            ...this.header,
-            shape: shape,
-            stride: utils.getStride(shape),
-        })
+        return new MultiDimArray({})
     }
 
     T() {
@@ -148,19 +83,16 @@ class MultiDimArray {
         })
     }
 
-    set(type, value, ...index) {
-
-        const [val] = value
+    set(index, assigns, value) {
         const localIndex = utils.findLocalIndex(index, this.header)
 
-        switch (type) {
-            case "+=": return this.header.array[localIndex] += val
-            case "-=": return this.header.array[localIndex] -= val
-            case "*=": return this.header.array[localIndex] *= val
-            case "/=": return this.header.array[localIndex] /= val
-            default: return this.header.array[localIndex] = val
+        switch (assigns) {
+            case "+=": return this.header.array[localIndex] += value
+            case "-=": return this.header.array[localIndex] -= value
+            case "*=": return this.header.array[localIndex] *= value
+            case "/=": return this.header.array[localIndex] /= value
+            case "=": return this.header.array[localIndex] = value
         }
-
     }
 
     toString() {
