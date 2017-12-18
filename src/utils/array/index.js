@@ -1,58 +1,50 @@
-
 const rawArrayUtils = require('./raw')
 const ndimArrayUtils = require('./ndim')
 const ops = require('../../algebra/ops')
 
 function getShape(A) {
-    if (A instanceof require('../../ndarray'))
-        return A.header.shape
-
-    if (A instanceof Array)
-        return rawArrayUtils.getShape(A)
+    return A instanceof Array
+        ? rawArrayUtils.getShape(A)
+        : A.header.shape
 }
 
 function access(index, action) {
     return function (accumulated, A) {
-        if (A instanceof require('../../ndarray'))
-            A = A.slice(...index)
 
-        if (A instanceof Array)
-            A = rawArrayUtils.slice(A,index)
+        const valueAtIndex = A instanceof Array
+            ? rawArrayUtils.slice(A, index)
+            : A.slice(...index)
 
-        return !accumulated ? A : action(accumulated, A)
+        return !accumulated ? valueAtIndex : action(accumulated, valueAtIndex)
     }
 }
 
-function* getIndices(shape, index = []) {
+function* getPossibleIndices(shape, index = []) {
     for (let i = 0; i < shape[0]; i++)
-        if (shape.length > 1)
-            yield* traverse(shape.slice(1), index.concat(i))
-        else
-            yield index.concat(i)
+        shape.length > 1
+            ? yield* getPossibleIndices(shape.slice(1), index.concat(i))
+            : yield index.concat(i)
 }
 
-function* traverse(action, ...arrays) {
+function* traverse(action, arrays) {
     // arrays must have same shape
     const template = arrays[0]
     const shape = getShape(template)
 
-    for (let index of getIndices(shape)) 
+    for (let index of getPossibleIndices(shape))
         // reduction begins with null to protect case of single array
-        yield [index, arrays.reduce(access(index, action), null)]
-    
+        yield arrays.reduce(access(index, action), null)
+
 }
 
 function flatten(A) {
-    const flat = []
-    for (let [_, value] of traverse(ops.noop, A))
-        flat.push(value)
-
-    return flat
+    return [...traverse(ops.noop, [A])]
 }
 
 module.exports = {
     ...rawArrayUtils,
     ...ndimArrayUtils,
     traverse,
-    flatten
+    flatten,
+    getShape
 }

@@ -1,4 +1,3 @@
 module.exports = {
-    ...require('./linear'),
-    ...require('./tensor')
+    ...require('./linear')
 }

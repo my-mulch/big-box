@@ -1,5 +1,5 @@
-const utils = require('../utils')
 const { ops, tensor, linear } = require('../algebra')
+const utils = require('../utils')
 
 class MultiDimArray {
 
@@ -11,7 +11,7 @@ class MultiDimArray {
 
         if (A) {
             this.header.shape = utils.getShape(A)
-            this.header.stride = utils.getStride(this.header.shape)
+            this.header.stride = utils.getStride(this.header)
             this.header.array = new Float64Array(utils.flatten(A))
             this.header.size = ops.product(this.header.shape)
             this.header.offset = 0
@@ -19,7 +19,7 @@ class MultiDimArray {
 
         if (shape) {
             this.header.shape = shape
-            this.header.stride = utils.getStride(shape)
+            this.header.stride = utils.getStride(this.header)
             this.header.size = ops.product(shape)
             this.header.offset = 0
             this.header.array = new Float64Array(this.header.size)
@@ -79,12 +79,25 @@ class MultiDimArray {
         })
     }
 
+    ravel() {
+        return new MultiDimArray(null, {
+            ...this.header,
+            array: new Float64Array(utils.flatten(this)),
+            shape: [this.header.size],
+            stride: [1],
+            offset: 0
+        })
+    }
+
     dot(B) {
         return linear.matrixProduct(this, B)
     }
 
     plus(B) {
-        return tensor.add(this, B)
+        return new MultiDimArray(null, {
+            ...this.header,
+            array: new Float64Array(tensor.add(this, B))
+        })
     }
 
     times(B) {
@@ -102,7 +115,7 @@ class MultiDimArray {
         })
     }
 
-    
+
     reshape(...shape) {
         return new MultiDimArray(null, {
             ...this.header,
