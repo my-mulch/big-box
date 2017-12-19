@@ -1,5 +1,6 @@
 const rawArrayUtils = require('./raw')
 const ndimArrayUtils = require('./ndim')
+const typedArrayUtils = require('./typed')
 
 function getShape(A) {
     return A instanceof Array
@@ -32,6 +33,7 @@ function* elementwiseTraverse(action, A, B) {
 module.exports = {
     ...rawArrayUtils,
     ...ndimArrayUtils,
+    ...typedArrayUtils,
     elementwiseTraverse,
     getShape
 }

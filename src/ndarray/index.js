@@ -54,7 +54,17 @@ class MultiDimArray {
         })
     }
 
-    ravel(){
+    vstack(B) {
+        if (!(B instanceof MultiDimArray))
+            B = new MultiDimArray(B)
+
+        return new MultiDimArray(null, {
+            array: utils.concat(this.array, B.array, Float64Array),
+            shape: [this.shape[0] + 1, this.shape[1]]
+        })
+    }
+
+    ravel() {
         return new MultiDimArray(tensor.flatten(this))
     }
 
