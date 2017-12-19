@@ -3,13 +3,6 @@ const utils = require('../utils/array')
 
 class Header {
     constructor(arg) {
-        if (arg instanceof Object) {
-            this.shape = arg.shape
-            this.array = arg.array
-            this.size = arg.size || scalar.product(this.shape)
-            this.stride = arg.stride || utils.getStride(this.shape)
-            this.offset = arg.offset || 0
-        }
 
         if (arg instanceof Array) {
             this.shape = utils.getShape(arg)
@@ -18,6 +11,16 @@ class Header {
             this.size = scalar.product(this.shape)
             this.offset = 0
         }
+
+        else if (arg instanceof Object) {
+            this.shape = arg.shape
+            this.array = arg.array
+            this.size = arg.size || scalar.product(this.shape)
+            this.stride = arg.stride || utils.getStride(this.shape)
+            this.offset = arg.offset || 0
+        }
+
+
     }
 
     exposeProperties(mdaInstance) {

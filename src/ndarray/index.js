@@ -55,7 +55,7 @@ class MultiDimArray {
     }
 
     ravel(){
-        
+        return new MultiDimArray(tensor.flatten(this))
     }
 
     copy() {
