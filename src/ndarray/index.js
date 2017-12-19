@@ -54,8 +54,15 @@ class MultiDimArray {
         })
     }
 
+    ravel(){
+        
+    }
+
     copy() {
-        return new MultiDimArray()
+        return new MultiDimArray(null, {
+            array: new Float64Array(this.array),
+            ...this.header
+        })
     }
 
     reshape(...shape) {
