@@ -1,5 +1,5 @@
 module.exports = {
     matrix: require('./matrix'),
-    arithmetic: require('./arithmetic'),
+    scalar: require('./scalar'),
     tensor: require('./tensor')
 }

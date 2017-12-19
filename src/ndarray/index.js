@@ -1,18 +1,26 @@
-const { matrix, arithmetic, tensor } = require('../algebra/operations')
 const utils = require('../utils/array')
 const Header = require('./header')
+
+const { probability, operations } = require('../math')
+const { matrix, scalar, tensor } = operations
+const { randomArray } = probability
+
 
 class MultiDimArray {
 
     constructor(A, headerOpts) {
-        if (A) this.header = new Header(A)
+
+        if (A && headerOpts)
+            throw new Error("Cannot specify both header options and array")
+
+        if (A)
+            this.header = new Header(A)
 
         if (headerOpts)
             this.header = new Header(headerOpts)
 
-    
         this.header.exposeProperties(this)
-
+        this.random = new Random()
     }
 
     static array(A) {
@@ -36,18 +44,13 @@ class MultiDimArray {
     }
 
     sum() {
-        return this.header.array.reduce(arithmetic.add)
+        return this.header.array.reduce(scalar.add)
     }
 
     matMult(B) {
-        const newShape = [this.shape[0], B.shape[1]]
-
         return new MultiDimArray(null, {
             array: [...matrix.matMult(this, B)],
-            shape: newShape,
-            stride: utils.getStride(newShape),
-            offset: 0,
-            size: newShape[0] * newShape[1]
+            shape: [this.shape[0], B.shape[1]]
         })
     }
 
@@ -104,6 +107,16 @@ class MultiDimArray {
 
     inspect() {
         return this.toString()
+    }
+}
+
+class Random {
+
+    randint(start, end, shape) {
+        return new MultiDimArray(null, {
+            shape: shape,
+            array: randomArray(start, end, scalar.product(shape))
+        })
     }
 }
 

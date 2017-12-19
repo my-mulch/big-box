@@ -1,21 +1,21 @@
-const { arithmetic, tensor } = require('../algebra/operations')
+const { scalar, tensor } = require('../math/operations')
 const utils = require('../utils/array')
 
 class Header {
     constructor(arg) {
         if (arg instanceof Object) {
             this.shape = arg.shape
-            this.stride = arg.stride
             this.array = arg.array
-            this.offset = arg.offset
-            this.size = arg.size
+            this.size = this.array.length
+            this.stride = arg.stride || utils.getStride(this.shape)
+            this.offset = arg.offset || 0
         }
 
         if (arg instanceof Array) {
             this.shape = utils.getShape(arg)
             this.stride = utils.getStride(this.shape)
             this.array = new Float64Array(tensor.flatten(arg))
-            this.size = arithmetic.product(this.shape)
+            this.size = scalar.product(this.shape)
             this.offset = 0
         }
     }

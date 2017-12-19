@@ -1,5 +1,5 @@
 const { elementwiseTraverse } = require('../../../utils/array')
-const ops = require('../arithmetic')
+const ops = require('../scalar')
 
 function add(A, B) {
     return [...elementwiseTraverse(ops.add, A, B)]
