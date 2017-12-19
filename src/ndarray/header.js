@@ -6,7 +6,7 @@ class Header {
         if (arg instanceof Object) {
             this.shape = arg.shape
             this.array = arg.array
-            this.size = this.array.length
+            this.size = arg.size || scalar.product(this.shape)
             this.stride = arg.stride || utils.getStride(this.shape)
             this.offset = arg.offset || 0
         }

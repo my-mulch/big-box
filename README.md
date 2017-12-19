@@ -14,7 +14,7 @@ npm install multi-dim
 ```
 
 ```js
-const {ndim} = require('multi-dim');
+const ndim = require('multi-dim');
 ...
 ```
 ## Basics

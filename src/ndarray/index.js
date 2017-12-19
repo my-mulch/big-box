@@ -59,14 +59,18 @@ class MultiDimArray {
     }
 
     reshape(...shape) {
-        return new MultiDimArray({})
+        return new MultiDimArray(null, {
+            shape: shape,
+            array: this.array,
+            offset: this.offset,
+        })
     }
 
     T() {
         return new MultiDimArray(null, {
-            ...this.header,
-            shape: this.header.shape.slice().reverse(),
-            stride: this.header.stride.slice().reverse(),
+            array: this.array,
+            shape: this.shape.slice().reverse(),
+            stride: this.stride.slice().reverse(),
         })
     }
 
@@ -82,7 +86,7 @@ class MultiDimArray {
             shape: newShape,
             offset: localIndex,
             stride: newStride,
-            array: this.header.array,
+            array: this.array,
         })
     }
 
@@ -111,13 +115,16 @@ class MultiDimArray {
 }
 
 class Random {
-
-    randint(start, end, shape) {
+    static randint(start, end, shape) {
         return new MultiDimArray(null, {
             shape: shape,
-            array: randomArray(start, end, scalar.product(shape))
+            array: new Float64Array(
+                randomArray(start, end, scalar.product(shape))
+            )
         })
     }
 }
+
+MultiDimArray.random = Random
 
 module.exports = MultiDimArray
