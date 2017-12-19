@@ -58,10 +58,23 @@ class MultiDimArray {
         if (!(B instanceof MultiDimArray))
             B = new MultiDimArray(B)
 
+        const oldShape = this.shape
+        const A = this.ravel().reshape(...oldShape)
+        
         return new MultiDimArray(null, {
-            array: utils.concat(this.array, B.array, Float64Array),
-            shape: [this.shape[0] + 1, this.shape[1]]
+            array: utils.concat(A.array, B.array, Float64Array),
+            shape: [A.shape[0] + 1, A.shape[1]]
         })
+    }
+
+    hstack(B) {
+        if (!(B instanceof MultiDimArray))
+            B = new MultiDimArray(B)
+
+        const oldShape = this.shape
+        const A = this.T().ravel().reshape(...oldShape.reverse())
+
+        return A.vstack(B).T()
     }
 
     ravel() {
