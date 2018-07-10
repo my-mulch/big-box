@@ -13,7 +13,9 @@ export default class MultiDimArray {
         return new MultiDimArray(A, type)
     }
 
-    slice(...index) { }
+    slice(...index) {
+        
+    }
 
     toString() { }
     inspect() { }
