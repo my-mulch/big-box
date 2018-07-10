@@ -1,12 +1,4 @@
-const rawArrayUtils = require('./raw')
-const ndimArrayUtils = require('./ndim')
-const typedArrayUtils = require('./typed')
 
-function getShape(A) {
-    return A instanceof Array
-        ? rawArrayUtils.getShape(A)
-        : A.header.shape
-}
 
 function valueAt(A, index) {
     if (!A) return null
@@ -25,10 +17,4 @@ function* elementwiseTraverse(action, A, B) {
         yield action(valueAt(A, index), valueAt(B, index))
 }
 
-module.exports = {
-    ...rawArrayUtils,
-    ...ndimArrayUtils,
-    ...typedArrayUtils,
-    elementwiseTraverse,
-    getShape
-}
+

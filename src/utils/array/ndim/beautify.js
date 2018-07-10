@@ -1,10 +1,10 @@
 const { findLocalIndex } = require('./access')
 
-function wrapperString(wrap, meat) {
+export function wrapperString(wrap, meat) {
     return wrap.split('$').join(meat)
 }
 
-function helperToString(header, index = []) {
+export function helperToString(header, index = []) {
     const elements = []
     const entirety = []
 
@@ -27,7 +27,3 @@ function helperToString(header, index = []) {
     if (elements.length) return wrapperString('[$]', elements.join(', '))
 }
 
-module.exports = {
-    helperToString,
-    wrapperString,
-} 

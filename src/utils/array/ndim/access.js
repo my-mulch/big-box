@@ -1,5 +1,5 @@
 
-function getSlice(index, header) {
+export function getSlice(index, header) {
     const newStride = []
     const newShape = []
     let localIndex = header.offset
@@ -16,13 +16,8 @@ function getSlice(index, header) {
 }
 
 
-function getStride(shape) {
+export function getStride(shape) {
     return shape.reduceRight(function (stride, dim) {
         return [dim * stride[0]].concat(stride)
     }, [1]).slice(1)
-}
-
-module.exports = {
-    getStride,
-    getSlice
 }
