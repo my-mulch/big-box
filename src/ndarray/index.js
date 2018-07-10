@@ -1,4 +1,4 @@
-const utils = require('../utils/array')
+const rawArrayUtils = require('../utils/array/raw')
 const Header = require('./header')
 
 const { probability, operations } = require('../math')
@@ -9,14 +9,12 @@ const { randomArray } = probability
 class MultiDimArray {
 
     constructor(A, type = Float64Array) {
-        this.data = type(utils.flatten(A))
-        this.shape = utils.getShape(A)
-        this.stride = utils.getStride(this.shape)
-        this.offset = 0
+        this.header = new Header(A)
+        this.data = type(rawArrayUtils.flatten(A))
     }
 
-    static array(A) {
-        return new MultiDimArray(A)
+    static array(A, type = Float64Array) {
+        return new MultiDimArray(A, type)
     }
 
     dot(B) {
