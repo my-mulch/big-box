@@ -6,7 +6,10 @@ export default class Header {
             this.shape = rawArrayUtils.getShape(arg)
             this.stride = rawArrayUtils.getStride(this.shape)
             this.offset = 0
-        } else if (arg instanceof Object)
-            this = arg
+        } else if (arg instanceof Object) {
+            this.shape = arg.shape
+            this.stride = arg.stride
+            this.offset = arg.offset
+        }
     }
 }

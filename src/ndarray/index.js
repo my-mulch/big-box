@@ -1,9 +1,5 @@
-const rawArrayUtils = require('../utils/array/raw')
-const Header = require('./header')
-
-const { probability, operations } = require('../math')
-const { matrix, scalar, tensor } = operations
-const { randomArray } = probability
+import Header from './header'
+import * as rawArrayUtils from '../utils/array/raw'
 
 
 class MultiDimArray {
