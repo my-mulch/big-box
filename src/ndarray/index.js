@@ -10,7 +10,9 @@ class MultiDimArray {
 
     constructor(A, type = Float64Array) {
         this.data = type(utils.flatten(A))
-        
+        this.shape = utils.getShape(A)
+        this.stride = utils.getStride(this.shape)
+        this.offset = 0
     }
 
     static array(A) {
