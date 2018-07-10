@@ -8,19 +8,9 @@ const { randomArray } = probability
 
 class MultiDimArray {
 
-    constructor(A, headerOpts) {
-
-        if (A && headerOpts)
-            throw new Error("Cannot specify both header options and array")
-
-        if (A)
-            this.header = new Header(A)
-
-        if (headerOpts)
-            this.header = new Header(headerOpts)
-
-        this.header.exposeProperties(this)
-        this.random = new Random()
+    constructor(A, type = Float64Array) {
+        this.data = type(utils.flatten(A))
+        
     }
 
     static array(A) {
@@ -60,7 +50,7 @@ class MultiDimArray {
 
         const oldShape = this.shape
         const A = this.ravel().reshape(...oldShape)
-        
+
         return new MultiDimArray(null, {
             array: utils.concat(A.array, B.array, Float64Array),
             shape: [A.shape[0] + 1, A.shape[1]]

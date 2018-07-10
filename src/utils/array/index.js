@@ -16,12 +16,7 @@ function valueAt(A, index) {
         : A.slice(...index)
 }
 
-function* getPossibleIndices(shape, index = []) {
-    for (let i = 0; i < shape[0]; i++)
-        shape.length > 1
-            ? yield* getPossibleIndices(shape.slice(1), index.concat(i))
-            : yield index.concat(i)
-}
+
 
 function* elementwiseTraverse(action, A, B) {
     // arrays must have same shape
