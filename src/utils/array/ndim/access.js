@@ -6,7 +6,7 @@ function specifiedDimensions(index) {
 
 function indexIsFullySpecified(index, header) {
     const fullLength = index.length === header.shape.length
-    
+
     return fullLength && index.every(function (element) {
         return element >= 0
     })
@@ -27,11 +27,10 @@ function getSlice(index, header) {
 }
 
 function getStride(shape) {
-    return shape.reduceRight(function (acc, _, i) {
-        if (i === shape.length - 1) acc.unshift(1)
-        else acc.unshift(acc[0] * shape[i + 1])
-        return acc
-    }, [])
+    return shape.reduceRight(function (stride, dim) {
+        return [dim * stride[0]].concat(stride)
+    }, [1])
+        .slice(1)
 }
 
 module.exports = {
