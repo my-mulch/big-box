@@ -13,6 +13,6 @@ const A = ndim.array([
 ])
 
 console.log(A.header)
-const B = A.slice(0, 0, 0)
+const B = A.slice(-1)
 console.log(B.header)
 console.log(B)

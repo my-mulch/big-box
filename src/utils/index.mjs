@@ -37,6 +37,12 @@ export function getStride(shape) {
     }, [1]).slice(1)
 }
 
+export function getDataForSlice(data, header) {
+    return [...getIndices(header.shape)].map(function (index) {
+        return getData(index, data, header)
+    })
+}
+
 /**
  * 
  * 
@@ -45,8 +51,6 @@ export function getStride(shape) {
  * 
  * 
  */
-
-
 
 export function getShape(A, shape = []) {
     if (!A.length) return shape

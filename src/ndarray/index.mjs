@@ -1,16 +1,15 @@
-import * as rawArrayUtils from '../utils/array/raw/index.mjs'
-import * as ndimArrayUtils from '../utils/array/ndim/index.mjs'
+import * as utils from '../utils'
 
 export default class MultiDimArray {
 
     constructor() {}
 
     _c1(A, type = Float64Array) {
-        this.data = new type(rawArrayUtils.flatten(A))
+        this.data = new type(utils.flatten(A))
 
         this.header = {}
-        this.header.shape = rawArrayUtils.getShape(A)
-        this.header.stride = ndimArrayUtils.getStride(this.header.shape)
+        this.header.shape = utils.getShape(A)
+        this.header.stride = utils.getStride(this.header.shape)
         this.header.offset = 0
 
         return this
@@ -29,7 +28,7 @@ export default class MultiDimArray {
 
 
     slice(...index) {
-        const newHeader = ndimArrayUtils.getSlice(index, this.header)
+        const newHeader = utils.getSlice(index, this.header)
         return new MultiDimArray()._c2(this.data, newHeader)
     }
 
@@ -38,8 +37,6 @@ export default class MultiDimArray {
     }
 
     toString() {
-        for (const index of rawArrayUtils.getIndices(this.header.shape)) {
-            const value = ndimArrayUtils.getData(index, this.data, this.header)
-        }
+        return JSON.stringify(utils.getDataForSlice(this.data, this.header))
     }
 }
