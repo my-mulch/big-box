@@ -34,6 +34,11 @@ export function create(shape) {
     })
 }
 
+export function cycle(array, n) {
+    const copy = [...array]
+    return copy.splice(-n % copy.length).concat(copy)
+}
+
 export function insert(A, index, value) {
     if (index.length === 1) {
         A[index[0]] = value
