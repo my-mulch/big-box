@@ -27,12 +27,12 @@ export function helperToString(header, index = []) {
 }
 
 
-export function getSlice(index, header) {
-    const newHeader = JSON.parse(JSON.stringify(header))
+export function getSlice(index, oldHeader) {
+    const newHeader = JSON.parse(JSON.stringify(oldHeader))
 
-    for (let i = 0, del = 0; i < header.shape.length; i++) {
+    for (let i = 0, del = 0; i < oldHeader.shape.length; i++) {
         if (index[i] >= 0) {
-            newHeader.offset += header.stride[i] * index[i]
+            newHeader.offset += oldHeader.stride[i] * index[i]
             newHeader.stride.splice(i - del, 1)
             newHeader.shape.splice(i - del, 1)
             del++
