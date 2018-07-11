@@ -26,12 +26,10 @@ export function slice(A, index) {
     return slice(A[index[0]], index.slice(1))
 }
 
-function create(shape) {
+export function create(shape) {
     if (!shape.length) return 0
 
-    const subArray = new Array(shape[0])
-    for (let i = 0; i < shape[0]; i++)
-        subArray[i] = create(shape.slice(1))
-
-    return subArray
+    return new Array(shape[0]).fill(null).map(function () {
+        return create(shape.slice(1))
+    })
 }
