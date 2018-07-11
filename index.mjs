@@ -1,1 +1,1 @@
-import ndim from './src/ndarray'
+import ndim from './src/ndarray/index.mjs'

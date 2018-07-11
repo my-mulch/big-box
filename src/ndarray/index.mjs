@@ -1,9 +1,9 @@
-import * as rawArrayUtils from '../utils/array/raw'
-import * as ndimArrayUtils from '../utils/array/ndim'
+import * as rawArrayUtils from '../utils/array/raw/index.mjs'
+import * as ndimArrayUtils from '../utils/array/ndim/index.mjs'
 
 export default class MultiDimArray {
 
-    constructor() { }
+    constructor() {}
 
     _c1(A, type = Float64Array) {
         this.data = type(rawArrayUtils.flatten(A))
@@ -29,7 +29,9 @@ export default class MultiDimArray {
         return new MultiDimArray()._c2(this.data, newHeader)
     }
 
-    inspect() { return this.toString() }
+    inspect() {
+        return this.toString()
+    }
     toString() {
         for (const index of rawArrayUtils.getIndices(this.header.shape)) {
             const value = ndimArrayUtils.getData(index, this.data, this.header)
