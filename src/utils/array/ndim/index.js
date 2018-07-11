@@ -28,19 +28,18 @@ export function helperToString(header, index = []) {
 
 
 export function getSlice(index, header) {
-    const newStride = []
-    const newShape = []
-    let localIndex = header.offset
+    const newHeader = JSON.parse(JSON.stringify(header))
 
-    for (let i = 0; i < header.shape.length; i++) {
-        if (index[i] === null || index[i] === undefined || index[i] === -1) {
-            newStride.push(header.stride[i])
-            newShape.push(header.shape[i])
-        } else
-            localIndex += header.stride[i] * index[i]
+    for (let i = 0, del = 0; i < header.shape.length; i++) {
+        if (index[i] >= 0) {
+            newHeader.offset += header.stride[i] * index[i]
+            newHeader.stride.splice(i - del, 1)
+            newHeader.shape.splice(i - del, 1)
+            del++
+        }
     }
 
-    return [newShape, newStride, localIndex]
+    return newHeader
 }
 
 
