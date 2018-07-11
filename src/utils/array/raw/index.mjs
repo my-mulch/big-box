@@ -33,3 +33,12 @@ export function create(shape) {
         return create(shape.slice(1))
     })
 }
+
+export function insert(A, index, value) {
+    if (index.length === 1) {
+        A[index[0]] = value
+        return
+    }
+
+    insert(A[index[0]], index.slice(1), value)
+}
