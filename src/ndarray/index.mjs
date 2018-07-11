@@ -6,17 +6,21 @@ export default class MultiDimArray {
     constructor() {}
 
     _c1(A, type = Float64Array) {
-        this.data = type(rawArrayUtils.flatten(A))
+        this.data = new type(rawArrayUtils.flatten(A))
 
         this.header = {}
         this.header.shape = rawArrayUtils.getShape(this.data)
         this.header.stride = ndimArrayUtils.getStride(this.header.shape)
         this.header.offset = 0
+
+        return this
     }
 
     _c2(data, header) {
         this.data = data
         this.header = header
+
+        return this
     }
 
     static array(A, type = Float64Array) {
