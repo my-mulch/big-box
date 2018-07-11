@@ -1,7 +1,10 @@
 export function getData(indices, data, header) {
-    return header.offset + data[indices.reduce(function (finalIndex, idxValue, i) {
-        return finalIndex + idxValue * header.stride[i]
-    }, 0)]
+    return data[
+        // index returned
+        header.offset + indices.reduce(function (finalIndex, idxValue, i) {
+            return finalIndex + idxValue * header.stride[i]
+        }, 0)
+    ]
 }
 
 export function getSlice(indices, oldHeader) {

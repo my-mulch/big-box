@@ -5,19 +5,19 @@ export function getShape(A, shape = []) {
 }
 
 export function* getIndices(shape, index = []) {
-    for (let i = 0; i < shape[0]; i++)
+    for (let i = 0; i < shape[0]; i++) {
         if (shape.length > 1)
             yield* getIndices(shape.slice(1), index.concat(i))
-    else
-        yield index.concat(i)
+        else
+            yield index.concat(i)
+    }
 }
 
 export function* flatten(A) {
-    for (let i = 0; i < A.length; i++)
-        if (Array.isArray(A[i]))
-            yield* flatten(A[i])
-    else
-        yield A[i]
+    for (let i = 0; i < A.length; i++) {
+        if (Array.isArray(A[i])) yield* flatten(A[i])
+        else yield A[i]
+    }
 }
 
 export function slice(A, index) {

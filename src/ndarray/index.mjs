@@ -38,6 +38,8 @@ export default class MultiDimArray {
     }
 
     toString() {
-        
+        for (const index of rawArrayUtils.getIndices(this.header.shape)) {
+            const value = ndimArrayUtils.getData(index, this.data, this.header)
+        }
     }
 }
