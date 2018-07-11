@@ -31,6 +31,9 @@ export default class MultiDimArray {
 
     inspect() { return this.toString() }
     toString() {
-
+        for (const index of rawArrayUtils.getIndices(this.header.shape)) {
+            const value = ndimArrayUtils.getData(index, this.data, this.header)
+            console.log(value)
+        }
     }
 }
