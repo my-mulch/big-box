@@ -1,6 +1,17 @@
 import ndim from './src/ndarray/index.mjs'
-console.log(ndim.array([
-    [1, 2, 3],
-    [4, 5, 6],
-    [7, 8, 9]
-]))
+const A = ndim.array([
+    [
+        [2, 3],
+        [4, 5],
+        [4, 7]
+    ],
+    [
+
+        [2, 3],
+        [4, 5],
+        [4, 7]
+
+    ]
+])
+
+console.log(A)

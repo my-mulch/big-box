@@ -9,7 +9,7 @@ export default class MultiDimArray {
         this.data = new type(rawArrayUtils.flatten(A))
 
         this.header = {}
-        this.header.shape = rawArrayUtils.getShape(this.data)
+        this.header.shape = rawArrayUtils.getShape(A)
         this.header.stride = ndimArrayUtils.getStride(this.header.shape)
         this.header.offset = 0
 
@@ -36,10 +36,8 @@ export default class MultiDimArray {
     inspect() {
         return this.toString()
     }
+
     toString() {
-        for (const index of rawArrayUtils.getIndices(this.header.shape)) {
-            const value = ndimArrayUtils.getData(index, this.data, this.header)
-            console.log(value)
-        }
+        
     }
 }
