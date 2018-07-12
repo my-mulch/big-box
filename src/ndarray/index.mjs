@@ -28,7 +28,7 @@ export default class MultiDimArray {
 
 
     slice(...index) {
-        const newHeader = utils.getSlice(index, this.header)
+        const newHeader = utils.getHeader(index, this.header)
         return new MultiDimArray()._c2(this.data, newHeader)
     }
 
@@ -37,6 +37,6 @@ export default class MultiDimArray {
     }
 
     toString() {
-        const dataVals = utils.getDataForSlice(this.data, this.header)
+        return utils.helperToString(this.data, this.header)
     }
 }
