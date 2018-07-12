@@ -37,6 +37,6 @@ export default class MultiDimArray {
     }
 
     toString() {
-        return JSON.stringify(utils.getDataForSlice(this.data, this.header))
+        const dataVals = utils.getDataForSlice(this.data, this.header)
     }
 }

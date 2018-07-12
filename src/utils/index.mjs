@@ -52,6 +52,10 @@ export function getDataForSlice(data, header) {
  * 
  */
 
+export function* getGenerator(A) {
+    yield* A
+}
+
 export function getShape(A, shape = []) {
     if (!A.length) return shape
 
@@ -74,17 +78,26 @@ export function* flatten(A) {
     }
 }
 
+export function getTemplateArrayString(shape) {
+    return shape.reduce(function (template, dimension) {
+        return template
+            .replace(/\$/g, new Array(dimension)
+                .fill("[$]")
+                .join(","))
+    }, "[$]")
+}
+
 export function slice(A, index) {
     if (!index.length) return A
 
     return slice(A[index[0]], index.slice(1))
 }
 
-export function create(shape) {
-    if (!shape.length) return 0
+export function create(shape, fill = () => 0) {
+    if (!shape.length) return fill()
 
     return new Array(shape[0]).fill(null).map(function () {
-        return create(shape.slice(1))
+        return create(shape.slice(1), fill)
     })
 }
 
