@@ -41,6 +41,6 @@ export default class MultiDimArray {
     }
 
     toString() {
-        return utils.helperToString(this.data, this.header)
+        return "array(" + utils.helperToString(this.data, this.header) + ")"
     }
 }
