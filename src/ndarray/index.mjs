@@ -29,7 +29,11 @@ export default class MultiDimArray {
 
     slice(...index) {
         const newHeader = utils.getHeader(index, this.header)
-        return new MultiDimArray()._c2(this.data, newHeader)
+
+        if (newHeader.shape.length)
+            return new MultiDimArray()._c2(this.data, newHeader)
+        else
+            return this.data[newHeader.offset]
     }
 
     inspect() {

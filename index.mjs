@@ -1,8 +1,4 @@
-import {
-    randomInt
-} from './src/math/probability'
 import ndim from './src/ndarray'
-import * as utils from './src/utils'
 
 const rawA = [
     [
@@ -35,6 +31,9 @@ const rawA = [
     ]
 ]
 
-// const rawA = utils.create([7, 2, 5], randomInt)
 const A = ndim.array(rawA)
-console.log(A)
+console.log(A.header)
+console.log(A.slice(4))
+console.log(A.slice(4).header)
+console.log(A.slice(4).slice(-1, 0))
+console.log(A.slice(4).slice(':', 0).slice(0))
