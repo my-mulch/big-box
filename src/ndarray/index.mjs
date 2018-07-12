@@ -26,6 +26,10 @@ export default class MultiDimArray {
         return new MultiDimArray()._c1(A, type)
     }
 
+    static arange(...args) {
+        return new MultiDimArray()._c1(utils.helperArange(args))
+    }
+
 
     slice(...index) {
         const newHeader = utils.getHeader(index, this.header)

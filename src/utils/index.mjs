@@ -71,6 +71,16 @@ export function escapeRegExp(str) {
     return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
 
+export function helperArange(args) {
+    // [start], end, [step] //
+    if (args.length === 1)
+        return [...getIntegerRange(0, args[0], 1)]
+    if (args.length === 2)
+        return [...getIntegerRange(args[0], args[1], 1)]
+    if (args.length === 3)
+        return [...getIntegerRange(args[0], args[1], args[2])]
+}
+
 /**
  * 
  * 
@@ -79,6 +89,13 @@ export function escapeRegExp(str) {
  * 
  * 
  */
+
+export function* getIntegerRange(start, end, step) {
+    while (start < end) {
+        yield start
+        start += step
+    }
+}
 
 export function autoReturnGenerator(generator) {
     return function autoReturner() {
