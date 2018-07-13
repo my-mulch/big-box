@@ -14,6 +14,18 @@ const A = ndim.array([
         [8, 6, 4, 5]
     ]
 ])
-
-const B = ndim.arange(10)
+const B = ndim.arange(36)
+console.log(B.header)
 console.log(B)
+
+console.log(B.reshape(3, 2, 2, 3).header)
+console.log(B.reshape(3, 2, 2, 3))
+
+const C = B.reshape(3, 2, 2, 3).slice(':', 0, ':', 0)
+console.log(C.header)
+console.log(C)
+
+const D = C.reshape(6)
+console.log(D.header)
+console.log(D.data)
+console.log(D)

@@ -28,8 +28,18 @@ export function getDataForHeader(ndArray) {
     })
 }
 
+export function getReshape(shape, ndArray) {
+    const newHeader = copyHeader(ndArray.header)
+    const lastDim = ndArray.header.stride.slice(-1).pop()
+
+    newHeader.shape = shape
+    newHeader.stride = getStride(shape, lastDim)
+
+    return newHeader
+}
+
 export function getSlice(indices, ndArray) {
-    const newHeader = JSON.parse(JSON.stringify(ndArray.header))
+    const newHeader = copyHeader(ndArray.header)
     newHeader.contig = isContiguousSlice(indices)
 
     for (let i = 0, del = 0; i < ndArray.header.shape.length; i++) {
@@ -42,6 +52,10 @@ export function getSlice(indices, ndArray) {
     }
 
     return newHeader
+}
+
+export function copyHeader(header) {
+    return JSON.parse(JSON.stringify(header))
 }
 
 export function isContiguousSlice(indices) {

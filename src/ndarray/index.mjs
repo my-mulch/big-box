@@ -41,11 +41,19 @@ export default class MultiDimArray {
             return this.data[newHeader.offset]
     }
 
+    reshape(...shape) {
+        if (!this.header.contig) // if the array is not contigous, a reshape means data copy
+            return new MultiDimArray()._c1(utils.getDataForHeader(this))
+
+        const newHeader = utils.getReshape(shape, this)
+        return new MultiDimArray()._c2(this.data, newHeader)
+    }
+
     inspect() {
         return this.toString()
     }
 
     toString() {
-        return utils.helperToString(this)
+        return utils.helperToString(this) + '\n'
     }
 }
