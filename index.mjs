@@ -12,6 +12,7 @@ const A = ndim.array([
     [1, 2, 5, 7]
 ])
 
-// console.log(B.reshape(2, 2, 3).slice(':', 0, ':'))
-// console.log(B.reshape(2, 2, 3).slice(':', 0, ':').header)
-console.log(B.reshape(2, 2, 3).slice(':', 0, ':').T().T().slice(':', 2).reshape(2, 1).data)
+const C = ndim.arange(1000).reshape(1000, 1)
+const D = ndim.arange(2000).reshape(1, 2000)
+
+console.log(C.dot(D).slice(2))

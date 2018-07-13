@@ -65,7 +65,6 @@ export default class Header {
         newHeader.stride.reverse()
         newHeader.shape.reverse()
 
-        // console.log(this)
         return newHeader
     }
 }
