@@ -30,6 +30,15 @@ export function helperToString(ndArray) {
     return formatArrStrLikeNumpy(filledArrayString, ndArray.header.shape.length)
 }
 
+export function getTemplateArrayString(shape) {
+    return shape.reduce(function (template, dimension) {
+        return template
+            .replace(/\$/g, new Array(dimension)
+                .fill("[$]")
+                .join(","))
+    }, "[$]")
+}
+
 export function formatArrStrLikeNumpy(arrStr, depth) {
     while (--depth > 0) {
         const find = stringSandwhich(']', ',', '[', [depth, 1, depth])
@@ -55,7 +64,7 @@ export function escapeRegExp(str) {
 }
 
 export function helperArange(args) {
-    // [start], end, [step] //
+    // args: [start,] end [,step] //
     if (args.length === 1)
         return [...getIntegerRange(0, args[0], 1)]
     if (args.length === 2)
@@ -90,6 +99,12 @@ export function* getGenerator(rawArray) {
     yield* rawArray
 }
 
+export function product(rawArray) {
+    return rawArray.reduce(function (prod, current) {
+        return prod * current
+    }, 1)
+}
+
 export function getShape(rawArray, shape = []) {
     if (!rawArray.length) return shape
 
@@ -112,15 +127,6 @@ export function* flatten(rawArray) {
         else
             yield rawArray[i]
     }
-}
-
-export function getTemplateArrayString(shape) {
-    return shape.reduce(function (template, dimension) {
-        return template
-            .replace(/\$/g, new Array(dimension)
-                .fill("[$]")
-                .join(","))
-    }, "[$]")
 }
 
 export function slice(rawArray, index) {

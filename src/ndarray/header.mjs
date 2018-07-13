@@ -59,6 +59,4 @@ export default class Header {
 
         return newHeader
     }
-
-
 }

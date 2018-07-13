@@ -49,7 +49,7 @@ export default class MultiDimArray {
     }
 
     dot(A) {
-        return new MultiDimArray()._c2(...matrix.mutliply(this, A))
+        return new MultiDimArray()._c2(...matrix.multiply(this, A))
     }
 
     inspect() {
