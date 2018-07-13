@@ -11,6 +11,7 @@ export default class MultiDimArray {
         this.header.shape = utils.getShape(A)
         this.header.stride = utils.getStride(this.header.shape)
         this.header.offset = 0
+        this.header.contig = true
 
         return this
     }
@@ -31,8 +32,8 @@ export default class MultiDimArray {
     }
 
 
-    slice(...index) {
-        const newHeader = utils.getHeader(index, this.header)
+    slice(...indices) {
+        const newHeader = utils.getSlice(indices, this)
 
         if (newHeader.shape.length)
             return new MultiDimArray()._c2(this.data, newHeader)
@@ -45,6 +46,6 @@ export default class MultiDimArray {
     }
 
     toString() {
-        return "array(" + utils.helperToString(this.data, this.header) + ")"
+        return utils.helperToString(this)
     }
 }
