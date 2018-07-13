@@ -1,5 +1,6 @@
-import * as matrix from '../math/matrix'
 import Header from './header'
+
+import * as matrix from '../math/matrix'
 import * as utils from '../utils'
 
 export default class MultiDimArray {
@@ -32,7 +33,7 @@ export default class MultiDimArray {
 
 
     slice(...indices) {
-        const newHeader = utils.getSliceHeader(indices, this)
+        const newHeader = this.header.slice(indices)
 
         if (newHeader.shape.length)
             return new MultiDimArray()._c2(this.data, newHeader)
@@ -44,8 +45,7 @@ export default class MultiDimArray {
         if (!this.header.contig) // if the array is not contigous, a reshape means data copy
             return new MultiDimArray()._c1(utils.getDataForHeader(this))
 
-        const newHeader = utils.getReshapeHeader(shape, this)
-        return new MultiDimArray()._c2(this.data, newHeader)
+        return new MultiDimArray()._c2(this.data, this.header.reshape(shape))
     }
 
     dot(A) {
