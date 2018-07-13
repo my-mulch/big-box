@@ -12,4 +12,6 @@ const A = ndim.array([
     [1, 2, 5, 7]
 ])
 
-console.log(A.dot(B))
+// console.log(B.reshape(2, 2, 3).slice(':', 0, ':'))
+// console.log(B.reshape(2, 2, 3).slice(':', 0, ':').header)
+console.log(B.reshape(2, 2, 3).slice(':', 0, ':').T().T().slice(':', 2).reshape(2, 1).data)

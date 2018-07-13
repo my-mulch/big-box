@@ -4,9 +4,9 @@ export default class Header {
     constructor(opts) {
         this.shape = opts.shape
 
-        this.stride = opts.stride ? opts.stride : Header.getStride(this.shape)
-        this.offset = opts.offset ? opts.offset : 0
-        this.contig = opts.contig ? opts.contig : true
+        this.stride = opts.stride !== undefined ? opts.stride : Header.getStride(this.shape)
+        this.offset = opts.offset !== undefined ? opts.offset : 0
+        this.contig = opts.contig !== undefined ? opts.contig : true
     }
 
     static getStride(shape, lastDim = 1) {
@@ -57,6 +57,15 @@ export default class Header {
         newHeader.shape = shape
         newHeader.stride = Header.getStride(shape, lastDim)
 
+        return newHeader
+    }
+
+    transpose() {
+        const newHeader = this.copy()
+        newHeader.stride.reverse()
+        newHeader.shape.reverse()
+
+        // console.log(this)
         return newHeader
     }
 }

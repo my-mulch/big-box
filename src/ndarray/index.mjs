@@ -52,6 +52,10 @@ export default class MultiDimArray {
         return new MultiDimArray()._c2(...matrix.multiply(this, A))
     }
 
+    T() {
+        return new MultiDimArray()._c2(this.data, this.header.transpose())
+    }
+
     inspect() {
         return this.toString()
     }
