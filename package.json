@@ -2,19 +2,17 @@
   "name": "multi-dim",
   "version": "2.0.7",
   "description": "A suite of methods to manipulate MDA",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "main": "src/ndarray/index.mjs",
+  "scripts": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/llltsp/Multi-Dim.git"
+    "url": "git+https://github.com/trumanpurnell/jumpy.git"
   },
   "author": "Truman Purnell",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/llltsp/Multi-Dim/issues"
+    "url": "https://github.com/trumanpurnell/jumpy/issues"
   },
-  "homepage": "https://github.com/llltsp/Multi-Dim#readme",
+  "homepage": "https://github.com/trumanpurnell/jumpy#readme",
   "dependencies": {}
 }
