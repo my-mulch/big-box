@@ -56,6 +56,14 @@ export default class MultiDimArray {
         return new MultiDimArray()._c2(this.data, this.header.transpose())
     }
 
+    toRawArray() {
+        return utils.createRawArray(this.header.shape, utils.getAutoReturnGenerator(this))
+    }
+
+    toGenerator() {
+        return utils.getGenerator(this.toRawArray())
+    }
+
     inspect() {
         return this.toString()
     }

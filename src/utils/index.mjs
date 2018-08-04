@@ -24,10 +24,14 @@ export function getDataForHeader(ndArray) {
 
 export function helperToString(ndArray) {
     const templateArrayString = getTemplateArrayString(ndArray.header.shape)
-    const automaticallyReturningGenerator = autoReturnGenerator(getGenerator(getDataForHeader(ndArray)))
+    const automaticallyReturningGenerator = getAutoReturnGenerator(ndArray)
     const filledArrayString = templateArrayString.replace(/\[\$\]/g, automaticallyReturningGenerator)
 
     return formatArrStrLikeNumpy(filledArrayString, ndArray.header.shape.length)
+}
+
+export function getAutoReturnGenerator(ndArray) {
+    return autoReturnGenerator(getGenerator(getDataForHeader(ndArray)))
 }
 
 export function getTemplateArrayString(shape) {
@@ -135,11 +139,11 @@ export function slice(rawArray, index) {
     return slice(rawArray[index[0]], index.slice(1))
 }
 
-export function create(shape, fill = () => 0) {
+export function createRawArray(shape, fill = () => 0) {
     if (!shape.length) return fill()
 
     return new Array(shape[0]).fill(null).map(function () {
-        return create(shape.slice(1), fill)
+        return createRawArray(shape.slice(1), fill)
     })
 }
 

@@ -11,8 +11,3 @@ const A = ndim.array([
     [4, 2, 3, 6],
     [1, 2, 5, 7]
 ])
-
-const C = ndim.arange(1000).reshape(1000, 1)
-const D = ndim.arange(2000).reshape(1, 2000)
-
-console.log(C.dot(D).slice(2))
