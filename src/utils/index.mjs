@@ -1,7 +1,23 @@
 /**
  * 
  * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
  * UTILS FOR MULTI-DIM ARRAYS
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
  * 
  * 
  * 
@@ -67,8 +83,8 @@ export function escapeRegExp(str) {
     return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
 }
 
+// args: [start,] end [,step] //
 export function helperArange(args) {
-    // args: [start,] end [,step] //
     if (args.length === 1)
         return [...getIntegerRange(0, args[0], 1)]
     if (args.length === 2)
@@ -80,7 +96,23 @@ export function helperArange(args) {
 /**
  * 
  * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
  * UTILS FOR RAW JAVASCRIPT ARRAYS
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
  * 
  * 
  * 

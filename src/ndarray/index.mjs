@@ -1,4 +1,5 @@
 import Header from './header'
+import typeMap from '../utils/types'
 
 import * as matrix from '../math/matrix'
 import * as utils from '../utils'
@@ -7,8 +8,11 @@ export default class MultiDimArray {
 
     constructor() {}
 
-    _c1(A, type = Float64Array) {
-        this.data = new type(utils.flatten(A))
+    _c1(A, type = 'float64') {
+        const flatA = utils.flatten(A)
+        const TypedArray = typeMap[type]
+
+        this.data = new TypedArray(flatA)
         this.header = new Header({
             shape: utils.getShape(A)
         })
@@ -23,7 +27,7 @@ export default class MultiDimArray {
         return this
     }
 
-    static array(A, type = Float64Array) {
+    static array(A, type = 'float64') {
         return new MultiDimArray()._c1(A, type)
     }
 
@@ -43,7 +47,12 @@ export default class MultiDimArray {
 
     reshape(...shape) {
         if (!this.header.contig) // if the array is not contigous, a reshape means data copy
-            return new MultiDimArray()._c1(utils.getDataForHeader(this))
+            return new MultiDimArray()._c2(
+                new MultiDimArray()._c1(this.toRawArray()).data,
+                new Header({
+                    shape
+                })
+            ) // blehck! Refactor needed
 
         return new MultiDimArray()._c2(this.data, this.header.reshape(shape))
     }
