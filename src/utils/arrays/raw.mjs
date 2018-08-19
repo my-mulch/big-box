@@ -35,4 +35,26 @@ export default class RawArrayUtils {
 
         RawArrayUtils.insert(rawArray[index[0]], index.slice(1), value)
     }
+
+    static getShape(rawArray, shape = []) {
+        if (!rawArray.length) return shape
+
+        return RawArrayUtils.getShape(rawArray[0], shape.concat(rawArray.length))
+    }
+
+    static * getGenerator(rawArray) {
+        yield* rawArray
+    }
+
+    static autoReturningFunctionFromGenerator(generator) {
+        return function autoReturner() {
+            return generator.next().value
+        }
+    }
+
+    static product(rawArray) {
+        return rawArray.reduce(function (prod, current) {
+            return prod * current
+        }, 1)
+    }
 }
