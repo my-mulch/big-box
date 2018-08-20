@@ -18,4 +18,6 @@ const B = ndim.array([
     [2]
 ], 'uint8')
 
-console.log(A.slice(':', 0, ':').reshape(4,1).add(B))
+console.log(B)
+console.log(A.slice(':', 0, ':').reshape(4, 1))
+console.log(A.slice(':', 0, ':').reshape(4, 1).subtract(B))

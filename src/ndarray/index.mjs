@@ -14,9 +14,7 @@ export default class MultiDimArray {
 
         this.type = TypeArrayUtils.TYPE_MAP[type]
         this.data = new this.type(flatA)
-        this.header = new Header({
-            shape: shapeA
-        })
+        this.header = new Header({ shape: shapeA })
 
         return this
     }
@@ -35,6 +33,10 @@ export default class MultiDimArray {
 
     static arange(...args) {
         return new MultiDimArray().c1(NDArrayUtils.helperArange(args))
+    }
+
+    static zeros(...shape){
+        return new MultiDimArray().c1(RawArrayUtils.createRawArray(shape))
     }
 
     add(B) {
@@ -73,11 +75,10 @@ export default class MultiDimArray {
         if (!this.header.contig)
             // if the array is not contigous, a reshape means data copy
             return new MultiDimArray().c2(
-                new this.type(NDArrayUtils.getRawFlat(this)),
-                new Header({
-                    shape
-                }),
-                this.type)
+                new this.type(NDArrayUtils.getRawFlat(this)), // new data
+                new Header({ shape }), // new header
+                this.type // new type
+            )
 
         return new MultiDimArray().c2(this.data, this.header.reshape(shape))
     }
