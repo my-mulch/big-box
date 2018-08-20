@@ -11,13 +11,8 @@ const A = ndim.array([
     ]
 ], 'uint8')
 
-const B = ndim.array([
-    [5],
-    [5],
-    [3],
-    [2]
-], 'uint8')
+const B = ndim.array([1, 2, 3, 4], 'uint8')
 
-console.log(B)
-console.log(A.slice(':', 0, ':').reshape(4, 1))
-console.log(A.slice(':', 0, ':').reshape(4, 1).subtract(B))
+const gen = A.toGenerator()
+console.log(gen.next().value)
+console.log(gen.next().value)

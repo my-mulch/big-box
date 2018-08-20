@@ -14,7 +14,9 @@ export default class MultiDimArray {
 
         this.type = TypeArrayUtils.TYPE_MAP[type]
         this.data = new this.type(flatA)
-        this.header = new Header({ shape: shapeA })
+        this.header = new Header({
+            shape: shapeA
+        })
 
         return this
     }
@@ -35,7 +37,7 @@ export default class MultiDimArray {
         return new MultiDimArray().c1(NDArrayUtils.helperArange(args))
     }
 
-    static zeros(...shape){
+    static zeros(...shape) {
         return new MultiDimArray().c1(RawArrayUtils.createRawArray(shape))
     }
 
@@ -76,7 +78,9 @@ export default class MultiDimArray {
             // if the array is not contigous, a reshape means data copy
             return new MultiDimArray().c2(
                 new this.type(NDArrayUtils.getRawFlat(this)), // new data
-                new Header({ shape }), // new header
+                new Header({
+                    shape
+                }), // new header
                 this.type // new type
             )
 
@@ -99,8 +103,9 @@ export default class MultiDimArray {
         return RawArrayUtils.createRawArray(this.header.shape, autoGenerator)
     }
 
-    * toGenerator() {
-        yield* this.toRawArray()
+    * toGenerator() { // slices first axis, more general in future
+        for (let i = 0; i < this.header.shape[axis]; i++)
+            yield this.slice(i)
     }
 
     inspect() {
