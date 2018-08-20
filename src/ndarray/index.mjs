@@ -36,6 +36,11 @@ export default class MultiDimArray {
         return new MultiDimArray().c1(NDArrayUtils.helperArange(args))
     }
 
+    add(ndArray){
+        const [newData, newHeader, newType] = Matrix.multiply(this, A)
+
+        return new MultiDimArray().c2(newData, newHeader, newType)
+    }
 
     slice(...indices) {
         const newHeader = this.header.slice(indices)
