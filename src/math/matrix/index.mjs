@@ -1,25 +1,29 @@
-import * as utils from '../../utils'
+import NDArrayUtils from '../../utils/arrays/nd'
+import TypeUtils from '../../utils/arrays/type'
+import MathUtils from '../../utils/math'
 import Header from '../../ndarray/header'
 
-export function multiply(A, B, type = Float64Array) {
-    const shared = A.header.shape[1]
-    const newHeader = new Header({
-        shape: [A.header.shape[0], B.header.shape[1]]
-    })
+export function multiply(A, B) {
 
-    const newData = new type(utils.product(newHeader.shape))
+    const sharedDim = A.header.shape[1]
+    
+    const newType = TypeUtils.compareTypes(A.type, B.type)
+    const newShape = [A.header.shape[0], B.header.shape[1]]
+    const newHeader = new Header({ shape: newShape })
+    const newData = new newType(MathUtils.product(newShape))
+    
 
     for (let r = 0, i = 0; r < newHeader.shape[0]; r++) {
         for (let c = 0; c < newHeader.shape[1]; c++) {
-            for (let s = 0; s < shared; s++) {
+            for (let s = 0; s < sharedDim; s++) {
                 newData[i] +=
-                    utils.getDataFromIndex([r, s], A) *
-                    utils.getDataFromIndex([s, c], B)
+                    NDArrayUtils.getDataFromIndex([r, s], A) *
+                    NDArrayUtils.getDataFromIndex([s, c], B)
             }
             i++
         }
     }
 
-    return [newData, newHeader]
+    return [newData, newHeader, newType]
 
 }

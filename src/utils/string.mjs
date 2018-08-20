@@ -1,4 +1,4 @@
-class StringUtils {
+export default class StringUtils {
     static stringSandwhich(bottom, meat, top, quantities) {
         return bottom.repeat(quantities[0]) +
             meat.repeat(quantities[1]) +

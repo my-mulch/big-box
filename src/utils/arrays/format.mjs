@@ -1,4 +1,7 @@
+import StringUtils from '../string'
+
 export default class FormatUtils {
+
     static getTemplateArrayString(shape) {
         return shape.reduce(function (template, dimension) {
             return template
@@ -10,9 +13,11 @@ export default class FormatUtils {
 
     static formatArrStrLikeNumpy(arrStr, depth) {
         while (--depth > 0) {
-            const find = stringSandwhich(']', ',', '[', [depth, 1, depth])
-            const replace = stringSandwhich(']', '\n', '[', [depth, depth, depth])
-            arrStr = arrStr.replace(new RegExp(escapeRegExp(find), 'g'), replace)
+            const findStr = StringUtils.stringSandwhich(']', ',', '[', [depth, 1, depth])
+            const replaceStr = StringUtils.stringSandwhich(']', '\n', '[', [depth, depth, depth])
+
+            const escapedFind = StringUtils.escapeRegExp(findStr)
+            arrStr = arrStr.replace(new RegExp(escapedFind, 'g'), replaceStr)
         }
 
         return arrStr

@@ -46,15 +46,9 @@ export default class RawArrayUtils {
         yield* rawArray
     }
 
-    static autoReturningFunctionFromGenerator(generator) {
+    static getAutoInvokingGenerator(generator) {
         return function autoReturner() {
             return generator.next().value
         }
-    }
-
-    static product(rawArray) {
-        return rawArray.reduce(function (prod, current) {
-            return prod * current
-        }, 1)
     }
 }

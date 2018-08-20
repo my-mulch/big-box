@@ -9,4 +9,11 @@ export default class MathUtils {
     static isNumber(n) {
         return !isNaN(parseFloat(n)) && isFinite(n);
     }
+
+    static product(rawArray) {
+        return rawArray.reduce(function (prod, current) {
+            return prod * current
+        }, 1)
+    }
+    
 }
