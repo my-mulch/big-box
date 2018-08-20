@@ -103,7 +103,7 @@ export default class MultiDimArray {
         return RawArrayUtils.createRawArray(this.header.shape, autoGenerator)
     }
 
-    * toGenerator() { // slices first axis, more general in future
+    * toGenerator(axis = 0) { // slices first axis, more general in future
         for (let i = 0; i < this.header.shape[axis]; i++)
             yield this.slice(i)
     }
