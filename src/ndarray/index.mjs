@@ -1,76 +1,79 @@
-import Header from './header'
-import typeMap from '../utils/types'
+import * as Matrix from '../math/matrix'
 
-import * as matrix from '../math/matrix'
-import * as utils from '../utils'
+import RawArrayUtils from '../utils/arrays/raw'
+import NDArrayUtils from '../utils/arrays/nd'
+import TypeArrayUtils from '../utils/arrays/type'
+
+import Header from './header'
 
 export default class MultiDimArray {
+    c1(A, type = 'float64') {
+        const flatA = RawArrayUtils.flatten(A)
+        const shapeA = RawArrayUtils.getShape(A)
 
-    constructor() {}
-
-    _c1(A, type = 'float64') {
-        const flatA = utils.flatten(A)
-        const TypedArray = typeMap[type]
-
-        this.data = new TypedArray(flatA)
+        this.type = TypeArrayUtils.TYPE_MAP[type]
+        this.data = new this.type(flatA)
         this.header = new Header({
-            shape: utils.getShape(A)
+            shape: shapeA
         })
 
         return this
     }
 
-    _c2(data, header) {
+    c2(data, header, type) {
         this.data = data
         this.header = header
+        this.type = type
 
         return this
     }
 
     static array(A, type = 'float64') {
-        return new MultiDimArray()._c1(A, type)
+        return new MultiDimArray().c1(A, type)
     }
 
     static arange(...args) {
-        return new MultiDimArray()._c1(utils.helperArange(args))
+        return new MultiDimArray().c1(NDArrayUtils.helperArange(args))
     }
 
 
     slice(...indices) {
         const newHeader = this.header.slice(indices)
 
-        if (newHeader.shape.length)
-            return new MultiDimArray()._c2(this.data, newHeader)
-        else
-            return this.data[newHeader.offset]
+        return newHeader.shape.length ?
+            new MultiDimArray().c2(this.data, newHeader, this.type) :
+            this.data[newHeader.offset]
     }
 
     reshape(...shape) {
-        if (!this.header.contig) // if the array is not contigous, a reshape means data copy
-            return new MultiDimArray()._c2(
-                new MultiDimArray()._c1(this.toRawArray()).data,
-                new Header({
-                    shape
-                })
-            ) // blehck! Refactor needed
+        if (!this.header.contig)
+            // if the array is not contigous, a reshape means data copy
+            return new MultiDimArray().c2(
+                new this.type(NDArrayUtils.getRawFlat(this)), 
+                new Header({ shape }), 
+                this.type)
 
-        return new MultiDimArray()._c2(this.data, this.header.reshape(shape))
+        return new MultiDimArray().c2(this.data, this.header.reshape(shape))
     }
 
     dot(A) {
-        return new MultiDimArray()._c2(...matrix.multiply(this, A))
+        const [newData, newHeader, newType] = Matrix.multiply(this, A)
+
+        return new MultiDimArray().c2(newData, newHeader, newType)
     }
 
     T() {
-        return new MultiDimArray()._c2(this.data, this.header.transpose())
+        return new MultiDimArray().c2(this.data, this.header.transpose())
     }
 
     toRawArray() {
-        return utils.createRawArray(this.header.shape, utils.getAutoReturnGenerator(this))
+        const autoGenerator = NDArrayUtils.getValueSequenceAutoGenerator(this)
+
+        return RawArrayUtils.createRawArray(this.header.shape, autoGenerator)
     }
 
-    toGenerator() {
-        return utils.getGenerator(this.toRawArray())
+    * toGenerator() {
+        yield* this.toRawArray()
     }
 
     inspect() {
@@ -78,6 +81,6 @@ export default class MultiDimArray {
     }
 
     toString() {
-        return utils.helperToString(this) + '\n'
+        return NDArrayUtils.helperToString(this) + '\n'
     }
 }
