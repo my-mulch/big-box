@@ -1,3 +1,4 @@
+import TensorOperator from '../math/tensor'
 import * as Matrix from '../math/matrix'
 
 import RawArrayUtils from '../utils/arrays/raw'
@@ -36,8 +37,26 @@ export default class MultiDimArray {
         return new MultiDimArray().c1(NDArrayUtils.helperArange(args))
     }
 
-    add(ndArray){
-        const [newData, newHeader, newType] = Matrix.multiply(this, A)
+    add(B) {
+        const [newData, newHeader, newType] = TensorOperator.add(this, B)
+
+        return new MultiDimArray().c2(newData, newHeader, newType)
+    }
+
+    subtract(B) {
+        const [newData, newHeader, newType] = TensorOperator.subtract(this, B)
+
+        return new MultiDimArray().c2(newData, newHeader, newType)
+    }
+
+    multiply(B) {
+        const [newData, newHeader, newType] = TensorOperator.multiply(this, B)
+
+        return new MultiDimArray().c2(newData, newHeader, newType)
+    }
+
+    divide(B) {
+        const [newData, newHeader, newType] = TensorOperator.divide(this, B)
 
         return new MultiDimArray().c2(newData, newHeader, newType)
     }
@@ -54,8 +73,10 @@ export default class MultiDimArray {
         if (!this.header.contig)
             // if the array is not contigous, a reshape means data copy
             return new MultiDimArray().c2(
-                new this.type(NDArrayUtils.getRawFlat(this)), 
-                new Header({ shape }), 
+                new this.type(NDArrayUtils.getRawFlat(this)),
+                new Header({
+                    shape
+                }),
                 this.type)
 
         return new MultiDimArray().c2(this.data, this.header.reshape(shape))

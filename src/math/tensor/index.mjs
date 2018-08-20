@@ -5,19 +5,19 @@ import Header from '../../ndarray/header'
 
 export default class TensorOperator {
     static add(A, B) {
-        return this.GeneralOperator(A, B, MathUtils.add)
+        return this.ElementwiseOperation(A, B, MathUtils.add)
     }
     static multiply(A, B) {
-        return this.GeneralOperator(A, B, MathUtils.multiply)
+        return this.ElementwiseOperation(A, B, MathUtils.multiply)
     }
     static divide(A, B) {
-        return this.GeneralOperator(A, B, MathUtils.divide)
+        return this.ElementwiseOperation(A, B, MathUtils.divide)
     }
     static subtract(A, B) {
-        return this.GeneralOperator(A, B, MathUtils.subtract)
+        return this.ElementwiseOperation(A, B, MathUtils.subtract)
     }
 
-    static GeneralOperator(A, B, operation) {
+    static ElementwiseOperation(A, B, operation) {
         const newType = TypeUtils.compareTypes(A.type, B.type)
         const newShape = A.header.shape
         const newSize = MathUtils.product(newShape)
