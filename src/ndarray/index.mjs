@@ -87,6 +87,11 @@ export default class MultiDimArray {
         return new MultiDimArray().c2(this.data, this.header.reshape(shape))
     }
 
+    min(axis = 0) {
+        
+        return
+    }
+
     dot(A) {
         const [newData, newHeader, newType] = Matrix.multiply(this, A)
 
@@ -103,7 +108,7 @@ export default class MultiDimArray {
         return RawArrayUtils.createRawArray(this.header.shape, autoGenerator)
     }
 
-    * toGenerator(axis = 0) { // slices first axis, more general in future
+    * toGenerator(axis = 0) {
         for (let i = 0; i < this.header.shape[axis]; i++)
             yield this.slice(i)
     }

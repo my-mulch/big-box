@@ -4,35 +4,36 @@ import MathUtils from '../../utils/math'
 import Header from '../../ndarray/header'
 
 export default class TensorOperator {
-    static add(A, B) {
-        return this.ElementwiseOperation(A, B, MathUtils.add)
+    static add(...manyArrays) {
+        return this.ElementwiseOperation(MathUtils.add, manyArrays)
     }
-    static multiply(A, B) {
-        return this.ElementwiseOperation(A, B, MathUtils.multiply)
+    static multiply(...manyArrays) {
+        return this.ElementwiseOperation(MathUtils.multiply, manyArrays)
     }
-    static divide(A, B) {
-        return this.ElementwiseOperation(A, B, MathUtils.divide)
+    static divide(...manyArrays) {
+        return this.ElementwiseOperation(MathUtils.divide, manyArrays)
     }
-    static subtract(A, B) {
-        return this.ElementwiseOperation(A, B, MathUtils.subtract)
+    static subtract(...manyArrays) {
+        return this.ElementwiseOperation(MathUtils.subtract, manyArrays)
+    }
+    static min(...manyArrays) {
+        return this.ElementwiseOperation(MathUtils.min, manyArrays)
+    }
+    static max(...manyArrays) {
+        return this.ElementwiseOperation(MathUtils.max, manyArrays)
     }
 
-    static ElementwiseOperation(A, B, operation) {
-        const newType = TypeUtils.compareTypes(A.type, B.type)
-        const newShape = A.header.shape
-        const newSize = MathUtils.product(newShape)
-        const newData = new newType(newSize)
+    static ElementwiseOperation(operation, ndArrays) {
+        const newType = TypeUtils.compareTypes(ndArrays)
+        const newShape = ndArrays[0].shape // all same shape
+        const newData = new newType(ndArrays[0].data.length)
         const newHeader = new Header({
             shape: newShape
         })
 
         let i = 0
-        for (const index of NDArrayUtils.getIndices(newShape)) {
-            newData[i++] = operation(
-                NDArrayUtils.getDataFromIndex(index, A),
-                NDArrayUtils.getDataFromIndex(index, B)
-            )
-        }
+        for (const index of NDArrayUtils.getIndices(newShape))
+            newData[i++] = operation(NDArrayUtils.getDataFromIndex(index, ndArrays))
 
         return [newData, newHeader, newType]
     }

@@ -10,26 +10,28 @@ export default class MathUtils {
         return !isNaN(parseFloat(n)) && isFinite(n);
     }
 
-    static product(rawArray) {
-        return rawArray.reduce(function (prod, current) {
-            return prod * current
-        }, 1)
+    static add(rawArray) {
+        return rawArray.reduce((a, b) => a + b)
     }
 
-    static add(a, b) {
-        return a + b
+    static multiply(rawArray) {
+        return rawArray.reduce((a, b) => a * b)
     }
 
-    static multiply(a, b) {
-        return a * b
+    static divide(rawArray) {
+        return rawArray.reduce((a, b) => a / b)
     }
 
-    static divide(a, b) {
-        return a / b
+    static subtract(rawArray) {
+        return rawArray.reduce((a, b) => a - b)
     }
 
-    static subtract(a, b) {
-        return a - b
+    static min(rawArray) {
+        return rawArray.reduce((a, b) => Math.min(a, b))
+    }
+
+    static max(array) {
+        return rawArray.reduce((a, b) => Math.max(a, b))
     }
 
 }

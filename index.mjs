@@ -12,7 +12,8 @@ const A = ndim.array([
 ], 'uint8')
 
 const B = ndim.array([1, 2, 3, 4], 'uint8')
+console.log(A.header)
 
-const gen = A.toGenerator()
+const gen = A.toGenerator(2)
 console.log(gen.next().value)
 console.log(gen.next().value)
