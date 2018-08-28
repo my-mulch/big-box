@@ -3,13 +3,15 @@ import RawArrayUtils from './raw'
 import FormatUtils from './format'
 
 export default class NDArrayUtils {
-    static getDataFromIndex(indices, ndArray) {
-        return ndArray.data[
-            // index returned
-            ndArray.header.offset + indices.reduce(function (finalIndex, idxValue, dimension) {
-                return finalIndex + idxValue * ndArray.header.stride[dimension]
-            }, 0)
-        ]
+    static getDataFromIndex(indices, ndArrays) {
+        const flatIndex = this.getFlatIndexFromMultiDim(indices, ndArrays[0])
+        return ndArrays.map(nd => nd.data[flatIndex])
+    }
+
+    static getFlatIndexFromMultiDim(indices, ndArray) {
+        return ndArray.header.offset + indices.reduce(function (finalIndex, idxValue, dimension) {
+            return finalIndex + idxValue * ndArray.header.stride[dimension]
+        }, 0)
     }
 
     static * getValueSequenceGenerator(ndArray) {

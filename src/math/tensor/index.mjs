@@ -1,25 +1,25 @@
+import MultiDimArray from '../../ndarray'
 import NDArrayUtils from '../../utils/arrays/nd'
 import TypeUtils from '../../utils/arrays/type'
 import MathUtils from '../../utils/math'
-import Header from '../../ndarray/header'
 
 export default class TensorOperator {
-    static add(...manyArrays) {
+    static add(manyArrays) {
         return this.ElementwiseOperation(MathUtils.add, manyArrays)
     }
-    static multiply(...manyArrays) {
+    static multiply(manyArrays) {
         return this.ElementwiseOperation(MathUtils.multiply, manyArrays)
     }
-    static divide(...manyArrays) {
+    static divide(manyArrays) {
         return this.ElementwiseOperation(MathUtils.divide, manyArrays)
     }
-    static subtract(...manyArrays) {
+    static subtract(manyArrays) {
         return this.ElementwiseOperation(MathUtils.subtract, manyArrays)
     }
-    static min(...manyArrays) {
+    static min(manyArrays) {
         return this.ElementwiseOperation(MathUtils.min, manyArrays)
     }
-    static max(...manyArrays) {
+    static max(manyArrays) {
         return this.ElementwiseOperation(MathUtils.max, manyArrays)
     }
 

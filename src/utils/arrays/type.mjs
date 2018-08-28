@@ -1,8 +1,8 @@
 export default class TypeArrayUtils {
-    static compareTypes(ndArrays) {
+    static compareManyTypes(ndArrays) {
         return ndArrays
             .map(nd => nd.type)
-            .reduce(this.helperCompareTypes)
+            .reduce(this.compareTwoTypes)
     }
 
     static compareTwoTypes(t1, t2) {

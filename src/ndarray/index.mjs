@@ -41,28 +41,37 @@ export default class MultiDimArray {
         return new MultiDimArray().c1(RawArrayUtils.createRawArray(shape))
     }
 
-    add(B) {
-        const [newData, newHeader, newType] = TensorOperator.add(this, B)
+    add(many) {
+        many.push(this)
+        const [newData, newHeader, newType] = TensorOperator.add(many)
 
         return new MultiDimArray().c2(newData, newHeader, newType)
     }
 
-    subtract(B) {
-        const [newData, newHeader, newType] = TensorOperator.subtract(this, B)
+    subtract(many) {
+        many.push(this)
+        const [newData, newHeader, newType] = TensorOperator.subtract(many)
 
         return new MultiDimArray().c2(newData, newHeader, newType)
     }
 
-    multiply(B) {
-        const [newData, newHeader, newType] = TensorOperator.multiply(this, B)
+    multiply(many) {
+        many.push(this)
+        const [newData, newHeader, newType] = TensorOperator.multiply(many)
 
         return new MultiDimArray().c2(newData, newHeader, newType)
     }
 
-    divide(B) {
-        const [newData, newHeader, newType] = TensorOperator.divide(this, B)
+    divide(many) {
+        many.push(this)
+        const [newData, newHeader, newType] = TensorOperator.divide(many)
 
         return new MultiDimArray().c2(newData, newHeader, newType)
+    }
+
+    min(axis = 0) {
+        const [newData, newHeader, newType] = TensorOperator.min()
+        return
     }
 
     slice(...indices) {
@@ -85,11 +94,6 @@ export default class MultiDimArray {
             )
 
         return new MultiDimArray().c2(this.data, this.header.reshape(shape))
-    }
-
-    min(axis = 0) {
-        
-        return
     }
 
     dot(A) {
