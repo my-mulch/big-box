@@ -127,12 +127,17 @@ export default class MultiDimArray {
         return RawArrayUtils.createRawArray(this.header.shape, autoGenerator)
     }
 
-    * toGenerator(axis = 0) {
-        const axisIndices = NDArrayUtils.getAxisIndices(axis, this.header.shape)
+    * toGenerator(axis) {
+        const sortedAxis = axis.sort()
+        const axisSlice = this.header.shape.map(_ => ':')
+        const axisIndices = sortedAxis.map(axis => this.header.shape[axis])
 
-        for (let i = 0; i < this.header.shape[axis]; i++) {
-            axisIndices[axis] = i
-            yield this.slice(axisIndices)
+        for (let index of NDArrayUtils.getIndices(axisIndices)) {
+            for (let i = 0; i < axis.length; i++)
+                axisSlice[sortedAxis[i]] = index[i]
+
+
+            yield this.slice(axisSlice)
         }
     }
 

@@ -16,10 +16,6 @@ export default class NDArrayUtils {
         return ndArrays.map(nd => this.getDataFromIndex(indices, nd))
     }
 
-    static getAxisIndices(axis, shape) {
-        return shape.map((_, dim) => axis === dim ? '$' : ':')
-    }
-
     static * getValueSequenceGenerator(ndArray) {
         for (const index of this.getIndices(ndArray.header.shape))
             yield this.getDataFromIndex(index, ndArray)
