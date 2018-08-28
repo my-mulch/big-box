@@ -6,6 +6,7 @@ import NDArrayUtils from '../utils/arrays/nd'
 import TypeArrayUtils from '../utils/arrays/type'
 
 import Header from './header'
+import util from 'util'
 
 export default class MultiDimArray {
     c1(A, type = 'float64') {
@@ -114,17 +115,18 @@ export default class MultiDimArray {
 
     * toGenerator(axis = 0) {
         const axisIndices = NDArrayUtils.getAxisIndices(axis, this.header.shape)
+
         for (let i = 0; i < this.header.shape[axis]; i++) {
             axisIndices[axis] = i
             yield this.slice(axisIndices)
         }
     }
 
-    inspect() {
+    [util.inspect.custom]() {
         return this.toString()
     }
 
     toString() {
-        return NDArrayUtils.helperToString(this) + '\n'
+        return '\n' + NDArrayUtils.helperToString(this) + '\n'
     }
 }
