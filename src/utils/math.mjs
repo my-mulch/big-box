@@ -46,4 +46,8 @@ export default class MathUtils {
         return Math.sqrt(MathUtils.add(MathUtils.square(rawArray)))
     }
 
+    static round(rawArray, precision) {
+        return rawArray.map(e => e.toFixed(precision))
+    }
+
 }

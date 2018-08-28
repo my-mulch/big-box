@@ -105,7 +105,11 @@ export default class MultiDimArray {
         return new MultiDimArray().c2(newData, newHeader, newType)
     }
 
-    slice(indices) {
+    round(precision = 0) {
+        return new MultiDimArray().c2(MathUtils.round(this.data, precision), this.header, this.type)
+    }
+
+    slice(...indices) {
         const newHeader = this.header.slice(indices)
 
         return newHeader.shape.length ?
@@ -124,7 +128,7 @@ export default class MultiDimArray {
                 this.type // new type
             )
 
-        return new MultiDimArray().c2(this.data, this.header.reshape(shape))
+        return new MultiDimArray().c2(this.data, this.header.reshape(shape), this.type)
     }
 
     dot(A) {
@@ -134,7 +138,7 @@ export default class MultiDimArray {
     }
 
     T() {
-        return new MultiDimArray().c2(this.data, this.header.transpose())
+        return new MultiDimArray().c2(this.data, this.header.transpose(), this.type)
     }
 
     toRawArray() {
@@ -152,8 +156,7 @@ export default class MultiDimArray {
             for (let i = 0; i < axis.length; i++)
                 axisSlice[sortedAxis[i]] = index[i]
 
-
-            yield this.slice(axisSlice)
+            yield this.slice(...axisSlice)
         }
     }
 

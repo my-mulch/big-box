@@ -6,7 +6,6 @@ import Header from '../../ndarray/header'
 export function multiply(A, B) {
 
     const sharedDim = A.header.shape[1]
-    
     const newType = TypeUtils.compareTypes(A.type, B.type)
     const newShape = [A.header.shape[0], B.header.shape[1]]
     const newHeader = new Header({ shape: newShape })
