@@ -30,7 +30,7 @@ export default class MathUtils {
         return rawArray.reduce((a, b) => Math.min(a, b))
     }
 
-    static max(array) {
+    static max(rawArray) {
         return rawArray.reduce((a, b) => Math.max(a, b))
     }
 

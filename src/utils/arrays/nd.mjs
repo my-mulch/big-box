@@ -35,14 +35,6 @@ export default class NDArrayUtils {
         return RawArrayUtils.getAutoInvokingGenerator(valueSequenceGenerator)
     }
 
-    static helperToString(ndArray) {
-        const templateArrayString = FormatUtils.getTemplateArrayString(ndArray.header.shape)
-        const autoReturningGeneratorFunction = this.getValueSequenceAutoGenerator(ndArray)
-        const filledArrayString = templateArrayString.replace(/\[\$\]/g, autoReturningGeneratorFunction)
-
-        return FormatUtils.formatArrStrLikeNumpy(filledArrayString, ndArray.header.shape.length)
-    }
-
     static * getIndices(shape, index = []) {
         for (let i = 0; i < shape[0]; i++) {
             if (shape.length > 1)

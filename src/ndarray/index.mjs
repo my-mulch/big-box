@@ -4,6 +4,8 @@ import * as Matrix from '../math/matrix'
 import RawArrayUtils from '../utils/arrays/raw'
 import NDArrayUtils from '../utils/arrays/nd'
 import TypeArrayUtils from '../utils/arrays/type'
+import FormatUtils from '../utils/arrays/format'
+
 import MathUtils from '../utils/math'
 
 import Header from './header'
@@ -134,11 +136,15 @@ export default class MultiDimArray {
         }
     }
 
-    [util.inspect.custom]() {
-        return this.toString()
+    toString() {
+        const templateArrayString = FormatUtils.getTemplateArrayString(this.header.shape)
+        const autoReturningGeneratorFunction = NDArrayUtils.getValueSequenceAutoGenerator(this)
+        const filledArrayString = templateArrayString.replace(/\[\$\]/g, autoReturningGeneratorFunction)
+
+        return '\n' + FormatUtils.formatArrStrLikeNumpy(filledArrayString, this.header.shape.length) + '\n'
     }
 
-    toString() {
-        return '\n' + NDArrayUtils.helperToString(this) + '\n'
+    [util.inspect.custom]() {
+        return this.toString()
     }
 }

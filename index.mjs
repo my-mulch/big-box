@@ -40,4 +40,4 @@ const A = ndim.array([
 ], 'uint8')
 
 console.log(A.header)
-console.log(A.min())
+console.log(A.max(1))
