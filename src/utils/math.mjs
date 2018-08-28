@@ -34,4 +34,8 @@ export default class MathUtils {
         return rawArray.reduce((a, b) => Math.max(a, b))
     }
 
+    static mean(rawArray) {
+        return MathUtils.add(rawArray) / rawArray.length
+    }
+
 }

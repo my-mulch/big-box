@@ -23,6 +23,9 @@ export default class TensorOperator {
     static max(manyArrays) {
         return this.ElementwiseOperation(MathUtils.max, manyArrays)
     }
+    static mean(manyArrays){
+        return this.ElementwiseOperation(MathUtils.mean, manyArrays)
+    }
 
     static ElementwiseOperation(operation, ndArrays) {
         const newType = TypeUtils.compareManyTypes(ndArrays)

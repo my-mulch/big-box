@@ -89,6 +89,14 @@ export default class MultiDimArray {
         return new MultiDimArray().c2(newData, newHeader, newType)
     }
 
+    mean(axis = null) {
+        if (axis === null)
+            return MathUtils.mean(this.data)
+
+        const [newData, newHeader, newType] = TensorOperator.mean([...this.toGenerator(axis)])
+        return new MultiDimArray().c2(newData, newHeader, newType)
+    }
+
     slice(indices) {
         const newHeader = this.header.slice(indices)
 

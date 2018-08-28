@@ -25,5 +25,4 @@ export function multiply(A, B) {
     }
 
     return [newData, newHeader, newType]
-
 }

@@ -16,4 +16,4 @@ const A = ndim.array([
 ], 'uint8')
 
 console.log(A.header)
-console.log(A.min([0, 1]))
+console.log(A.mean([2, 1]))
