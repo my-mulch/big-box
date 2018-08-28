@@ -10,7 +10,7 @@ export function multiply(A, B) {
     const newType = TypeUtils.compareTypes(A.type, B.type)
     const newShape = [A.header.shape[0], B.header.shape[1]]
     const newHeader = new Header({ shape: newShape })
-    const newData = new newType(MathUtils.product(newShape))
+    const newData = new newType(MathUtils.multiply(newShape))
     
 
     for (let r = 0, i = 0; r < newHeader.shape[0]; r++) {

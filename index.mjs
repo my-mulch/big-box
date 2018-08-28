@@ -13,7 +13,7 @@ const A = ndim.array([
         [10, 70, 34],
         [21, 210, 168]
     ]
-], 'uint8')
+], 'float64')
 
 console.log(A.header)
-console.log(A.mean([2, 1]))
+console.log(A.norm([2, 1]))

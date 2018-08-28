@@ -34,8 +34,16 @@ export default class MathUtils {
         return rawArray.reduce((a, b) => Math.max(a, b))
     }
 
+    static square(rawArray) {
+        return rawArray.map(a => a * a)
+    }
+
     static mean(rawArray) {
         return MathUtils.add(rawArray) / rawArray.length
+    }
+
+    static norm(rawArray) {
+        return Math.sqrt(MathUtils.add(MathUtils.square(rawArray)))
     }
 
 }

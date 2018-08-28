@@ -97,6 +97,14 @@ export default class MultiDimArray {
         return new MultiDimArray().c2(newData, newHeader, newType)
     }
 
+    norm(axis = null) {
+        if (axis === null)
+            return MathUtils.norm(this.data)
+
+        const [newData, newHeader, newType] = TensorOperator.norm([...this.toGenerator(axis)])
+        return new MultiDimArray().c2(newData, newHeader, newType)
+    }
+
     slice(indices) {
         const newHeader = this.header.slice(indices)
 

@@ -23,8 +23,11 @@ export default class TensorOperator {
     static max(manyArrays) {
         return this.ElementwiseOperation(MathUtils.max, manyArrays)
     }
-    static mean(manyArrays){
+    static mean(manyArrays) {
         return this.ElementwiseOperation(MathUtils.mean, manyArrays)
+    }
+    static norm(manyArrays) {
+        return this.ElementwiseOperation(MathUtils.norm, manyArrays)
     }
 
     static ElementwiseOperation(operation, ndArrays) {
