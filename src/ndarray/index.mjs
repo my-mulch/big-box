@@ -74,7 +74,7 @@ export default class MultiDimArray {
         return
     }
 
-    slice(...indices) {
+    slice(indices) {
         const newHeader = this.header.slice(indices)
 
         return newHeader.shape.length ?
@@ -113,8 +113,11 @@ export default class MultiDimArray {
     }
 
     * toGenerator(axis = 0) {
-        for (let i = 0; i < this.header.shape[axis]; i++)
-            yield this.slice(i)
+        const axisIndices = NDArrayUtils.getAxisIndices(axis, this.header.shape)
+        for (let i = 0; i < this.header.shape[axis]; i++) {
+            axisIndices[axis] = i
+            yield this.slice(axisIndices)
+        }
     }
 
     inspect() {

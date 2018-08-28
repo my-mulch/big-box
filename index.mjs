@@ -1,6 +1,6 @@
 import ndim from './src/ndarray'
 
-const A = ndim.array([
+const A = np.array([
     [
         [5, 9],
         [1, 8],

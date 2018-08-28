@@ -3,18 +3,20 @@ import RawArrayUtils from './raw'
 import FormatUtils from './format'
 
 export default class NDArrayUtils {
-    static getDataFromIndex(indices, ndArrays) {
-        const flatIndex = this.getFlatIndex(indices, ndArrays[0])
-        return ndArrays.map(nd => nd.data[flatIndex])
+    static getDataFromIndex(indices, ndArray) {
+        return ndArray.data[
+            // gets flat index into data array
+            ndArray.header.offset + indices.reduce(function (finalIndex, idxValue, dimension) {
+                return finalIndex + idxValue * ndArray.header.stride[dimension]
+            }, 0)
+        ]
     }
 
-    static getFlatIndex(indices, ndArray) {
-        return ndArray.header.offset + indices.reduce(function (finalIndex, idxValue, dimension) {
-            return finalIndex + idxValue * ndArray.header.stride[dimension]
-        }, 0)
+    static getManyDataFromIndex(indices, ndArrays) {
+        return ndArrays.map(nd => this.getDataFromIndex(indices, nd))
     }
 
-    static getSliceAxis(axis, shape) {
+    static getAxisIndices(axis, shape) {
         return shape.map((_, dim) => axis === dim ? '$' : ':')
     }
 

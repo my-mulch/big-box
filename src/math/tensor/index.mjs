@@ -33,7 +33,7 @@ export default class TensorOperator {
 
         let i = 0
         for (const index of NDArrayUtils.getIndices(newShape))
-            newData[i++] = operation(NDArrayUtils.getDataFromIndex(index, ndArrays))
+            newData[i++] = operation(NDArrayUtils.getManyDataFromIndex(index, ndArrays))
 
         return [newData, newHeader, newType]
     }
