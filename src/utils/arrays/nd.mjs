@@ -4,14 +4,18 @@ import FormatUtils from './format'
 
 export default class NDArrayUtils {
     static getDataFromIndex(indices, ndArrays) {
-        const flatIndex = this.getFlatIndexFromMultiDim(indices, ndArrays[0])
+        const flatIndex = this.getFlatIndex(indices, ndArrays[0])
         return ndArrays.map(nd => nd.data[flatIndex])
     }
 
-    static getFlatIndexFromMultiDim(indices, ndArray) {
+    static getFlatIndex(indices, ndArray) {
         return ndArray.header.offset + indices.reduce(function (finalIndex, idxValue, dimension) {
             return finalIndex + idxValue * ndArray.header.stride[dimension]
         }, 0)
+    }
+
+    static getSliceAxis(axis, shape) {
+        return shape.map((_, dim) => axis === dim ? '$' : ':')
     }
 
     static * getValueSequenceGenerator(ndArray) {
