@@ -2,6 +2,7 @@ import MultiDimArray from '../../ndarray'
 import NDArrayUtils from '../../utils/arrays/nd'
 import TypeUtils from '../../utils/arrays/type'
 import MathUtils from '../../utils/math'
+import Header from '../../ndarray/header'
 
 export default class TensorOperator {
     static add(manyArrays) {
@@ -24,15 +25,12 @@ export default class TensorOperator {
     }
 
     static ElementwiseOperation(operation, ndArrays) {
-        const newType = TypeUtils.compareTypes(ndArrays)
-        const newShape = ndArrays[0].shape // all same shape
+        const newType = TypeUtils.compareManyTypes(ndArrays)
         const newData = new newType(ndArrays[0].data.length)
-        const newHeader = new Header({
-            shape: newShape
-        })
+        const newHeader = new Header({ shape: ndArrays[0].header.shape })
 
         let i = 0
-        for (const index of NDArrayUtils.getIndices(newShape))
+        for (const index of NDArrayUtils.getIndices(ndArrays[0].header.shape))
             newData[i++] = operation(NDArrayUtils.getManyDataFromIndex(index, ndArrays))
 
         return [newData, newHeader, newType]

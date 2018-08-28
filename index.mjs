@@ -2,17 +2,42 @@ import ndim from './src/ndarray'
 
 const A = ndim.array([
     [
-        [5, 9],
-        [1, 8],
+        [5, 0],
+        [7, 6],
+        [2, 2],
+        [9, 4],
+        [2, 8],
+        [0, 2],
+        [7, 5],
+        [8, 6],
+        [3, 0],
+        [4, 0]
     ],
     [
-        [2, 5],
-        [6, 7],
+        [4, 7],
+        [2, 6],
+        [0, 2],
+        [1, 2],
+        [3, 9],
+        [5, 1],
+        [1, 8],
+        [0, 5],
+        [0, 9],
+        [9, 2]
+    ],
+    [
+        [8, 8],
+        [6, 3],
+        [4, 2],
+        [7, 9],
+        [0, 7],
+        [2, 7],
+        [0, 8],
+        [0, 3],
+        [1, 5],
+        [4, 9]
     ]
 ], 'uint8')
 
-const B = ndim.array([1, 2, 3, 4], 'uint8')
 console.log(A.header)
-
-const gen = A.toGenerator(2)
-console.log(gen.next().value, gen.next().value)
+console.log(A.min())

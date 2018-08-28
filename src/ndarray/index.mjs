@@ -4,6 +4,7 @@ import * as Matrix from '../math/matrix'
 import RawArrayUtils from '../utils/arrays/raw'
 import NDArrayUtils from '../utils/arrays/nd'
 import TypeArrayUtils from '../utils/arrays/type'
+import MathUtils from '../utils/math'
 
 import Header from './header'
 import util from 'util'
@@ -70,9 +71,20 @@ export default class MultiDimArray {
         return new MultiDimArray().c2(newData, newHeader, newType)
     }
 
-    min(axis = 0) {
-        const [newData, newHeader, newType] = TensorOperator.min()
-        return
+    min(axis = null) {
+        if (axis === null)
+            return MathUtils.min(this.data)
+
+        const [newData, newHeader, newType] = TensorOperator.min([...this.toGenerator(axis)])
+        return new MultiDimArray().c2(newData, newHeader, newType)
+    }
+
+    max(axis = null) {
+        if (axis === null)
+            return MathUtils.max(this.data)
+
+        const [newData, newHeader, newType] = TensorOperator.max([...this.toGenerator(axis)])
+        return new MultiDimArray().c2(newData, newHeader, newType)
     }
 
     slice(indices) {
