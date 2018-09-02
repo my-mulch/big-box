@@ -125,7 +125,7 @@ export default class MultiDimArray {
         if (!this.header.contig)
             // if the array is not contigous, a reshape means data copy
             return new MultiDimArray().c2(
-                new this.type(NDArrayUtils.getRawFlat(this)), // new data
+                new this.type([...this.toGenerator(...this.header.shape.keys())]), // new data
                 new Header({ shape }), // new header
                 this.type // new type
             )
