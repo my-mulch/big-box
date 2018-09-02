@@ -16,7 +16,7 @@ const A = nd.array([
 ], 'float64')
 
 
-const meanPixel = A.mean([0, 1]).reshape(4, 1)
+const meanPixel = A.mean(0, 1).reshape(4, 1)
 const x = meanPixel.slice(0, 0)
 const y = meanPixel.slice(0, 1)
 const z = meanPixel.slice(0, 2)

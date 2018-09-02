@@ -10,14 +10,14 @@ export function multiply(A, B) {
     const newShape = [A.header.shape[0], B.header.shape[1]]
     const newHeader = new Header({ shape: newShape })
     const newData = new newType(MathUtils.multiply(newShape))
-    
+
 
     for (let r = 0, i = 0; r < newHeader.shape[0]; r++) {
         for (let c = 0; c < newHeader.shape[1]; c++) {
             for (let s = 0; s < sharedDim; s++) {
                 newData[i] +=
-                    NDArrayUtils.getDataFromIndex([r, s], A) *
-                    NDArrayUtils.getDataFromIndex([s, c], B)
+                    NDArrayUtils.getData([r, s], A) *
+                    NDArrayUtils.getData([s, c], B)
             }
             i++
         }

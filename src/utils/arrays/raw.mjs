@@ -42,13 +42,4 @@ export default class RawArrayUtils {
         return this.getShape(rawArray[0], shape.concat(rawArray.length))
     }
 
-    static * getGenerator(rawArray) {
-        yield* rawArray
-    }
-
-    static getAutoInvokingGenerator(generator) {
-        return function autoReturner() {
-            return generator.next().value
-        }
-    }
 }

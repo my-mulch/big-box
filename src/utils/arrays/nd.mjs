@@ -3,7 +3,7 @@ import RawArrayUtils from './raw'
 import FormatUtils from './format'
 
 export default class NDArrayUtils {
-    static getDataFromIndex(indices, ndArray) {
+    static getData(indices, ndArray) {
         return ndArray.data[
             // gets flat index into data array
             ndArray.header.offset + indices.reduce(function (finalIndex, idxValue, dimension) {
@@ -12,23 +12,8 @@ export default class NDArrayUtils {
         ]
     }
 
-    static getManyDataFromIndex(indices, ndArrays) {
-        return ndArrays.map(nd => this.getDataFromIndex(indices, nd))
-    }
-
-    static * getValueSequenceGenerator(ndArray) {
-        for (const index of this.getIndices(ndArray.header.shape))
-            yield this.getDataFromIndex(index, ndArray)
-    }
-
-    static getRawFlat(ndArray) {
-        return [...this.getValueSequenceGenerator(ndArray)]
-    }
-
-    static getValueSequenceAutoGenerator(ndArray) {
-        const valueSequenceGenerator = this.getValueSequenceGenerator(ndArray)
-
-        return RawArrayUtils.getAutoInvokingGenerator(valueSequenceGenerator)
+    static getDataMany(indices, ndArrays) {
+        return ndArrays.map(nd => this.getData(indices, nd))
     }
 
     static * getIndices(shape, index = []) {

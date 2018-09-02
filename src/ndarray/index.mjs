@@ -43,6 +43,12 @@ export default class MultiDimArray {
         return new MultiDimArray().c1(RawArrayUtils.createRawArray(shape))
     }
 
+    dot(A) {
+        const [newData, newHeader, newType] = Matrix.multiply(this, A)
+
+        return new MultiDimArray().c2(newData, newHeader, newType)
+    }
+
     add(many) {
         many.push(this)
         const [newData, newHeader, newType] = TensorOperator.add(many)
@@ -75,7 +81,7 @@ export default class MultiDimArray {
         if (!axis.length)
             return MathUtils.min(this.data)
 
-        const [newData, newHeader, newType] = TensorOperator.min([...this.toGenerator(axis)])
+        const [newData, newHeader, newType] = TensorOperator.min([...this.toGenerator(...axis)])
         return new MultiDimArray().c2(newData, newHeader, newType)
     }
 
@@ -83,7 +89,7 @@ export default class MultiDimArray {
         if (!axis.length)
             return MathUtils.max(this.data)
 
-        const [newData, newHeader, newType] = TensorOperator.max([...this.toGenerator(axis)])
+        const [newData, newHeader, newType] = TensorOperator.max([...this.toGenerator(...axis)])
         return new MultiDimArray().c2(newData, newHeader, newType)
     }
 
@@ -99,7 +105,7 @@ export default class MultiDimArray {
         if (!axis.length)
             return MathUtils.norm(this.data)
 
-        const [newData, newHeader, newType] = TensorOperator.norm([...this.toGenerator(axis)])
+        const [newData, newHeader, newType] = TensorOperator.norm([...this.toGenerator(...axis)])
         return new MultiDimArray().c2(newData, newHeader, newType)
     }
 
@@ -110,9 +116,9 @@ export default class MultiDimArray {
     slice(...indices) {
         const newHeader = this.header.slice(indices)
 
-        return newHeader.shape.length ?
-            new MultiDimArray().c2(this.data, newHeader, this.type) :
-            this.data[newHeader.offset]
+        return newHeader.shape.length
+            ? new MultiDimArray().c2(this.data, newHeader, this.type)
+            : this.data[newHeader.offset]
     }
 
     reshape(...shape) {
@@ -125,12 +131,6 @@ export default class MultiDimArray {
             )
 
         return new MultiDimArray().c2(this.data, this.header.reshape(shape), this.type)
-    }
-
-    dot(A) {
-        const [newData, newHeader, newType] = Matrix.multiply(this, A)
-
-        return new MultiDimArray().c2(newData, newHeader, newType)
     }
 
     T() {
