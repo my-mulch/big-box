@@ -18,9 +18,7 @@ export default class MultiDimArray {
 
         this.type = TypeArrayUtils.TYPE_MAP[type]
         this.data = new this.type(flatA)
-        this.header = new Header({
-            shape: shapeA
-        })
+        this.header = new Header({ shape: shapeA })
 
         return this
     }
@@ -73,32 +71,32 @@ export default class MultiDimArray {
         return new MultiDimArray().c2(newData, newHeader, newType)
     }
 
-    min(axis = null) {
-        if (axis === null)
+    min(...axis) {
+        if (!axis.length)
             return MathUtils.min(this.data)
 
         const [newData, newHeader, newType] = TensorOperator.min([...this.toGenerator(axis)])
         return new MultiDimArray().c2(newData, newHeader, newType)
     }
 
-    max(axis = null) {
-        if (axis === null)
+    max(...axis) {
+        if (!axis.length)
             return MathUtils.max(this.data)
 
         const [newData, newHeader, newType] = TensorOperator.max([...this.toGenerator(axis)])
         return new MultiDimArray().c2(newData, newHeader, newType)
     }
 
-    mean(axis = null) {
-        if (axis === null)
+    mean(...axis) {
+        if (!axis.length)
             return MathUtils.mean(this.data)
 
-        const [newData, newHeader, newType] = TensorOperator.mean([...this.toGenerator(axis)])
+        const [newData, newHeader, newType] = TensorOperator.mean([...this.toGenerator(...axis)])
         return new MultiDimArray().c2(newData, newHeader, newType)
     }
 
-    norm(axis = null) {
-        if (axis === null)
+    norm(...axis) {
+        if (!axis.length)
             return MathUtils.norm(this.data)
 
         const [newData, newHeader, newType] = TensorOperator.norm([...this.toGenerator(axis)])
@@ -122,9 +120,7 @@ export default class MultiDimArray {
             // if the array is not contigous, a reshape means data copy
             return new MultiDimArray().c2(
                 new this.type(NDArrayUtils.getRawFlat(this)), // new data
-                new Header({
-                    shape
-                }), // new header
+                new Header({ shape }), // new header
                 this.type // new type
             )
 
@@ -141,13 +137,7 @@ export default class MultiDimArray {
         return new MultiDimArray().c2(this.data, this.header.transpose(), this.type)
     }
 
-    toRawArray() {
-        const autoGenerator = NDArrayUtils.getValueSequenceAutoGenerator(this)
-
-        return RawArrayUtils.createRawArray(this.header.shape, autoGenerator)
-    }
-
-    * toGenerator(axis) {
+    * toGenerator(...axis) {
         const sortedAxis = axis.sort()
         const axisSlice = this.header.shape.map(_ => ':')
         const axisIndices = sortedAxis.map(axis => this.header.shape[axis])
@@ -161,11 +151,11 @@ export default class MultiDimArray {
     }
 
     toString() {
-        const templateArrayString = FormatUtils.getTemplateArrayString(this.header.shape)
-        const autoReturningGeneratorFunction = NDArrayUtils.getValueSequenceAutoGenerator(this)
-        const filledArrayString = templateArrayString.replace(/\[\$\]/g, autoReturningGeneratorFunction)
-
-        return '\n' + FormatUtils.formatArrStrLikeNumpy(filledArrayString, this.header.shape.length) + '\n'
+        return [...this.toGenerator(0)].map(function (slice) {
+            return slice instanceof MultiDimArray
+                ? slice.toString()
+                : FormatUtils.formatNumber(slice)
+        })
     }
 
     [util.inspect.custom]() {

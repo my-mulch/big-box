@@ -7,7 +7,7 @@ export default class MathUtils {
     }
 
     static isNumber(n) {
-        return !isNaN(parseFloat(n)) && isFinite(n);
+        return !isNaN(parseFloat(n)) && isFinite(n)
     }
 
     static add(rawArray) {
