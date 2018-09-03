@@ -1,4 +1,4 @@
-import nd from './src/ndarray'
+import nd from '../ndarray'
 
 const A = nd.array([
     [
