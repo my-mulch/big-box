@@ -23,5 +23,4 @@ export default class NDArrayUtils {
                 ? yield* this.indices(shape.slice(1), index.concat(i))
                 : yield index.concat(i)
     }
-
 }

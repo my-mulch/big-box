@@ -23,11 +23,24 @@ export default class MultiDimArray {
         this.header = header
         this.type = type
 
-        return this.header.shape ? this : this.data[this.header.offset]
+        return this.header.shape.length ? this : this.data[this.header.offset]
     }
 
     static array(A, type = 'float64') {
         return new MultiDimArray().c1(A, type)
+    }
+
+    static zeros(...shape) {
+        return new MultiDimArray().c1(utils.array.raw.createRawArray(shape))
+    }
+
+    static axisFn(axes, operator) {
+        if (!axes.length)
+            return operator(this.data)
+
+        return new MultiDimArray().c2(
+            ...TensorOperator.elementwise(operator, [...this.sliceAxis(axes)])
+        )
     }
 
     static arange(...args) {
@@ -39,65 +52,15 @@ export default class MultiDimArray {
             return new MultiDimArray().c1([...utils.math.getIntegerRange(args[0], args[1], args[2])])
     }
 
-    static zeros(...shape) {
-        return new MultiDimArray().c1(utils.array.raw.createRawArray(shape))
-    }
+    min(...axis) { return MultiDimArray.axisFn(axis, TensorOperator.min) }
+    max(...axis) { return MultiDimArray.axisFn(axis, TensorOperator.max) }
+    mean(...axis) { return MultiDimArray.axisFn(axis, TensorOperator.mean) }
+    norm(...axis) { return MultiDimArray.axisFn(axis, TensorOperator.norm) }
 
     dot(many) {
-        const [newData, newHeader, newType] = MatrixOperator.multiply(this, A)
-
         return new MultiDimArray().c2(
-            newData,
-            newHeader,
-            newType)
-    }
-
-    min(...axis) {
-        if (!axis.length)
-            return utils.math.min(this.data)
-
-        const [newData, newHeader, newType] = TensorOperator.min([...this.toGenerator(...axis)])
-
-        return new MultiDimArray().c2(
-            newData,
-            newHeader,
-            newType)
-    }
-
-    max(...axis) {
-        if (!axis.length)
-            return utils.math.max(this.data)
-
-        const [newData, newHeader, newType] = TensorOperator.max([...this.toGenerator(...axis)])
-
-        return new MultiDimArray().c2(
-            newData,
-            newHeader,
-            newType)
-    }
-
-    mean(...axis) {
-        if (!axis.length)
-            return utils.math.mean(this.data)
-
-        const [newData, newHeader, newType] = TensorOperator.mean([...this.toGenerator(...axis)])
-
-        return new MultiDimArray().c2(
-            newData,
-            newHeader,
-            newType)
-    }
-
-    norm(...axis) {
-        if (!axis.length)
-            return utils.math.norm(this.data)
-
-        const [newData, newHeader, newType] = TensorOperator.norm([...this.toGenerator(...axis)])
-
-        return new MultiDimArray().c2(
-            newData,
-            newHeader,
-            newType)
+            ...MatrixOperator.multiply(this, A)
+        )
     }
 
     round(precision = 0) {
@@ -107,11 +70,23 @@ export default class MultiDimArray {
             this.type)
     }
 
+    T() {
+        return new MultiDimArray().c2(
+            this.data,
+            this.header.transpose(),
+            this.type)
+    }
+
     slice(...indices) {
         return new MultiDimArray().c2(
             this.data,
             this.header.slice(indices),
             this.type)
+    }
+
+    * sliceAxis(axes) {
+        for (const index of utils.array.nd.indices(this.header.sliceAxis(axes)))
+            yield this.slice(...index)
     }
 
     reshape(...shape) {
@@ -128,24 +103,12 @@ export default class MultiDimArray {
             this.type)
     }
 
-    T() {
-        return new MultiDimArray().c2(
-            this.data,
-            this.header.transpose(),
-            this.type)
-    }
-
-    * toGenerator(...axes) {
-        for (const index of utils.array.nd.indices(this.header.sliceAxis(axes)))
-            yield this.slice(...index)
-    }
-
     toRawFlat() {
-        return [...this.toGenerator(...this.header.shape.keys())]
+        return [...this.sliceAxis(...this.header.shape.keys())]
     }
 
     toString() {
-        return [...this.toGenerator(0)].map(function (slice) {
+        return [...this.sliceAxis(0)].map(function (slice) {
             return slice instanceof MultiDimArray
                 ? slice.toString()
                 : utils.array.format.formatNumber(slice)

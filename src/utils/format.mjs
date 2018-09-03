@@ -1,9 +1,7 @@
+import constants from '../contants.mjs'
+
 export default class FormatUtils {
     static formatNumber(number) {
-        return number.toPrecision(this.DEFAULT_PRINT_OPTS.PRECISION)
+        return number.toPrecision(constants.ND_PRINT_PRECISION)
     }
-}
-
-FormatUtils.DEFAULT_PRINT_OPTS = {
-    PRECISION: 5,
 }
