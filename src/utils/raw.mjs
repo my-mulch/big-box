@@ -8,12 +8,6 @@ export default class RawArrayUtils {
         }
     }
 
-    static slice(rawArray, index) {
-        if (!index.length) return rawArray
-
-        return this.slice(rawArray[index[0]], index.slice(1))
-    }
-
     static createRawArray(shape, fill = () => 0) {
         if (!shape.length) return fill()
 
@@ -25,15 +19,6 @@ export default class RawArrayUtils {
     static cycle(rawArray, n) {
         const copy = [...rawArray]
         return copy.splice(-n % copy.length).concat(copy)
-    }
-
-    static insert(rawArray, index, value) {
-        if (index.length === 1) {
-            rawArray[index[0]] = value
-            return
-        }
-
-        this.insert(rawArray[index[0]], index.slice(1), value)
     }
 
     static getShape(rawArray, shape = []) {

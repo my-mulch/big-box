@@ -1,4 +1,4 @@
-export default class HeaderUtils {
+export default class HeaderArrayUtils {
     static getStride(shape, lastDim = 1) {
         return shape.reduceRight(function (stride, dim) {
             return [dim * stride[0]].concat(stride)

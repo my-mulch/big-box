@@ -1,10 +1,10 @@
-import HeaderUtils from '../utils/header'
+import utils from '../utils'
 
 export default class Header {
     constructor(opts) {
         this.shape = opts.shape
 
-        this.stride = opts.stride !== undefined ? opts.stride : HeaderUtils.getStride(this.shape)
+        this.stride = opts.stride !== undefined ? opts.stride : utils.array.header.getStride(this.shape)
         this.offset = opts.offset !== undefined ? opts.offset : 0
         this.contig = opts.contig !== undefined ? opts.contig : true
     }
@@ -14,14 +14,17 @@ export default class Header {
     }
 
     sliceAxis(axes) {
-        return axes.sort().map(function (axis) {
-            return this.shape[axis]
+        axes.sort(utils.math.subtract)
+
+        return this.shape.map(function (dim, i) {
+            if (axes[0] !== i)
+                return ':'
         })
     }
 
     slice(indices) {
         const newHeader = this.copy()
-        newHeader.contig = HeaderUtils.isContiguousSlice(indices)
+        newHeader.contig = utils.array.header.isContiguousSlice(indices)
 
         for (let i = 0, del = 0; i < this.shape.length; i++) {
             if (indices[i] >= 0) {
@@ -40,7 +43,7 @@ export default class Header {
         const lastDim = newHeader.stride.slice(-1).pop()
 
         newHeader.shape = shape
-        newHeader.stride = HeaderUtils.getStride(shape, lastDim)
+        newHeader.stride = utils.array.header.getStride(shape, lastDim)
 
         return newHeader
     }

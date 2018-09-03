@@ -1,17 +1,17 @@
 import NDArrayUtils from './nd.mjs'
 import FormatArrayUtils from './format.mjs'
-import HeaderUtils from './header.mjs'
+import HeaderArrayUtils from './header.mjs'
 import MathUtils from './math.mjs'
 import RawArrayUtils from './raw.mjs'
-import TypedArrayUtils from './type.mjs'
+import TypeArrayUtils from './type.mjs'
 
 export default {
     math: MathUtils,
     array: {
-        header: HeaderUtils,
+        header: HeaderArrayUtils,
         format: FormatArrayUtils,
         nd: NDArrayUtils,
         raw: RawArrayUtils,
-        type: TypedArrayUtils
+        type: TypeArrayUtils
     },
 }

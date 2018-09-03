@@ -9,45 +9,4 @@ export default class MathUtils {
     static isNumber(n) {
         return !isNaN(parseFloat(n)) && isFinite(n)
     }
-
-    static add(rawArray) {
-        return rawArray.reduce((a, b) => a + b)
-    }
-
-    static multiply(rawArray) {
-        return rawArray.reduce((a, b) => a * b)
-    }
-
-    static divide(rawArray) {
-        return rawArray.reduce((a, b) => a / b)
-    }
-
-    static subtract(rawArray) {
-        return rawArray.reduce((a, b) => a - b)
-    }
-
-    static min(rawArray) {
-        return rawArray.reduce((a, b) => Math.min(a, b))
-    }
-
-    static max(rawArray) {
-        return rawArray.reduce((a, b) => Math.max(a, b))
-    }
-
-    static square(rawArray) {
-        return rawArray.map(a => a * a)
-    }
-
-    static mean(rawArray) {
-        return MathUtils.add(rawArray) / rawArray.length
-    }
-
-    static norm(rawArray) {
-        return Math.sqrt(MathUtils.add(MathUtils.square(rawArray)))
-    }
-
-    static round(rawArray, precision) {
-        return rawArray.map(e => e.toFixed(precision))
-    }
-
 }
