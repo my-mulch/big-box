@@ -1,3 +1,4 @@
+import ScalarOperator from '../math/scalar'
 import utils from '../utils'
 
 export default class Header {
@@ -14,11 +15,14 @@ export default class Header {
     }
 
     sliceAxis(axes) {
-        axes.sort(utils.math.subtract)
+        axes.sort(ScalarOperator.subtract)
 
         return this.shape.map(function (dim, i) {
             if (axes[0] !== i)
                 return ':'
+
+            axes.shift()
+            return dim
         })
     }
 
