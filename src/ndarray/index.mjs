@@ -5,7 +5,6 @@ import RawArrayUtils from '../utils/arrays/raw'
 import NDArrayUtils from '../utils/arrays/nd'
 import TypeArrayUtils from '../utils/arrays/type'
 import FormatUtils from '../utils/arrays/format'
-
 import MathUtils from '../utils/math'
 
 import Header from './header'
@@ -37,7 +36,12 @@ export default class MultiDimArray {
     }
 
     static arange(...args) {
-        return new MultiDimArray().c1(NDArrayUtils.helperArange(args))
+        if (args.length === 1)
+            return new MultiDimArray().c1([...Utils.math.getIntegerRange(0, args[0], 1)])
+        if (args.length === 2)
+            return new MultiDimArray().c1([...Utils.math.getIntegerRange(args[0], args[1], 1)])
+        if (args.length === 3)
+            return new MultiDimArray().c1([...Utils.math.getIntegerRange(args[0], args[1], args[2])])
     }
 
     static zeros(...shape) {
@@ -136,8 +140,10 @@ export default class MultiDimArray {
             this.type)
     }
 
+    
+
     * toGenerator(...axes) {
-        for (let index of NDArrayUtils.getIndices(this.header.axisSlice(axes)))
+        for (let index of Utils.nd.getIndices(this.header.sliceAxis(axes)))
             yield this.slice(...NDArrayUtils.getAxisIndex(axis, index, this))
     }
 

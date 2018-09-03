@@ -13,7 +13,7 @@ export default class Header {
         return new Header(JSON.parse(JSON.stringify(this)))
     }
 
-    axisSlice(axes) {
+    sliceAxis(axes) {
         return axes.sort().map(function (axis) {
             return this.shape[axis]
         })

@@ -1,5 +1,3 @@
-import MathUtils from '../math'
-
 export default class NDArrayUtils {
     static getData(indices, ndArray) {
         return ndArray.data[
@@ -23,12 +21,4 @@ export default class NDArrayUtils {
         }
     }
 
-    static helperArange(args) {
-        if (args.length === 1)
-            return [...MathUtils.getIntegerRange(0, args[0], 1)]
-        if (args.length === 2)
-            return [...MathUtils.getIntegerRange(args[0], args[1], 1)]
-        if (args.length === 3)
-            return [...MathUtils.getIntegerRange(args[0], args[1], args[2])]
-    }
 }
