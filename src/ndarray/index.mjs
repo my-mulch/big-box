@@ -136,7 +136,7 @@ export default class MultiDimArray {
     }
 
     * toGenerator(...axes) {
-        for (const index of utils.array.nd.getIndices(this.header.sliceAxis(axes)))
+        for (const index of utils.array.nd.indices(this.header.sliceAxis(axes)))
             yield this.slice(...index)
     }
 

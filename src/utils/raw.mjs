@@ -1,11 +1,9 @@
 export default class RawArrayUtils {
     static * flatten(rawArray) {
-        for (let i = 0; i < rawArray.length; i++) {
-            if (Array.isArray(rawArray[i]))
-                yield* this.flatten(rawArray[i])
-            else
-                yield rawArray[i]
-        }
+        for (let i = 0; i < rawArray.length; i++)
+            Array.isArray(rawArray[i])
+                ? yield* this.flatten(rawArray[i])
+                : yield rawArray[i]
     }
 
     static createRawArray(shape, fill = () => 0) {
