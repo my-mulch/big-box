@@ -1,6 +1,4 @@
 import MathUtils from '../math'
-import RawArrayUtils from './raw'
-import FormatUtils from './format'
 
 export default class NDArrayUtils {
     static getData(indices, ndArray) {

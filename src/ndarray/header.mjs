@@ -13,6 +13,12 @@ export default class Header {
         return new Header(JSON.parse(JSON.stringify(this)))
     }
 
+    axisSlice(axes) {
+        return axes.sort().map(function (axis) {
+            return this.shape[axis]
+        })
+    }
+
     slice(indices) {
         const newHeader = this.copy()
         newHeader.contig = HeaderUtils.isContiguousSlice(indices)
