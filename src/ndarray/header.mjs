@@ -14,7 +14,7 @@ export default class Header {
         return new Header(JSON.parse(JSON.stringify(this)))
     }
 
-    sliceAxis(axes) {
+    sliceByAxis(axes) {
         axes.sort(ScalarOperator.subtract)
 
         return this.shape.map(function (dim, i) {

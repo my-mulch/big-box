@@ -34,15 +34,6 @@ export default class MultiDimArray {
         return new MultiDimArray().c1(utils.array.raw.createRawArray(shape))
     }
 
-    static axisFn(axes, operator) {
-        if (!axes.length)
-            return operator(this.data)
-
-        return new MultiDimArray().c2(
-            ...TensorOperator.elementwise(operator, [...this.sliceAxis(axes)])
-        )
-    }
-
     static arange(...args) {
         if (args.length === 1)
             return new MultiDimArray().c1([...utils.math.getIntegerRange(0, args[0], 1)])
@@ -52,29 +43,24 @@ export default class MultiDimArray {
             return new MultiDimArray().c1([...utils.math.getIntegerRange(args[0], args[1], args[2])])
     }
 
-    min(...axis) { return MultiDimArray.axisFn(axis, TensorOperator.min) }
-    max(...axis) { return MultiDimArray.axisFn(axis, TensorOperator.max) }
-    mean(...axis) { return MultiDimArray.axisFn(axis, TensorOperator.mean) }
-    norm(...axis) { return MultiDimArray.axisFn(axis, TensorOperator.norm) }
+    axisFn(axes, operator) {
+        if (!axes.length)
+            return operator(this.data)
+
+        return new MultiDimArray().c2(
+            ...TensorOperator.elementwise(operator, [...this.sliceByAxis(axes)])
+        )
+    }
+
+    min(...axis) { return this.axisFn(axis, TensorOperator.min) }
+    max(...axis) { return this.axisFn(axis, TensorOperator.max) }
+    mean(...axis) { return this.axisFn(axis, TensorOperator.mean) }
+    norm(...axis) { return this.axisFn(axis, TensorOperator.norm) }
 
     dot(many) {
         return new MultiDimArray().c2(
             ...MatrixOperator.multiply(this, A)
         )
-    }
-
-    round(precision = 0) {
-        return new MultiDimArray().c2(
-            utils.math.round(this.data, precision),
-            this.header,
-            this.type)
-    }
-
-    T() {
-        return new MultiDimArray().c2(
-            this.data,
-            this.header.transpose(),
-            this.type)
     }
 
     slice(...indices) {
@@ -84,9 +70,16 @@ export default class MultiDimArray {
             this.type)
     }
 
-    * sliceAxis(axes) {
-        for (const index of utils.array.nd.indices(this.header.sliceAxis(axes)))
+    * sliceByAxis(axes = [0]) {
+        for (const index of utils.array.nd.indices(this.header.sliceByAxis(axes)))
             yield this.slice(...index)
+    }
+
+    T() {
+        return new MultiDimArray().c2(
+            this.data,
+            this.header.transpose(),
+            this.type)
     }
 
     reshape(...shape) {
@@ -103,19 +96,15 @@ export default class MultiDimArray {
             this.type)
     }
 
-    toRawFlat() {
-        return [...this.sliceAxis(...this.header.shape.keys())]
-    }
+    toRawArray() {
+        return [...this.sliceByAxis()].map(function (slice) {
+            if (slice instanceof MultiDimArray) return slice.toRawArray()
 
-    toString() {
-        return [...this.sliceAxis(0)].map(function (slice) {
-            return slice instanceof MultiDimArray
-                ? slice.toString()
-                : utils.array.format.formatNumber(slice)
+            return slice
         })
     }
 
-    [util.inspect.custom]() {
-        return this.toString()
-    }
+    toRawFlat() { return [...this.sliceByAxis(...this.header.shape.keys())] }
+    toString() { return this.toRawArray() }
+    [util.inspect.custom]() { return this.toString() }
 }

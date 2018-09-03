@@ -16,11 +16,13 @@ const A = nd.array([
 ], 'float64')
 
 
-// const meanPixel = A.mean(0, 1).reshape(4, 1)
-// const x = meanPixel.slice(0, 0)
-// const y = meanPixel.slice(0, 1)
-// const z = meanPixel.slice(0, 2)
-// const w = meanPixel.slice(0, 3)
+const meanPixel = A.mean(0, 1).reshape(4, 1)
+const x = meanPixel.slice(0, 0)
+const y = meanPixel.slice(0, 1)
+const z = meanPixel.slice(0, 2)
+const w = meanPixel.slice(0, 3)
+
+console.log(x, y, z, w)
 
 // const center = nd.array([
 //     [1, 0, 0, -x],
@@ -31,4 +33,3 @@ const A = nd.array([
 
 
 // console.log(center.dot(A.reshape(6, 4).T()))
-console.log(A.slice(':', 1, ':').reshape(12))
