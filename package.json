@@ -6,13 +6,13 @@
   "scripts": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/trumanpurnell/jumpy.git"
+    "url": "git+https://github.com/trumanpurnell/dimsum.git"
   },
   "author": "Truman Purnell",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/trumanpurnell/jumpy/issues"
+    "url": "https://github.com/trumanpurnell/dimsum/issues"
   },
-  "homepage": "https://github.com/trumanpurnell/jumpy#readme",
+  "homepage": "https://github.com/trumanpurnell/dimsum#readme",
   "dependencies": {}
 }
