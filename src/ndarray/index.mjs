@@ -43,6 +43,18 @@ export default class MultiDimArray {
             return new MultiDimArray().c1([...utils.math.getIntegerRange(args[0], args[1], args[2])])
     }
 
+    static dot(...many) {
+        return many.reduce(function (result, current) {
+            return result.dot(current)
+        })
+    }
+
+    dot(A) {
+        return new MultiDimArray().c2(
+            ...MatrixOperator.multiply(this, A)
+        )
+    }
+
     axisFn(axes, operator) {
         if (!axes.length)
             return operator(this.data)
@@ -56,12 +68,6 @@ export default class MultiDimArray {
     max(...axis) { return this.axisFn(axis, TensorOperator.max) }
     mean(...axis) { return this.axisFn(axis, TensorOperator.mean) }
     norm(...axis) { return this.axisFn(axis, TensorOperator.norm) }
-
-    dot(many) {
-        return new MultiDimArray().c2(
-            ...MatrixOperator.multiply(this, A)
-        )
-    }
 
     slice(...indices) {
         return new MultiDimArray().c2(
@@ -104,7 +110,10 @@ export default class MultiDimArray {
         })
     }
 
-    toRawFlat() { return [...this.sliceByAxis(...this.header.shape.keys())] }
-    toString() { return this.toRawArray() }
+    toRawFlat() {
+        return [...this.sliceByAxis(...this.header.shape.keys())]
+    }
+
+    toString() { return utils.array.format.likeNumpy(this.toRawArray()) }
     [util.inspect.custom]() { return this.toString() }
 }

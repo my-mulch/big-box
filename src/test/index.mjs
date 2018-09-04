@@ -22,14 +22,9 @@ const y = meanPixel.slice(0, 1)
 const z = meanPixel.slice(0, 2)
 const w = meanPixel.slice(0, 3)
 
-console.log(x, y, z, w)
-
-// const center = nd.array([
-//     [1, 0, 0, -x],
-//     [0, 1, 0, -y],
-//     [0, 0, 1, -z],
-//     [0, 0, 0, 1]
-// ])
-
-
-// console.log(center.dot(A.reshape(6, 4).T()))
+const center = nd.array([
+    [1, 0, 0, -x],
+    [0, 1, 0, -y],
+    [0, 0, 1, -z],
+    [0, 0, 0, 1]
+])

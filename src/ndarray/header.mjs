@@ -10,9 +10,7 @@ export default class Header {
         this.contig = opts.contig !== undefined ? opts.contig : true
     }
 
-    copy() {
-        return new Header(JSON.parse(JSON.stringify(this)))
-    }
+    copy() { return new Header(JSON.parse(JSON.stringify(this))) }
 
     sliceByAxis(axes) {
         axes.sort(ScalarOperator.subtract)
