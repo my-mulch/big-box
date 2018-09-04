@@ -11,7 +11,7 @@ export default class RawArrayUtils {
 
         return new Array(shape[0]).fill(null).map(function () {
             return this.createRawArray(shape.slice(1), fill)
-        })
+        }, this)
     }
 
     static cycle(rawArray, n) {

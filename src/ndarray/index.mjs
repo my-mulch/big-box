@@ -1,3 +1,4 @@
+import ProbabilityOperator from '../math/probability/index.mjs'
 import TensorOperator from '../math/tensor'
 import MatrixOperator from '../math/matrix'
 
@@ -116,4 +117,14 @@ export default class MultiDimArray {
 
     toString() { return utils.array.format.likeNumpy(this.toRawArray()) }
     [util.inspect.custom]() { return this.toString() }
+}
+
+MultiDimArray.random = class Random {
+    static randint(min, max, shape) {
+        return new MultiDimArray().c1(
+            utils.array.raw.createRawArray(shape, function () {
+                return ProbabilityOperator.randInt(min, max)
+            })
+        )
+    }
 }
