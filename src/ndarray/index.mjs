@@ -1,21 +1,20 @@
-import * as Matrix from '../math/matrix'
+import ProbabilityOperator from '../math/probability/index.mjs'
+import TensorOperator from '../math/tensor'
+import MatrixOperator from '../math/matrix'
 
-import RawArrayUtils from '../utils/arrays/raw'
-import NDArrayUtils from '../utils/arrays/nd'
-import TypeArrayUtils from '../utils/arrays/type'
-
+import util from 'util' // node's
+import utils from '../utils' // mine
 import Header from './header'
 
 export default class MultiDimArray {
-    c1(A, type = 'float64') {
-        const flatA = RawArrayUtils.flatten(A)
-        const shapeA = RawArrayUtils.getShape(A)
 
-        this.type = TypeArrayUtils.TYPE_MAP[type]
+    c1(A, type = 'float64') {
+        const flatA = utils.array.raw.flatten(A)
+        const shapeA = utils.array.raw.getShape(A)
+
+        this.type = utils.array.type.TYPE_MAP[type]
         this.data = new this.type(flatA)
-        this.header = new Header({
-            shape: shapeA
-        })
+        this.header = new Header({ shape: shapeA })
 
         return this
     }
@@ -25,62 +24,107 @@ export default class MultiDimArray {
         this.header = header
         this.type = type
 
-        return this
+        return this.header.shape.length ? this : this.data[this.header.offset]
     }
 
     static array(A, type = 'float64') {
         return new MultiDimArray().c1(A, type)
     }
 
+    static zeros(...shape) {
+        return new MultiDimArray().c1(utils.array.raw.createRawArray(shape))
+    }
+
     static arange(...args) {
-        return new MultiDimArray().c1(NDArrayUtils.helperArange(args))
+        if (args.length === 1)
+            return new MultiDimArray().c1([...utils.math.getIntegerRange(0, args[0], 1)])
+        if (args.length === 2)
+            return new MultiDimArray().c1([...utils.math.getIntegerRange(args[0], args[1], 1)])
+        if (args.length === 3)
+            return new MultiDimArray().c1([...utils.math.getIntegerRange(args[0], args[1], args[2])])
     }
 
-
-    slice(...indices) {
-        const newHeader = this.header.slice(indices)
-
-        return newHeader.shape.length ?
-            new MultiDimArray().c2(this.data, newHeader, this.type) :
-            this.data[newHeader.offset]
-    }
-
-    reshape(...shape) {
-        if (!this.header.contig)
-            // if the array is not contigous, a reshape means data copy
-            return new MultiDimArray().c2(
-                new this.type(NDArrayUtils.getRawFlat(this)), 
-                new Header({ shape }), 
-                this.type)
-
-        return new MultiDimArray().c2(this.data, this.header.reshape(shape))
+    static dot(...many) {
+        return many.reduce(function (result, current) {
+            return result.dot(current)
+        })
     }
 
     dot(A) {
-        const [newData, newHeader, newType] = Matrix.multiply(this, A)
+        return new MultiDimArray().c2(
+            ...MatrixOperator.multiply(this, A)
+        )
+    }
 
-        return new MultiDimArray().c2(newData, newHeader, newType)
+    axisFn(axes, operator) {
+        if (!axes.length)
+            return operator(this.data)
+
+        return new MultiDimArray().c2(
+            ...TensorOperator.elementwise(operator, [...this.sliceByAxis(axes)])
+        )
+    }
+
+    min(...axis) { return this.axisFn(axis, TensorOperator.min) }
+    max(...axis) { return this.axisFn(axis, TensorOperator.max) }
+    mean(...axis) { return this.axisFn(axis, TensorOperator.mean) }
+    norm(...axis) { return this.axisFn(axis, TensorOperator.norm) }
+
+    slice(...indices) {
+        return new MultiDimArray().c2(
+            this.data,
+            this.header.slice(indices),
+            this.type)
+    }
+
+    * sliceByAxis(axes = [0]) {
+        for (const index of utils.array.nd.indices(this.header.sliceByAxis(axes)))
+            yield this.slice(...index)
     }
 
     T() {
-        return new MultiDimArray().c2(this.data, this.header.transpose())
+        return new MultiDimArray().c2(
+            this.data,
+            this.header.transpose(),
+            this.type)
+    }
+
+    reshape(...shape) {
+        // if the array is not contigous, a reshape means data copy
+        if (!this.header.contig)
+            return new MultiDimArray().c2(
+                new this.type(this.toRawFlat()),
+                new Header({ shape }),
+                this.type)
+
+        return new MultiDimArray().c2(
+            this.data,
+            this.header.reshape(shape),
+            this.type)
     }
 
     toRawArray() {
-        const autoGenerator = NDArrayUtils.getValueSequenceAutoGenerator(this)
+        return [...this.sliceByAxis()].map(function (slice) {
+            if (slice instanceof MultiDimArray) return slice.toRawArray()
 
-        return RawArrayUtils.createRawArray(this.header.shape, autoGenerator)
+            return slice
+        })
     }
 
-    * toGenerator() {
-        yield* this.toRawArray()
+    toRawFlat() {
+        return [...this.sliceByAxis(...this.header.shape.keys())]
     }
 
-    inspect() {
-        return this.toString()
-    }
+    toString() { return utils.array.format.likeNumpy(this.toRawArray()) }
+    [util.inspect.custom]() { return this.toString() }
+}
 
-    toString() {
-        return NDArrayUtils.helperToString(this) + '\n'
+MultiDimArray.random = class Random {
+    static randint(min, max, shape) {
+        return new MultiDimArray().c1(
+            utils.array.raw.createRawArray(shape, function () {
+                return ProbabilityOperator.randInt(min, max)
+            })
+        )
     }
 }

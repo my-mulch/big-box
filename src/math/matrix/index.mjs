@@ -1,29 +1,20 @@
-import NDArrayUtils from '../../utils/arrays/nd'
-import TypeUtils from '../../utils/arrays/type'
-import MathUtils from '../../utils/math'
-import Header from '../../ndarray/header'
+import Header from '../../ndarray/header.mjs'
+import utils from '../../utils'
 
-export function multiply(A, B) {
+export default class MatrixOperator {
+    static multiply(A, B) {
+        const newTypedArray = utils.array.type.compareTypes(A.type, B.type)
+        const newHeader = new Header({ shape: [A.header.shape[0], B.header.shape[1]] })
+        const newData = new newTypedArray(A.header.shape[0] * B.header.shape[1])
 
-    const sharedDim = A.header.shape[1]
-    
-    const newType = TypeUtils.compareTypes(A.type, B.type)
-    const newShape = [A.header.shape[0], B.header.shape[1]]
-    const newHeader = new Header({ shape: newShape })
-    const newData = new newType(MathUtils.product(newShape))
-    
+        for (let r = 0, i = 0; r < newHeader.shape[0]; r++)
+            for (let c = 0; c < newHeader.shape[1]; c++ , i++)
+                for (let s = 0; s < A.header.shape[1]; s++)
+                    newData[i] +=
+                        utils.array.nd.dataForOne([r, s], A) *
+                        utils.array.nd.dataForOne([s, c], B)
 
-    for (let r = 0, i = 0; r < newHeader.shape[0]; r++) {
-        for (let c = 0; c < newHeader.shape[1]; c++) {
-            for (let s = 0; s < sharedDim; s++) {
-                newData[i] +=
-                    NDArrayUtils.getDataFromIndex([r, s], A) *
-                    NDArrayUtils.getDataFromIndex([s, c], B)
-            }
-            i++
-        }
+
+        return [newData, newHeader, newTypedArray]
     }
-
-    return [newData, newHeader, newType]
-
 }

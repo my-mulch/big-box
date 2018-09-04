@@ -1,4 +1,10 @@
 export default class TypeArrayUtils {
+    static compareManyTypes(ndArrays) {
+        return ndArrays
+            .map(nd => nd.type)
+            .reduce(this.compareTypes)
+    }
+
     static compareTypes(t1, t2) {
         return TypeArrayUtils.TYPE_RANKINGS[t1] >
             TypeArrayUtils.TYPE_RANKINGS[t2] ? t1 : t2
