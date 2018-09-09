@@ -3,7 +3,6 @@ import Header from '../../ndarray/header'
 import utils from '../../utils'
 
 export default class TensorOperator {
-    static round(rawArray, precision) { return rawArray.map(e => e.toFixed(precision)) }
     static add(rawArray) { return rawArray.reduce(ScalarOperator.add) }
     static multiply(rawArray) { return rawArray.reduce(ScalarOperator.multiply) }
     static divide(rawArray) { return rawArray.reduce(ScalarOperator.divide) }
@@ -21,7 +20,7 @@ export default class TensorOperator {
 
         let i = 0
         for (const index of utils.array.nd.indices(newHeader.shape))
-            newData[i++] = operation(utils.array.nd.dataForMany(index, ndArrays))
+            newData[i++] = operation(utils.array.nd.accessMany(ndArrays, index))
 
         return [newData, newHeader, newType]
     }

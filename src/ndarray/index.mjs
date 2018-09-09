@@ -70,6 +70,12 @@ export default class MultiDimArray {
     mean(...axis) { return this.axisFn(axis, TensorOperator.mean) }
     norm(...axis) { return this.axisFn(axis, TensorOperator.norm) }
 
+    divide(A) {
+        return new MultiDimArray().c2(
+            ...TensorOperator.elementwise(TensorOperator.divide, [this, A])
+        )
+    }
+
     slice(...indices) {
         return new MultiDimArray().c2(
             this.data,

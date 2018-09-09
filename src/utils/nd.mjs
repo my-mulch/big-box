@@ -1,17 +1,25 @@
 import constants from '../contants.mjs'
 
 export default class NDArrayUtils {
-    static dataForOne(indices, ndArray) {
+    static access(ndArray, index) {
         return ndArray.data[
             // gets flat index into data array
-            ndArray.header.offset + indices.reduce(function (finalIndex, idxValue, dimension) {
+            ndArray.header.offset + index.reduce(function (finalIndex, idxValue, dimension) {
                 return finalIndex + idxValue * ndArray.header.stride[dimension]
             }, 0)
         ]
     }
 
-    static dataForMany(indices, ndArrays) {
-        return ndArrays.map(nd => this.dataForOne(indices, nd))
+    static accessMany(ndArrays, index) {
+        return ndArrays.map(function (ndArray) {
+            if (typeof ndArray === constants.NUMBER)
+                return ndArray
+
+            if (ndArray.header.shape.length !== index.length)
+                return this.access(ndArray, index.slice(-ndArray.header.shape.length))
+
+            return this.access(ndArray, index)
+        }, this)
     }
 
     static * indices(shape, index = []) {
