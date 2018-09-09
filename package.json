@@ -1,6 +1,6 @@
 {
   "name": "multi-dim",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "A suite of methods to manipulate MDA",
   "main": "src/ndarray/index.mjs",
   "scripts": {},
