@@ -1,7 +1,7 @@
 export default class TypeArrayUtils {
     static compareManyTypes(ndArrays) {
         return ndArrays
-            .map(nd => nd.type)
+            .map(function (ndArray) { return ndArray.type === undefined ? Float64Array : ndArray.type })
             .reduce(this.compareTypes)
     }
 
@@ -31,4 +31,5 @@ TypeArrayUtils.TYPE_RANKINGS = { // Numpy type mappings
     int32: 5,
     float32: 6,
     float64: 7,
+    undefined: 7
 }

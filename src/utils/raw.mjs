@@ -6,7 +6,7 @@ export default class RawArrayUtils {
                 : yield rawArray[i]
     }
 
-    static createRawArray(shape, fill = () => 0) {
+    static createRawArray(shape, fill = function () { return 0 }) {
         if (!shape.length) return fill()
 
         return new Array(shape[0]).fill(null).map(function () {
