@@ -15,5 +15,5 @@ const A = nd.array([
 
 const B = nd.array([4, 3, 1, 7, 6, 2, 8])
 
-console.log(A.divide(B))
+console.log(A.multiply(B))
 

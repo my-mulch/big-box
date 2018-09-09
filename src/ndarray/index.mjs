@@ -52,8 +52,7 @@ export default class MultiDimArray {
 
     dot(A) {
         return new MultiDimArray().c2(
-            ...MatrixOperator.multiply(this, A)
-        )
+            ...MatrixOperator.multiply(this, A))
     }
 
     axisFn(axes, operator) {
@@ -61,8 +60,12 @@ export default class MultiDimArray {
             return operator(this.data)
 
         return new MultiDimArray().c2(
-            ...TensorOperator.elementwise(operator, [...this.sliceByAxis(axes)])
-        )
+            ...TensorOperator.elementwise(operator, [...this.sliceByAxis(axes)]))
+    }
+
+    elementFn(A, operator) {
+        return new MultiDimArray().c2(
+            ...TensorOperator.elementwise(operator, [this, A]))
     }
 
     min(...axis) { return this.axisFn(axis, TensorOperator.min) }
@@ -70,10 +73,14 @@ export default class MultiDimArray {
     mean(...axis) { return this.axisFn(axis, TensorOperator.mean) }
     norm(...axis) { return this.axisFn(axis, TensorOperator.norm) }
 
-    divide(A) {
-        return new MultiDimArray().c2(
-            ...TensorOperator.elementwise(TensorOperator.divide, [this, A])
-        )
+    add(A) { return this.elementFn(A, TensorOperator.add) }
+    subtract(A) { return this.elementFn(A, TensorOperator.subtract) }
+    multiply(A) { return this.elementFn(A, TensorOperator.multiply) }
+    divide(A) { return this.elementFn(A, TensorOperator.divide) }
+
+    * sliceByAxis(axes = [0]) {
+        for (const index of utils.array.nd.indices(this.header.sliceByAxis(axes)))
+            yield this.slice(...index)
     }
 
     slice(...indices) {
@@ -81,11 +88,6 @@ export default class MultiDimArray {
             this.data,
             this.header.slice(indices),
             this.type)
-    }
-
-    * sliceByAxis(axes = [0]) {
-        for (const index of utils.array.nd.indices(this.header.sliceByAxis(axes)))
-            yield this.slice(...index)
     }
 
     T() {
