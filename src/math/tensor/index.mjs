@@ -4,7 +4,7 @@ import utils from '../../utils'
 
 export default class TensorOperator {
     static add(rawArray) { return rawArray.reduce(ScalarOperator.add) }
-    static multiply(rawArray) { return rawArray.reduce(ScalarOperator.multiply) }
+    static multiply(rawArray) { return rawArray.reduce(ScalarOperator.multiply, 1) }
     static divide(rawArray) { return rawArray.reduce(ScalarOperator.divide) }
     static subtract(rawArray) { return rawArray.reduce(ScalarOperator.subtract) }
     static min(rawArray) { return rawArray.reduce(ScalarOperator.min) }

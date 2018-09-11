@@ -1,3 +1,5 @@
+import TensorOperator from '../math/tensor'
+
 export default class HeaderArrayUtils {
     static getStride(shape, lastDim = 1) {
         return shape.reduceRight(function (stride, dim) {
@@ -18,5 +20,9 @@ export default class HeaderArrayUtils {
                 return false
 
         return true
+    }
+
+    static smartReshape(dim, i, shape) {
+        return dim > 0 ? dim : this.size / -TensorOperator.multiply(shape)
     }
 }

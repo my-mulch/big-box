@@ -1,4 +1,4 @@
-import ProbabilityOperator from '../math/probability/index.mjs'
+import ProbabilityOperator from '../math/probability'
 import TensorOperator from '../math/tensor'
 import MatrixOperator from '../math/matrix'
 
