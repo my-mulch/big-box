@@ -30,6 +30,8 @@ export default class Header {
         const newHeader = this.copy()
 
         for (let i = 0, del = 0; i < this.shape.length; i++) {
+            if(indices[i] === undefined) continue
+
             let [low, high] = indices[i].split(':').map(Number)
 
             if (high === 0 && low === 0) continue
