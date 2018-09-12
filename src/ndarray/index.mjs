@@ -86,7 +86,7 @@ export default class MultiDimArray {
     slice(...indices) {
         return new MultiDimArray().c2(
             this.data,
-            this.header.slice(indices),
+            this.header.slice(indices.map(String)),
             this.type)
     }
 
@@ -127,7 +127,7 @@ export default class MultiDimArray {
     [util.inspect.custom]() { return this.toString() }
 }
 
-MultiDimArray.random = class Random {
+class Random {
     static randint(min, max, shape) {
         return new MultiDimArray().c1(
             utils.array.raw.createRawArray(shape, function () {

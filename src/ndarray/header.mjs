@@ -28,17 +28,26 @@ export default class Header {
 
     slice(indices) {
         const newHeader = this.copy()
-        newHeader.contig = utils.array.header.isContiguousSlice(indices)
 
-        for (let i = 0, del = 0; i < this.shape.length; i++)
-            if (indices[i] >= 0) {
-                newHeader.offset += this.stride[i] * indices[i]
+        for (let i = 0, del = 0; i < this.shape.length; i++) {
+            let [low, high] = indices[i].split(':').map(Number)
+
+            if (high === 0 && low === 0) continue
+            if (high <= 0) high += this.shape[i]
+
+            newHeader.shape[i] = high - low
+            newHeader.offset += this.stride[i] * low
+
+            if (high === undefined) {
                 newHeader.stride.splice(i - del, 1)
                 newHeader.shape.splice(i - del, 1)
                 del++
             }
+        }
 
+        newHeader.contig = utils.array.header.isContiguousSlice(indices)
         newHeader.size = TensorOperator.multiply(newHeader.shape)
+
         return newHeader
     }
 

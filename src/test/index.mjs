@@ -14,6 +14,6 @@ const A = nd.array([
 ], 'float64')
 
 const B = nd.array([4, 3, 1, 7, 6, 2, 8])
+console.log(A.slice(3))
 
-console.log(A.reshape(7, 5, -1))
 
