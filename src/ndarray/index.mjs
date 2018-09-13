@@ -51,6 +51,9 @@ export default class MultiDimArray {
     }
 
     dot(A) {
+        if (!(A instanceof MultiDimArray))
+            A = new MultiDimArray().c1(A)
+
         return new MultiDimArray().c2(
             ...MatrixOperator.multiply(this, A))
     }
@@ -64,6 +67,9 @@ export default class MultiDimArray {
     }
 
     elementFn(A, operator) {
+        if (!(A instanceof MultiDimArray))
+            A = new MultiDimArray().c1(A)
+
         return new MultiDimArray().c2(
             ...TensorOperator.elementwise(operator, [this, A]))
     }
