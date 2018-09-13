@@ -13,8 +13,9 @@ const A = nd.array([
     [4, 9, 7, 3, 7, 2, 6]
 ], 'float64')
 
-for(const row of A)
-    console.log(row instanceof nd)
+for (const [a, b, c, d, e, f, g] of A)
+    console.log(b, a, e)
+
 
 
 
