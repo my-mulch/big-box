@@ -44,6 +44,37 @@ export default class MultiDimArray {
             return new MultiDimArray().c1([...utils.math.getIntegerRange(args[0], args[1], args[2])])
     }
 
+    *[Symbol.iterator](axes = [0]) {
+        for (const index of utils.array.nd.indices(this.header.sliceByAxis(axes)))
+            yield this.slice(...index)
+    }
+
+    axisFn(axes, operator) {
+        if (!axes.length)
+            return operator(this.data)
+
+        return new MultiDimArray().c2(
+            ...TensorOperator.elementwise(operator, [...this[Symbol.iterator](axes)]))
+    }
+
+    min(...axis) { return this.axisFn(axis, TensorOperator.min) }
+    max(...axis) { return this.axisFn(axis, TensorOperator.max) }
+    mean(...axis) { return this.axisFn(axis, TensorOperator.mean) }
+    norm(...axis) { return this.axisFn(axis, TensorOperator.norm) }
+
+    elementFn(A, operator) {
+        if (!(A instanceof MultiDimArray))
+            A = new MultiDimArray().c1(A)
+
+        return new MultiDimArray().c2(
+            ...TensorOperator.elementwise(operator, [this, A]))
+    }
+
+    add(A) { return this.elementFn(A, TensorOperator.add) }
+    subtract(A) { return this.elementFn(A, TensorOperator.subtract) }
+    multiply(A) { return this.elementFn(A, TensorOperator.multiply) }
+    divide(A) { return this.elementFn(A, TensorOperator.divide) }
+
     static dot(...many) {
         return many.reduce(function (result, current) {
             return result.dot(current)
@@ -56,37 +87,6 @@ export default class MultiDimArray {
 
         return new MultiDimArray().c2(
             ...MatrixOperator.multiply(this, A))
-    }
-
-    axisFn(axes, operator) {
-        if (!axes.length)
-            return operator(this.data)
-
-        return new MultiDimArray().c2(
-            ...TensorOperator.elementwise(operator, [...this.sliceByAxis(axes)]))
-    }
-
-    elementFn(A, operator) {
-        if (!(A instanceof MultiDimArray))
-            A = new MultiDimArray().c1(A)
-
-        return new MultiDimArray().c2(
-            ...TensorOperator.elementwise(operator, [this, A]))
-    }
-
-    min(...axis) { return this.axisFn(axis, TensorOperator.min) }
-    max(...axis) { return this.axisFn(axis, TensorOperator.max) }
-    mean(...axis) { return this.axisFn(axis, TensorOperator.mean) }
-    norm(...axis) { return this.axisFn(axis, TensorOperator.norm) }
-
-    add(A) { return this.elementFn(A, TensorOperator.add) }
-    subtract(A) { return this.elementFn(A, TensorOperator.subtract) }
-    multiply(A) { return this.elementFn(A, TensorOperator.multiply) }
-    divide(A) { return this.elementFn(A, TensorOperator.divide) }
-
-    * sliceByAxis(axes = [0]) {
-        for (const index of utils.array.nd.indices(this.header.sliceByAxis(axes)))
-            yield this.slice(...index)
     }
 
     slice(...indices) {
@@ -118,27 +118,16 @@ export default class MultiDimArray {
     }
 
     toRawArray() {
-        return [...this.sliceByAxis()].map(function (slice) {
+        return [...this].map(function (slice) {
             if (slice instanceof MultiDimArray) return slice.toRawArray()
 
             return slice
         })
     }
 
-    toRawFlat() {
-        return [...this.sliceByAxis(...this.header.shape.keys())]
-    }
 
+    toRawFlat() { return [...this[Symbol.iterator](...this.header.shape.keys())] }
     toString() { return utils.array.format.likeNumpy(this.toRawArray()) }
-    [util.inspect.custom]() { return this.toString() }
-}
 
-class Random {
-    static randint(min, max, shape) {
-        return new MultiDimArray().c1(
-            utils.array.raw.createRawArray(shape, function () {
-                return ProbabilityOperator.randInt(min, max)
-            })
-        )
-    }
+    [util.inspect.custom]() { return this.toString() }
 }

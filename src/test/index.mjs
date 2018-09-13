@@ -13,7 +13,8 @@ const A = nd.array([
     [4, 9, 7, 3, 7, 2, 6]
 ], 'float64')
 
-const B = nd.array([4, 3, 1, 7, 6, 2, 8])
-console.log(A.slice(3))
+for(const row of A)
+    console.log(row instanceof nd)
+
 
 
