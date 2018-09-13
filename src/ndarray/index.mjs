@@ -63,7 +63,7 @@ export default class MultiDimArray {
     norm(...axis) { return this.axisFn(axis, TensorOperator.norm) }
 
     elementFn(A, operator) {
-        if (!(A instanceof MultiDimArray))
+        if (A.constructor === Array)
             A = new MultiDimArray().c1(A)
 
         return new MultiDimArray().c2(
