@@ -15,7 +15,3 @@ const A = nd.array([
 
 for (const [a, b, c, d, e, f, g] of A)
     console.log(b, a, e)
-
-console.log(nd.random.randint(0, 256, [3, 3, 4]).set(':', ':', 3)(1))
-
-
