@@ -66,7 +66,7 @@ export default class MultiDimArray {
 
     elementFn(A, operator) {
         if (A.constructor === Array)
-            A = new MultiDimArray().c1(A)
+            A = MultiDimArray.array(A)
 
         return new MultiDimArray().c2(
             ...TensorOperator.elementwise(operator, [this, A]))
@@ -85,7 +85,7 @@ export default class MultiDimArray {
 
     dot(A) {
         if (A.constructor === Array)
-            A = new MultiDimArray().c1(A)
+            A = MultiDimArray.array(A)
 
         return new MultiDimArray().c2(
             ...MatrixOperator.multiply(this, A))
@@ -94,7 +94,7 @@ export default class MultiDimArray {
     set(...indices) {
         return (function (data) {
             if (data.constructor === Array)
-                data = new MultiDimArray().c1(data)
+                data = MultiDimArray.array(data)
 
             const region = this.slice(...indices)
 
@@ -150,9 +150,9 @@ export default class MultiDimArray {
 
 class Random {
     static randint(low, high, shape) {
-        return utils.array.raw.createRawArray(shape, function () {
+        return MultiDimArray.array(utils.array.raw.createRawArray(shape, function () {
             return ProbabilityOperator.randInt(low, high)
-        })
+        }))
     }
 }
 
