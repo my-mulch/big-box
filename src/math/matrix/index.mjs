@@ -11,8 +11,8 @@ export default class MatrixOperator {
             for (let c = 0; c < newHeader.shape[1]; c++ , i++)
                 for (let s = 0; s < A.header.shape[1]; s++)
                     newData[i] +=
-                        utils.array.nd.access(A, [r, s]) *
-                        utils.array.nd.access(B, [s, c])
+                        utils.array.nd.read(A, [r, s]) *
+                        utils.array.nd.read(B, [s, c])
 
 
         return [newData, newHeader, newTypedArray]

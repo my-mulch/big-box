@@ -6,6 +6,8 @@ import util from 'util' // node's
 import utils from '../utils' // mine
 import Header from './header'
 
+import constants from '../contants.mjs'
+
 export default class MultiDimArray {
 
     c1(A, type = 'float64') {
@@ -82,11 +84,25 @@ export default class MultiDimArray {
     }
 
     dot(A) {
-        if (!(A instanceof MultiDimArray))
+        if (A.constructor === Array)
             A = new MultiDimArray().c1(A)
 
         return new MultiDimArray().c2(
             ...MatrixOperator.multiply(this, A))
+    }
+
+    set(...indices) {
+        return (function (data) {
+            if (data.constructor === Array)
+                data = new MultiDimArray().c1(data)
+
+            const region = this.slice(...indices)
+
+            for (const index of utils.array.nd.indices(region.header.shape))
+                utils.array.nd.write(region, index, utils.array.nd.broadcast(data, index))
+
+            return this
+        }).bind(this)
     }
 
     slice(...indices) {
