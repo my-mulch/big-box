@@ -18,5 +18,4 @@ for (const [a, b, c, d, e, f, g] of A)
 
 
 
-
     

@@ -131,3 +131,13 @@ export default class MultiDimArray {
 
     [util.inspect.custom]() { return this.toString() }
 }
+
+class Random {
+    static randint(low, high, shape) {
+        return utils.array.raw.createRawArray(shape, function () {
+            return ProbabilityOperator.randInt(low, high)
+        })
+    }
+}
+
+MultiDimArray.random = Random
