@@ -13,5 +13,7 @@ const A = nd.array([
     [4, 9, 0, 0, 7, 2, 6]
 ], 'float64')
 
-for (const [a, b, c, d, e, f, g] of A)
-    console.log(b, a, e)
+// for (const [a, b, c, d, e, f, g] of A)
+//     console.log(b, a, e)
+
+console.log(A.slice(0).set(2)(1))

@@ -98,6 +98,11 @@ export default class MultiDimArray {
 
             const region = this.slice(...indices)
 
+            if (region.constructor === Number) {
+                utils.array.nd.write(this, indices, data)
+                return this
+            }
+
             for (const index of utils.array.nd.indices(region.header.shape))
                 utils.array.nd.write(region, index, utils.array.nd.broadcast(data, index))
 
