@@ -50,7 +50,7 @@ export default class MultiDimArray {
         return new MultiDimArray().c2(
             [...utils.array.nd.indices(shape)].map(function (index) { return Number(TensorOperator.equal(index)) }),
             new Header({ shape }),
-            Uint8Array)
+            Float64Array)
     }
 
     static arange(...args) {
@@ -99,17 +99,16 @@ export default class MultiDimArray {
         })
     }
 
+    static inv(A) {
+        return MatrixOperator.invert(A, MultiDimArray.eye(...A.header.shape))
+    }
+
     dot(A) {
         if (A.constructor === Array)
             A = MultiDimArray.array(A)
 
         return new MultiDimArray().c2(
             ...MatrixOperator.multiply(this, A))
-    }
-
-    inv() {
-        return new MultiDimArray().c2(
-            ...MatrixOperator.invert(this))
     }
 
     set(...indices) {
@@ -130,6 +129,12 @@ export default class MultiDimArray {
 
             }).bind(this)
         }
+    }
+
+    round(precision) {
+        this.data = this.data.map(function (value) { return value.toFixed(precision) })
+
+        return this
     }
 
     slice(...indices) {

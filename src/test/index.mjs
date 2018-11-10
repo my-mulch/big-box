@@ -1,3 +1,8 @@
 import nd from '../ndarray'
 
-console.log(nd.eye(3, 3, 3))
+const A = nd.random.randint(1, 10, [3, 3])
+const B = nd.inv(A)
+
+console.log(A)
+console.log()
+console.log(B.dot(A).round(2))
