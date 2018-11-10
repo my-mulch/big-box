@@ -58,10 +58,10 @@ export default class MultiDimArray {
             ...TensorOperator.elementwise(operator, [...this[Symbol.iterator](axes)]))
     }
 
-    min(opts) { return this.axisFn(opts.axis, TensorOperator.min) }
-    max(opts) { return this.axisFn(opts.axis, TensorOperator.max) }
-    mean(opts) { return this.axisFn(opts.axis, TensorOperator.mean) }
-    norm(opts) { return this.axisFn(opts.axis, TensorOperator.norm) }
+    min(opts = { axis: [0] }) { return this.axisFn(opts.axis, TensorOperator.min) }
+    max(opts = { axis: [0] }) { return this.axisFn(opts.axis, TensorOperator.max) }
+    mean(opts = { axis: [0] }) { return this.axisFn(opts.axis, TensorOperator.mean) }
+    norm(opts = { axis: [0] }) { return this.axisFn(opts.axis, TensorOperator.norm) }
 
     elementFn(A, operator) {
         if (A.constructor === Array)
