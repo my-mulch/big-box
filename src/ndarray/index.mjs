@@ -32,6 +32,10 @@ export default class MultiDimArray {
         return new MultiDimArray().c1(utils.array.raw.createRawArray(shape))
     }
 
+    static ones(...shape) {
+        return new MultiDimArray().c1(utils.array.raw.createRawArray(shape, function () { return 1 }))
+    }
+
     static arange(...args) {
         if (args.length === 1)
             return new MultiDimArray().c1([...utils.math.getIntegerRange(0, args[0], 1)])
