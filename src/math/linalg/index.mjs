@@ -1,8 +1,8 @@
 import Header from '../../ndarray/header.mjs'
 import utils from '../../utils'
 
-export default class MatrixOperator {
-    static multiply(A, B) {
+export default class LinearAlgebraOperator {
+    static matMult(A, B) {
         const newTypedArray = utils.array.type.compareTypes(A.type, B.type)
         const newHeader = new Header({ shape: [A.header.shape[0], B.header.shape[1]] })
         const newData = new newTypedArray(A.header.shape[0] * B.header.shape[1])
@@ -16,6 +16,13 @@ export default class MatrixOperator {
 
 
         return [newData, newHeader, newTypedArray]
+    }
+
+    static cross(A, B) {
+        return A.copy()
+            .set(0).to(A.slice(1) * B.slice(2) - A.slice(2) * B.slice(1))
+            .set(1).to(A.slice(2) * B.slice(0) - A.slice(0) * B.slice(2))
+            .set(2).to(A.slice(0) * B.slice(1) - A.slice(1) * B.slice(0))
     }
 
     static invert(A, I) {

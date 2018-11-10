@@ -1,6 +1,6 @@
 import ProbabilityOperator from '../math/probability'
 import TensorOperator from '../math/tensor'
-import MatrixOperator from '../math/matrix'
+import LinearAlgebraOperator from '../math/linalg'
 
 import util from 'util' // node's
 import utils from '../utils' // mine
@@ -85,7 +85,7 @@ export default class MultiDimArray {
             A = MultiDimArray.array(A)
 
         return new MultiDimArray().c2(
-            ...TensorOperator.elementwise(operator, [this, A]))
+            ...TensorOperator.elementwise(operator, this, A))
     }
 
     add(A) { return this.elementFn(A, TensorOperator.add) }
@@ -93,14 +93,21 @@ export default class MultiDimArray {
     multiply(A) { return this.elementFn(A, TensorOperator.multiply) }
     divide(A) { return this.elementFn(A, TensorOperator.divide) }
 
+    static inv(A) {
+        return LinearAlgebraOperator.invert(A, MultiDimArray.eye(...A.header.shape))
+    }
+
     static dot(...many) {
         return many.reduce(function (result, current) {
             return result.dot(current)
         })
     }
 
-    static inv(A) {
-        return MatrixOperator.invert(A, MultiDimArray.eye(...A.header.shape))
+    static cross(A, B) {
+        if (A.constructor === Array)
+            A = MultiDimArray.array(A)
+
+        return A.cross(B)
     }
 
     dot(A) {
@@ -108,7 +115,14 @@ export default class MultiDimArray {
             A = MultiDimArray.array(A)
 
         return new MultiDimArray().c2(
-            ...MatrixOperator.multiply(this, A))
+            ...LinearAlgebraOperator.matMult(this, A))
+    }
+
+    cross(A) {
+        if (A.constructor === Array)
+            A = MultiDimArray.array(A)
+
+        return LinearAlgebraOperator.cross(this, A)
     }
 
     set(...indices) {

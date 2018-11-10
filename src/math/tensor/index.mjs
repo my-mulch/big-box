@@ -19,7 +19,7 @@ export default class TensorOperator {
         })
     }
 
-    static elementwise(operation, ndArrays) {
+    static elementwise(operation, ...ndArrays) {
         const newType = utils.array.type.compareManyTypes(ndArrays)
         const newData = new newType(ndArrays[0].data.length)
         const newHeader = new Header({ shape: ndArrays[0].header.shape })

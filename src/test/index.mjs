@@ -1,8 +1,10 @@
 import nd from '../ndarray'
 
-const A = nd.random.randint(1, 10, [3, 3])
-const B = nd.inv(A)
 
-console.log(A)
-console.log()
-console.log(B.dot(A).round(2))
+const a = nd.array([3, 4, 5])
+const b = nd.array([4, 3, 5])
+const c = nd.array([-5, -12, -13])
+
+console.log(nd.cross(a, b))
+
+// A x B: 5, 5, -7
