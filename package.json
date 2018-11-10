@@ -3,7 +3,9 @@
   "version": "6.3.3",
   "description": "A suite of methods to manipulate MDA",
   "main": "src/ndarray/index.mjs",
-  "scripts": {},
+  "scripts": {
+    "test": "node --experimental-modules src/test/"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/trumanpurnell/dimsum.git"

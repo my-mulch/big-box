@@ -1,19 +1,9 @@
 import nd from '../ndarray'
 
-const A = nd.array([
-    [4, 3, 0, 0, 6, 2, 8],
-    [2, 3, 0, 0, 5, 8, 0],
-    [4, 6, 0, 0, 5, 1, 2],
-    [4, 9, 0, 0, 2, 1, 7],
-    [3, 4, 0, 0, 7, 8, 0],
-    [3, 8, 0, 0, 2, 3, 1],
-    [9, 8, 0, 0, 9, 3, 6],
-    [7, 7, 0, 0, 1, 9, 5],
-    [9, 3, 0, 0, 2, 0, 0],
-    [4, 9, 0, 0, 7, 2, 6]
-], 'float64')
+const A = nd.random.randint(0, 255, [3, 2, 4])
 
-// for (const [a, b, c, d, e, f, g] of A)
-//     console.log(b, a, e)
 
-console.log(A.slice(0).set(2)(1))
+
+console.log(A)
+console.log("\n\n\n\n")
+console.log(A.add([1, 2, 3, 4]))

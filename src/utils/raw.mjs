@@ -4,10 +4,10 @@ export default class RawArrayUtils {
             if (Array.isArray(rawArray[i]))
                 yield* this.flatten(rawArray[i])
 
-            if (rawArray[i] instanceof Object)
+            else if (rawArray[i] instanceof Object)
                 yield rawArray[i].toRawFlat()
 
-            if (typeof rawArray[i] === 'number')
+            else if (typeof rawArray[i] === 'number')
                 yield rawArray[i]
         }
     }

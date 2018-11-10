@@ -21,6 +21,8 @@ export default class NDArrayUtils {
 
     static write(ndArray, index, data) {
         ndArray.data[this.lookup(ndArray, index)] = data
+
+        return ndArray
     }
 
     static read(ndArray, index) {

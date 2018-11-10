@@ -58,10 +58,10 @@ export default class MultiDimArray {
             ...TensorOperator.elementwise(operator, [...this[Symbol.iterator](axes)]))
     }
 
-    min(...axis) { return this.axisFn(axis, TensorOperator.min) }
-    max(...axis) { return this.axisFn(axis, TensorOperator.max) }
-    mean(...axis) { return this.axisFn(axis, TensorOperator.mean) }
-    norm(...axis) { return this.axisFn(axis, TensorOperator.norm) }
+    min(opts) { return this.axisFn(opts.axis, TensorOperator.min) }
+    max(opts) { return this.axisFn(opts.axis, TensorOperator.max) }
+    mean(opts) { return this.axisFn(opts.axis, TensorOperator.mean) }
+    norm(opts) { return this.axisFn(opts.axis, TensorOperator.norm) }
 
     elementFn(A, operator) {
         if (A.constructor === Array)
@@ -91,22 +91,23 @@ export default class MultiDimArray {
     }
 
     set(...indices) {
-        return (function (data) {
-            if (data.constructor === Array)
-                data = MultiDimArray.array(data)
+        return {
+            to: (function (data) {
+                if (data.constructor === Array)
+                    data = MultiDimArray.array(data)
 
-            const region = this.slice(...indices)
+                const region = this.slice(...indices)
 
-            if (region.constructor === Number) {
-                utils.array.nd.write(this, indices, data)
+                if (region.constructor === Number)
+                    return utils.array.nd.write(this, indices, data)
+
+                for (const index of utils.array.nd.indices(region.header.shape))
+                    utils.array.nd.write(region, index, utils.array.nd.broadcast(data, index))
+
                 return this
-            }
 
-            for (const index of utils.array.nd.indices(region.header.shape))
-                utils.array.nd.write(region, index, utils.array.nd.broadcast(data, index))
-
-            return this
-        }).bind(this)
+            }).bind(this)
+        }
     }
 
     slice(...indices) {
@@ -139,7 +140,8 @@ export default class MultiDimArray {
 
     toRawArray() {
         return [...this].map(function (slice) {
-            if (slice instanceof MultiDimArray) return slice.toRawArray()
+            if (slice instanceof MultiDimArray)
+                return slice.toRawArray()
 
             return slice
         })
@@ -147,7 +149,7 @@ export default class MultiDimArray {
 
 
     toRawFlat() { return [...this[Symbol.iterator](...this.header.shape.keys())] }
-    toString() { return utils.array.format.likeNumpy(this.toRawArray()) }
+    toString() { return util.inspect(this.toRawArray(), { showHidden: false, depth: null }) }
 
     [util.inspect.custom]() { return this.toString() }
 }
