@@ -6,17 +6,12 @@ import util from 'util' // node's
 import utils from '../utils' // mine
 import Header from './header'
 
-import constants from '../contants.mjs'
-
 export default class MultiDimArray {
 
     c1(A, type = 'float64') {
-        const flatA = utils.array.raw.flatten(A)
-        const shapeA = utils.array.raw.getShape(A)
-
         this.type = utils.array.type.TYPE_MAP[type]
-        this.data = new this.type(flatA)
-        this.header = new Header({ shape: shapeA })
+        this.data = new this.type(utils.array.raw.flatten(A))
+        this.header = new Header({ shape: utils.array.raw.getShape(A) })
 
         return this
     }
