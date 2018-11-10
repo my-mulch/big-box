@@ -5,7 +5,7 @@ export default class RawArrayUtils {
                 yield* this.flatten(rawArray[i])
 
             else if (rawArray[i] instanceof Object)
-                yield rawArray[i].toRawFlat()
+                yield* this.flatten(rawArray[i].toRawFlat())
 
             else if (typeof rawArray[i] === 'number')
                 yield rawArray[i]

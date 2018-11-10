@@ -17,11 +17,15 @@ export default class MultiDimArray {
     }
 
     c2(data, header, type) {
-        this.data = data
-        this.header = header
         this.type = type
+        this.header = header
+        this.data = data.constructor === Array ? new this.type(data) : data
 
         return this.header.shape.length ? this : this.data[this.header.offset]
+    }
+
+    copy() {
+        return new MultiDimArray().c2(this.data.slice(), this.header.copy(), this.type)
     }
 
     static array(A, type = 'float64') {
@@ -36,6 +40,19 @@ export default class MultiDimArray {
         return new MultiDimArray().c1(utils.array.raw.createRawArray(shape, function () { return 1 }))
     }
 
+    static createIdentity(indices) {
+        return [...indices].map(function (index) {
+            return index.reduce(function (last, i) { return last === i ? i : false })
+        })
+    }
+
+    static eye(...shape) {
+        return new MultiDimArray().c2(
+            [...utils.array.nd.indices(shape)].map(function (index) { return Number(TensorOperator.equal(index)) }),
+            new Header({ shape }),
+            Uint8Array)
+    }
+
     static arange(...args) {
         if (args.length === 1)
             return new MultiDimArray().c1([...utils.math.getIntegerRange(0, args[0], 1)])
@@ -45,23 +62,23 @@ export default class MultiDimArray {
             return new MultiDimArray().c1([...utils.math.getIntegerRange(args[0], args[1], args[2])])
     }
 
-    *[Symbol.iterator](axes = [0]) {
-        for (const index of utils.array.nd.indices(this.header.sliceByAxis(axes)))
+    *[Symbol.iterator](opts = { axis: [0] }) {
+        for (const index of utils.array.nd.indices(this.header.sliceByAxis(opts.axis)))
             yield this.slice(...index)
     }
 
-    axisFn(axes, operator) {
-        if (!axes.length)
+    axisFn(axis, operator) {
+        if (!axis.length)
             return operator(this.data)
 
         return new MultiDimArray().c2(
-            ...TensorOperator.elementwise(operator, [...this[Symbol.iterator](axes)]))
+            ...TensorOperator.elementwise(operator, [...this[Symbol.iterator]({ axis })]))
     }
 
-    min(opts = { axis: [0] }) { return this.axisFn(opts.axis, TensorOperator.min) }
-    max(opts = { axis: [0] }) { return this.axisFn(opts.axis, TensorOperator.max) }
-    mean(opts = { axis: [0] }) { return this.axisFn(opts.axis, TensorOperator.mean) }
-    norm(opts = { axis: [0] }) { return this.axisFn(opts.axis, TensorOperator.norm) }
+    min(opts = { axis: [] }) { return this.axisFn(opts.axis, TensorOperator.min) }
+    max(opts = { axis: [] }) { return this.axisFn(opts.axis, TensorOperator.max) }
+    mean(opts = { axis: [] }) { return this.axisFn(opts.axis, TensorOperator.mean) }
+    norm(opts = { axis: [] }) { return this.axisFn(opts.axis, TensorOperator.norm) }
 
     elementFn(A, operator) {
         if (A.constructor === Array)
@@ -88,6 +105,11 @@ export default class MultiDimArray {
 
         return new MultiDimArray().c2(
             ...MatrixOperator.multiply(this, A))
+    }
+
+    inv() {
+        return new MultiDimArray().c2(
+            ...MatrixOperator.invert(this))
     }
 
     set(...indices) {
@@ -148,7 +170,7 @@ export default class MultiDimArray {
     }
 
 
-    toRawFlat() { return [...this[Symbol.iterator](...this.header.shape.keys())] }
+    toRawFlat() { return [...this[Symbol.iterator]({ axis: this.header.shape.keys() })] }
     toString() { return util.inspect(this.toRawArray(), { showHidden: false, depth: null }) }
 
     [util.inspect.custom]() { return this.toString() }

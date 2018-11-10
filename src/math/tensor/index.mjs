@@ -13,6 +13,12 @@ export default class TensorOperator {
     static mean(rawArray) { return TensorOperator.add(rawArray) / rawArray.length }
     static norm(rawArray) { return Math.sqrt(TensorOperator.add(TensorOperator.square(rawArray))) }
 
+    static equal(rawArray) {
+        return rawArray.every(function (value, index, array) {
+            return value === array[0]
+        })
+    }
+
     static elementwise(operation, ndArrays) {
         const newType = utils.array.type.compareManyTypes(ndArrays)
         const newData = new newType(ndArrays[0].data.length)
