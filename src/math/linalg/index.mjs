@@ -1,21 +1,11 @@
-import Header from '../../ndarray/header.mjs'
-import utils from '../../utils'
+
 
 export default class LinearAlgebraOperator {
     static matMult(A, B) {
-        const newTypedArray = utils.array.type.compareTypes(A.type, B.type)
-        const newHeader = new Header({ shape: [A.header.shape[0], B.header.shape[1]] })
-        const newData = new newTypedArray(A.header.shape[0] * B.header.shape[1])
-
-        for (let r = 0, i = 0; r < newHeader.shape[0]; r++)
-            for (let c = 0; c < newHeader.shape[1]; c++ , i++)
-                for (let s = 0; s < A.header.shape[1]; s++)
-                    newData[i] +=
-                        utils.array.nd.read(A, [r, s]) *
-                        utils.array.nd.read(B, [s, c])
-
-
-        return [newData, newHeader, newTypedArray]
+        return {
+            data: new Array(utils.linalg.matrixSize(A, B)).fill(0).map(utils.linalg.matrixProduct(A, B)),
+            shape: utils.linalg.matrixShape(A, B)
+        }
     }
 
     static cross(A, B) {
