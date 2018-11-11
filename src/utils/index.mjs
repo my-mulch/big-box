@@ -1,9 +1,11 @@
-import NDArrayUtils from './nd.mjs'
-import HeaderArrayUtils from './header.mjs'
-import RawArrayUtils from './raw.mjs'
+import NDArrayUtils from '../ndarray/utils/ndarray'
+import RawArrayUtils from '../ndarray/utils/raw'
+import HeaderUtils from '../ndarray/utils/header'
+import LinearAlgebraUtils from '../math/linalg/utils'
 
 export default {
-    header: HeaderArrayUtils,
+    header: HeaderUtils,
     ndim: NDArrayUtils,
     raw: RawArrayUtils,
+    linalg: LinearAlgebraUtils
 }

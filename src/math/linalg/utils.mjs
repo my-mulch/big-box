@@ -1,6 +1,7 @@
+import TensorOperator from '../tensor'
 
 export default class LinearAlgebraUtils {
-    static dotProduct(r, c) {
+    static dotProduct(r, c, A, B) {
         return function (result, _, s) {
             return result
                 + (A.header.shape.length === 1 ? A.slice(s) : A.slice(r, s))
@@ -11,8 +12,10 @@ export default class LinearAlgebraUtils {
     static matrixProduct(A, B) {
         const sd = B.header.shape[0] // shared dimension
         const od = B.header.shape.slice(-1).pop() // outer or final dimension
+
         return function (_, i) {
-            return new Float64Array(sd).reduce(dotProduct(Math.floor(i / od), i % od), 0)
+            const [r, c] = [Math.floor(i / od), i % od]
+            return new Array(sd).reduce(dotProduct(r, c, A, B), 0)
         }
     }
 
