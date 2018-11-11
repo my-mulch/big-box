@@ -8,99 +8,106 @@ import Header from './header'
 
 export default class MultiDimArray {
 
-    c1(A, type = 'float64') {
-        this.type = utils.array.type.TYPE_MAP[type]
-        this.data = new this.type(utils.array.raw.flatten(A))
-        this.header = new Header({ shape: utils.array.raw.getShape(A) })
+    constructor(props) {
+        this.header = props.header
+        this.data = props.data
 
-        return this
-    }
-
-    c2(data, header, type) {
-        this.type = type
-        this.header = header
-        this.data = data.constructor === Array ? new this.type(data) : data
-
-        return this.header.shape.length ? this : this.data[this.header.offset]
+        if (this.data.constructor === Array)
+            this.data = new Float64Array(utils.raw.flatten(this.data))
     }
 
     copy() {
-        return new MultiDimArray().c2(this.data.slice(), this.header.copy(), this.type)
+        return new MultiDimArray({
+            data: this.data.slice(),
+            header: this.header.copy()
+        })
     }
 
-    static array(A, type = 'float64') {
-        return new MultiDimArray().c1(A, type)
+    static array(A) {
+        return new MultiDimArray({
+            data: A,
+            header: new Header({ shape: utils.raw.getShape(A) })
+        })
     }
 
     static zeros(...shape) {
-        return new MultiDimArray().c1(utils.array.raw.createRawArray(shape))
+        return new MultiDimArray({
+            data: new Float64Array(TensorOperator.multiply(shape)),
+            header: new Header({ shape })
+        })
     }
 
     static ones(...shape) {
-        return new MultiDimArray().c1(utils.array.raw.createRawArray(shape, function () { return 1 }))
-    }
-
-    static createIdentity(indices) {
-        return [...indices].map(function (index) {
-            return index.reduce(function (last, i) { return last === i ? i : false })
+        return new MultiDimArray({
+            data: new Float64Array(TensorOperator.multiply(shape)).fill(1),
+            header: new Header({ shape })
         })
     }
 
     static eye(...shape) {
-        return new MultiDimArray().c2(
-            [...utils.array.nd.indices(shape)].map(function (index) { return Number(TensorOperator.equal(index)) }),
-            new Header({ shape }),
-            Float64Array)
+
+        function oneForEqualZeroForNot(index) {
+            return Number(TensorOperator.equal(index))
+        }
+
+        return new MultiDimArray({
+            data: [...utils.ndim.indices(shape)].map(oneForEqualZeroForNot),
+            header: new Header({ shape })
+        })
     }
 
-    static arange(...args) {
-        if (args.length === 1)
-            return new MultiDimArray().c1([...utils.math.getIntegerRange(0, args[0], 1)])
-        if (args.length === 2)
-            return new MultiDimArray().c1([...utils.math.getIntegerRange(args[0], args[1], 1)])
-        if (args.length === 3)
-            return new MultiDimArray().c1([...utils.math.getIntegerRange(args[0], args[1], args[2])])
+    static arange(opts) {
+        opts.start = opts.start || 0
+        opts.end = opts.end || 0
+        opts.step = opts.step || 1
+
+        return new MultiDimArray({
+            data: new Int32Array(TensorOperator.getIntegerRange(opts)),
+            header: new Header({ shape: [Math.ceil((opts.end - opts.start) / opts.step)] })
+        })
     }
 
-    *[Symbol.iterator](opts = { axis: [0] }) {
-        for (const index of utils.array.nd.indices(this.header.sliceByAxis(opts.axis)))
+    *[Symbol.iterator](axis = [0]) {
+        for (const index of utils.ndim.indices(this.header.sliceByAxis(axis)))
             yield this.slice(...index)
     }
 
-    axisFn(axis, operator) {
+    axisOperate(axis, operator) {
         if (!axis.length)
             return operator(this.data)
 
-        return new MultiDimArray().c2(
-            ...TensorOperator.elementwise(operator, [...this[Symbol.iterator]({ axis })]))
+        return new MultiDimArray({
+            data: new Float64Array(TensorOperator.elementwise(operator, ...this[Symbol.iterator](axis))),
+            header: new Header({ shape: this.header.shape })
+        })
     }
 
-    min(opts = { axis: [] }) { return this.axisFn(opts.axis, TensorOperator.min) }
-    max(opts = { axis: [] }) { return this.axisFn(opts.axis, TensorOperator.max) }
-    mean(opts = { axis: [] }) { return this.axisFn(opts.axis, TensorOperator.mean) }
-    norm(opts = { axis: [] }) { return this.axisFn(opts.axis, TensorOperator.norm) }
-
-    elementFn(A, operator) {
+    dataOperate(A, operator) {
         if (A.constructor === Array)
             A = MultiDimArray.array(A)
 
-        return new MultiDimArray().c2(
-            ...TensorOperator.elementwise(operator, this, A))
+        return new MultiDimArray({
+            data: new Float64Array(TensorOperator.elementwise(operator, this, A)),
+            header: new Header({ shape: this.header.shape })
+        })
     }
 
-    add(A) { return this.elementFn(A, TensorOperator.add) }
-    subtract(A) { return this.elementFn(A, TensorOperator.subtract) }
-    multiply(A) { return this.elementFn(A, TensorOperator.multiply) }
-    divide(A) { return this.elementFn(A, TensorOperator.divide) }
+    min(...axis) { return this.axisOperate(axis, TensorOperator.min) }
+    max(...axis) { return this.axisOperate(axis, TensorOperator.max) }
+    mean(...axis) { return this.axisOperate(axis, TensorOperator.mean) }
+    norm(...axis) { return this.axisOperate(axis, TensorOperator.norm) }
+
+    add(A) { return this.dataOperate(A, TensorOperator.add) }
+    subtract(A) { return this.dataOperate(A, TensorOperator.subtract) }
+    multiply(A) { return this.dataOperate(A, TensorOperator.multiply) }
+    divide(A) { return this.dataOperate(A, TensorOperator.divide) }
 
     static inv(A) {
         return LinearAlgebraOperator.invert(A, MultiDimArray.eye(...A.header.shape))
     }
 
-    static dot(...many) {
-        return many.reduce(function (result, current) {
-            return result.dot(current)
-        })
+    static dot(A, B) {
+        return new MultiDimArray().c2(...LinearAlgebraOperator.matMult(A, B))
     }
 
     static cross(A, B) {
@@ -114,8 +121,9 @@ export default class MultiDimArray {
         if (A.constructor === Array)
             A = MultiDimArray.array(A)
 
-        return new MultiDimArray().c2(
-            ...LinearAlgebraOperator.matMult(this, A))
+        return MultiDimArray.dot(
+            this.header.shape.length === 1 ? this.reshape(1, this.header.shape[0]) : this,
+            A.header.shape.length === 1 ? A.reshape(A.header.shape[0], 1) : A)
     }
 
     cross(A) {
@@ -134,10 +142,10 @@ export default class MultiDimArray {
                 const region = this.slice(...indices)
 
                 if (region.constructor === Number)
-                    return utils.array.nd.write(this, indices, data)
+                    return utils.ndim.write(this, indices, data)
 
-                for (const index of utils.array.nd.indices(region.header.shape))
-                    utils.array.nd.write(region, index, utils.array.nd.broadcast(data, index))
+                for (const index of utils.ndim.indices(region.header.shape))
+                    utils.ndim.write(region, index, utils.ndim.broadcast(data, index))
 
                 return this
 
@@ -189,7 +197,7 @@ export default class MultiDimArray {
     }
 
 
-    toRawFlat() { return [...this[Symbol.iterator]({ axis: this.header.shape.keys() })] }
+    toRawFlat() { return [...this[Symbol.iterator]([...this.header.shape.keys()])] }
     toString() { return util.inspect(this.toRawArray(), { showHidden: false, depth: null }) }
 
     [util.inspect.custom]() { return this.toString() }
@@ -197,9 +205,11 @@ export default class MultiDimArray {
 
 class Random {
     static randint(low, high, shape) {
-        return MultiDimArray.array(utils.array.raw.createRawArray(shape, function () {
+        function randomNumbers() {
             return ProbabilityOperator.randInt(low, high)
-        }))
+        }
+
+        return new Int32Array(TensorOperator.multiply(shape)).map(randomNumbers)
     }
 }
 

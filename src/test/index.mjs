@@ -1,10 +1,9 @@
 import nd from '../ndarray'
 
+const A = nd.random.randint(0, 10, [3, 4, 2])
 
-const a = nd.array([3, 4, 5])
-const b = nd.array([4, 3, 5])
-const c = nd.array([-5, -12, -13])
-
-console.log(nd.cross(a, b))
-
+console.log(A)
+// console.log(a.dot(b))
 // A x B: 5, 5, -7
+
+// console.log(z.dot(x).header.shape)

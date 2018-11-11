@@ -1,5 +1,4 @@
 import ScalarOperator from '../scalar'
-import Header from '../../ndarray/header'
 import utils from '../../utils'
 
 export default class TensorOperator {
@@ -19,15 +18,19 @@ export default class TensorOperator {
         })
     }
 
+    static * getIntegerRange(opts) {
+        while (opts.start < opts.end) {
+            yield opts.start
+            opts.start += opts.step
+        }
+    }
+
     static elementwise(operation, ...ndArrays) {
-        const newType = utils.array.type.compareManyTypes(ndArrays)
-        const newData = new newType(ndArrays[0].data.length)
-        const newHeader = new Header({ shape: ndArrays[0].header.shape })
 
-        let i = 0
-        for (const index of utils.array.nd.indices(newHeader.shape))
-            newData[i++] = operation(utils.array.nd.readMany(ndArrays, index))
+        function operateAtIndex(index) {
+            return operation(utils.ndim.readMany(ndArrays, index))
+        }
 
-        return [newData, newHeader, newType]
+        return [...utils.ndim.indices(ndArrays[0].header.shape)].map(operateAtIndex)
     }
 }
