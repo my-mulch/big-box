@@ -16,10 +16,9 @@ export default class MultiDimArray {
             this.data = new Float64Array(utils.raw.flatten(this.data))
     }
 
-    copy() {
-        return new MultiDimArray({
-            data: this.data.slice(),
-            header: this.header.copy()
+    static convert(...arrays) {
+        return arrays.map(function (array) {
+            return array.constructor === Array ? MultiDimArray.array(array) : array
         })
     }
 
@@ -67,6 +66,13 @@ export default class MultiDimArray {
         })
     }
 
+    copy() {
+        return new MultiDimArray({
+            data: this.data.slice(),
+            header: this.header.copy()
+        })
+    }
+
     *[Symbol.iterator](axis = [0]) {
         for (const index of utils.ndim.indices(this.header.sliceByAxis(axis)))
             yield this.slice(...index)
@@ -83,8 +89,7 @@ export default class MultiDimArray {
     }
 
     dataOperate(A, operator) {
-        if (A.constructor === Array)
-            A = MultiDimArray.array(A)
+        const [A] = MultiDimArray.convert(A)
 
         return new MultiDimArray({
             data: new Float64Array(TensorOperator.elementwise(operator, this, A)),
@@ -103,49 +108,56 @@ export default class MultiDimArray {
     divide(A) { return this.dataOperate(A, TensorOperator.divide) }
 
     static inv(A) {
-        return LinearAlgebraOperator.invert(A, MultiDimArray.eye(...A.header.shape))
+        return new MultiDimArray({
+            data: LinearAlgebraOperator.invert(A, MultiDimArray.eye(...A.header.shape)),
+            shape: new Header({ shape: A.header.shape })
+        })
     }
 
     static dot(A, B) {
-        return new MultiDimArray().c2(...LinearAlgebraOperator.matMult(A, B))
+        const [A, B] = MultiDimArray.convert(A, B)
+
+        return new MultiDimArray({
+            data: LinearAlgebraOperator.matMult(A, B),
+            header: new Header({ shape: utils.linalg.matrixShape(A, B) })
+        })
     }
 
     static cross(A, B) {
-        if (A.constructor === Array)
-            A = MultiDimArray.array(A)
+        const [A, B] = MultiDimArray.convert(A, B)
 
-        return A.cross(B)
+        return new MultiDimArray({
+            data: LinearAlgebraOperator.cross(A, B),
+            header: new Header({ shape: A.header.shape })
+        })
     }
 
     dot(A) {
-        if (A.constructor === Array)
-            A = MultiDimArray.array(A)
+        const [A] = MultiDimArray.convert(A)
 
-        return MultiDimArray.dot(
-            this.header.shape.length === 1 ? this.reshape(1, this.header.shape[0]) : this,
-            A.header.shape.length === 1 ? A.reshape(A.header.shape[0], 1) : A)
+        return MultiDimArray.dot(this, A)
     }
 
     cross(A) {
-        if (A.constructor === Array)
-            A = MultiDimArray.array(A)
+        const [A] = MultiDimArray.convert(A)
 
-        return LinearAlgebraOperator.cross(this, A)
+        return MultiDimArray.cross(this, A)
     }
+
+    inv() { return MultiDimArray.inv(this) }
 
     set(...indices) {
         return {
-            to: (function (data) {
-                if (data.constructor === Array)
-                    data = MultiDimArray.array(data)
+            to: (function (A) {
+                const [A] = MultiDimArray.convert(A)
 
                 const region = this.slice(...indices)
 
                 if (region.constructor === Number)
-                    return utils.ndim.write(this, indices, data)
+                    return utils.ndim.write(this, indices, A)
 
                 for (const index of utils.ndim.indices(region.header.shape))
-                    utils.ndim.write(region, index, utils.ndim.broadcast(data, index))
+                    utils.ndim.write(region, index, utils.ndim.broadcast(A, index))
 
                 return this
 
