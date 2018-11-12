@@ -39,7 +39,6 @@ array([[  0,  1,  2,  3,  4],
 ```
 
 ### Indexing, Slicing, and Striding
--1, or ':', or any number less than 0
 
 ```js
 > const a = ndim.array([0,1,2]);
@@ -51,7 +50,7 @@ array([[  0,  1,  2,  3,  4],
 array([[  0,  1,  2],
        [  3,  4,  5],
        [  6,  7,  8])
-> b.slice(':',1)
-array([[1,4,7]])
+> b.slice('1:',1)
+array([[4,7]])
 
 ```
