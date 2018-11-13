@@ -74,16 +74,19 @@ export default class MultiDimArray {
     }
 
     static dot(A, B) {
-        const [A, B] = MultiDimArray.convert(A, B)
+        [A, B] = MultiDimArray.convert(A, B)
+
+        if (utils.linalg.matrixSize(A, B) === 1)
+            return LinearAlgebraOperator.matMult(A, B).pop()
 
         return new MultiDimArray({
-            data: LinearAlgebraOperator.matMult(A, B),
+            data: new Float64Array(LinearAlgebraOperator.matMult(A, B)),
             header: new Header({ shape: utils.linalg.matrixShape(A, B) })
         })
     }
 
     static cross(A, B) {
-        const [A, B] = MultiDimArray.convert(A, B)
+        [A, B] = MultiDimArray.convert(A, B)
 
         return new MultiDimArray({
             data: LinearAlgebraOperator.cross(A, B),
@@ -131,7 +134,7 @@ export default class MultiDimArray {
     set(...indices) {
         return {
             to: (function (A) {
-                const [A] = MultiDimArray.convert(A)
+                [A] = MultiDimArray.convert(A)
                 const region = this.slice(...indices)
 
                 if (region.constructor === Number)
@@ -193,10 +196,10 @@ export default class MultiDimArray {
         })
     }
 
-    toRawFlat() { return [...this.axis([...this.header.shape.keys()])] }
+    toRawFlat() { return [...this.axis(...this.header.shape.keys())] }
     toString() { return util.inspect(this.toRawArray(), { showHidden: false, depth: null }) }
 
-    *[Symbol.iterator]() { yield* this.axis() }
+    *[Symbol.iterator]() { yield* this.axis(0) }
     [util.inspect.custom]() { return this.toString() }
 }
 

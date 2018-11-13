@@ -1,4 +1,5 @@
 import TensorOperator from '../tensor'
+import ScalarOperator from '../scalar'
 
 export default class LinearAlgebraUtils {
     static dotProduct(r, c, A, B) {
@@ -15,7 +16,7 @@ export default class LinearAlgebraUtils {
 
         return function (_, i) {
             const [r, c] = [Math.floor(i / od), i % od]
-            return new Array(sd).reduce(dotProduct(r, c, A, B), 0)
+            return new Array(sd).fill(0).reduce(LinearAlgebraUtils.dotProduct(r, c, A, B), 0)
         }
     }
 
@@ -25,6 +26,9 @@ export default class LinearAlgebraUtils {
     }
 
     static matrixShape(A, B) {
-        return [A.header.shape[0], B.header.shape[1]]
+        return [
+            A.header.shape.length === 1 ? 1 : A.header.shape[0],
+            A.header.shape.length === 1 ? 1 : B.header.shape[1]
+        ]
     }
 }

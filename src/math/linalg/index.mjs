@@ -2,10 +2,7 @@ import utils from '../../utils'
 
 export default class LinearAlgebraOperator {
     static matMult(A, B) {
-        return {
-            data: new Float64Array(utils.linalg.matrixSize(A, B)).map(utils.linalg.matrixProduct(A, B)),
-            shape: utils.linalg.matrixShape(A, B)
-        }
+        return new Array(utils.linalg.matrixSize(A, B)).fill(0).map(utils.linalg.matrixProduct(A, B))
     }
 
     static cross(A, B) {

@@ -17,15 +17,9 @@ export default class TensorOperator {
 
     static * range(start, stop, step) { do yield start; while (start += step < stop) }
 
-
-
-
     static elementwise(operation, ...ndArrays) {
-
-        function operateAtIndex(index) {
+        return [...utils.ndim.indices(ndArrays[0].header.shape)].map(function (index) {
             return operation(utils.ndim.readMany(ndArrays, index))
-        }
-
-        return [...utils.ndim.indices(ndArrays[0].header.shape)].map(operateAtIndex)
+        })
     }
 }

@@ -51,7 +51,7 @@ export default class ArrayUtils {
             if (Array.isArray(rawArray[i]))
                 yield* this.flatten(rawArray[i])
 
-            else if (rawArray[i].constructor === NUMBER)
+            else if (rawArray[i].constructor === Number)
                 yield rawArray[i]
 
             else // it is a MultiDimArray
