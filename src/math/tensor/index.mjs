@@ -14,8 +14,7 @@ export default class TensorOperator {
 
     static mean(rawArray) { return TensorOperator.add(rawArray) / rawArray.length }
     static norm(rawArray) { return Math.sqrt(TensorOperator.add(TensorOperator.square(rawArray))) }
-
-    static * range(start, stop, step) { do yield start; while (start += step < stop) }
+    static * range(start, stop, step) { do yield start; while ((start += step) < stop) }
 
     static elementwise(operation, ...ndArrays) {
         return [...utils.ndim.indices(ndArrays[0].header.shape)].map(function (index) {

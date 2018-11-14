@@ -54,7 +54,7 @@ export default class MultiDimArray {
 
         return new MultiDimArray({
             data: new Float64Array(TensorOperator.range(start, stop, step)),
-            header: new Header({ shape: [Math.ceil((end - start) / step)] })
+            header: new Header({ shape: [Math.ceil((stop - start) / step)] })
         })
     }
 
