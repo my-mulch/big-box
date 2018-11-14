@@ -3,11 +3,9 @@ export default class FakeJest {
     static expect(stuff) {
         return {
             equals: function (otherStuff) {
-                console.log(
-                    JSON.stringify(stuff) === JSON.stringify(otherStuff)
-                        ? 'Passed!'
-                        : 'Failed'
-                )
+                stuff = JSON.stringify(stuff)
+                otherStuff = JSON.stringify(otherStuff)
+                console.log(stuff === otherStuff ? 'Passed!' : `Failed: expected ${stuff} to equal ${otherStuff}`)
             }
         }
     }

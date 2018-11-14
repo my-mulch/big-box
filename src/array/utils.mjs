@@ -60,7 +60,8 @@ export default class ArrayUtils {
     }
 
     static getShape(rawArray, shape = []) {
-        if (!rawArray.length) return shape
+        if (rawArray.constructor === Number) return shape
+        if (rawArray.constructor !== Array) return shape.concat(rawArray.header.shape)
 
         return this.getShape(rawArray[0], shape.concat(rawArray.length))
     }
