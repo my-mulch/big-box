@@ -44,4 +44,7 @@ FakeJest.expect(nd.arange(10).toRawArray()).equals([0, 1, 2, 3, 4, 5, 6, 7, 8, 9
 FakeJest.expect(nd.arange(2, 10).toRawArray()).equals([2, 3, 4, 5, 6, 7, 8, 9])
 FakeJest.expect(nd.arange(5, 11, 3).toRawArray()).equals([5, 8])
 
+FakeJest.expect(B.copy().data).notEqualsByReference(B.data)
+FakeJest.expect(B.copy().toRawArray()).equals(B.toRawArray())
+
 console.log('\n\n-------- End Creation Suite --------\n\n')
