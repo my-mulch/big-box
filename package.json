@@ -4,7 +4,7 @@
   "description": "A suite of methods to manipulate MDA",
   "main": "src/ndarray/index.mjs",
   "scripts": {
-    "test": "node --experimental-modules src/test/"
+    "test": "node --experimental-modules src/test"
   },
   "repository": {
     "type": "git",
@@ -16,5 +16,7 @@
     "url": "https://github.com/trumanpurnell/dimsum/issues"
   },
   "homepage": "https://github.com/trumanpurnell/dimsum#readme",
-  "dependencies": {}
+  "dependencies": {
+    "jasmine": "^3.3.0"
+  }
 }

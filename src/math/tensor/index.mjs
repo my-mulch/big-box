@@ -1,5 +1,5 @@
 import ScalarOperator from '../scalar'
-import utils from '../../utils'
+import utils from '../../top/utils'
 
 export default class TensorOperator {
     static add(rawArray) { return rawArray.reduce(ScalarOperator.add) }

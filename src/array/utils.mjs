@@ -1,4 +1,4 @@
-import constants from '../contants'
+import constants from '../top/contants'
 
 export default class ArrayUtils {
 

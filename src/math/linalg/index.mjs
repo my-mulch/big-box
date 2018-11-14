@@ -1,4 +1,4 @@
-import utils from '../../utils'
+import utils from '../../top/utils'
 
 export default class LinearAlgebraOperator {
     static matMult(A, B) {

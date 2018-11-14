@@ -1,6 +1,6 @@
 import ScalarOperator from '../math/scalar'
 import TensorOperator from '../math/tensor'
-import utils from '../utils'
+import utils from '../top/utils'
 
 export default class Header {
     constructor(opts) {

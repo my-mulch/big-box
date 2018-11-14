@@ -3,7 +3,7 @@ import TensorOperator from '../math/tensor'
 import LinearAlgebraOperator from '../math/linalg'
 
 import util from 'util' // node's
-import utils from '../utils' // mine
+import utils from '../top/utils' // mine
 import Header from '../header'
 
 export default class MultiDimArray {
