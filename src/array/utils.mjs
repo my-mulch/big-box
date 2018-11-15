@@ -14,8 +14,8 @@ export default class ArrayUtils {
     }
 
     static broadcast(ndArray, index) {
-        if (ndArray.constructor === Number)
-            return ndArray
+        if (!ndArray.header.shape.length)
+            return ndArray.data[0]
 
         if (ndArray.header.shape.length !== index.length)
             return this.read(ndArray, index.slice(-ndArray.header.shape.length))
@@ -47,6 +47,12 @@ export default class ArrayUtils {
     }
 
     static * flatten(rawArray) {
+        if (rawArray.constructor === Number)
+            yield rawArray
+
+        else if (rawArray.constructor !== Array) // it is a MultiDimArray!
+            yield* rawArray.data
+
         for (let i = 0; i < rawArray.length; i++) {
             if (Array.isArray(rawArray[i]))
                 yield* this.flatten(rawArray[i])
@@ -54,7 +60,7 @@ export default class ArrayUtils {
             else if (rawArray[i].constructor === Number)
                 yield rawArray[i]
 
-            else // it is a MultiDimArray
+            else // it is a MultiDimArray!
                 yield* this.flatten(rawArray[i].toRawFlat())
         }
     }

@@ -2,24 +2,28 @@
 export default class FakeJest {
     static expect(stuff) {
         return {
-            equals: function (otherStuff) {
-                console.log(JSON.stringify(stuff) === JSON.stringify(otherStuff)
+            toEqual: function (otherStuff) {
+                stuff = JSON.stringify(stuff)
+                otherStuff = JSON.stringify(otherStuff)
+                console.log(stuff === otherStuff
                     ? 'Passed!'
                     : `Failed: expected ${stuff} to equal ${otherStuff}`)
             },
 
-            equalsByReference: function (otherStuff) {
+            toEqualByReference: function (otherStuff) {
                 console.log(stuff === otherStuff
                     ? 'Passed!'
                     : `Failed: expected ${JSON.stringify(otherStuff)} reference to equal ${JSON.stringify(otherStuff)} reference`)
             },
 
-            notEqualsByReference: function (otherStuff) {
+            toNotEqualByReference: function (otherStuff) {
                 console.log(stuff !== otherStuff
                     ? 'Passed!'
                     : `Failed: expected ${JSON.stringify(stuff)} reference to differ from ${JSON.stringify(otherStuff)} reference`)
             }
         }
     }
+
+    static execute(...suites) { suites.map(function (suite) { suite(FakeJest) }) }
 
 }

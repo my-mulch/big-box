@@ -15,7 +15,7 @@ export default class MultiDimArray {
 
     static convert(...arrays) {
         return arrays.map(function (array) {
-            return array.constructor === Array ? MultiDimArray.array(array) : array
+            return array.constructor !== MultiDimArray ? MultiDimArray.array(array) : array
         })
     }
 
@@ -76,6 +76,15 @@ export default class MultiDimArray {
     static dot(A, B) {
         [A, B] = MultiDimArray.convert(A, B)
 
+        if (!A.header.shape.length && !B.header.shape.length)
+            return A.data[0] * B.data[0]
+
+        if (!A.header.shape.length)
+            return B.multiply(A)
+
+        if (!B.header.shape.length)
+            return A.multiply(B)
+
         if (utils.linalg.matrixSize(A, B) === 1)
             return LinearAlgebraOperator.matMult(A, B).pop()
 
@@ -111,7 +120,7 @@ export default class MultiDimArray {
 
     dataOperate(A, operator) {
         return new MultiDimArray({
-            data: new Float64Array(TensorOperator.elementwise(operator, this, MultiDimArray.convert(A))),
+            data: new Float64Array(TensorOperator.elementwise(operator, this, ...MultiDimArray.convert(A))),
             header: new Header({ shape: this.header.shape })
         })
     }
@@ -126,8 +135,8 @@ export default class MultiDimArray {
     multiply(A) { return this.dataOperate(A, TensorOperator.multiply) }
     divide(A) { return this.dataOperate(A, TensorOperator.divide) }
 
-    dot(A) { return MultiDimArray.dot(this, MultiDimArray.convert(A)) }
-    cross(A) { return MultiDimArray.cross(this, MultiDimArray.convert(A)) }
+    dot(A) { return MultiDimArray.dot(this, ...MultiDimArray.convert(A)) }
+    cross(A) { return MultiDimArray.cross(this, ...MultiDimArray.convert(A)) }
     inv() { return MultiDimArray.inv(this) }
 
 
