@@ -29,35 +29,6 @@ export default class LinearAlgebraUtils {
         return [A.header.shape[0], B.header.shape[1]]
     }
 
-    static matrixInverse(A, I) {
-        const d = A.header.shape[0]
-
-        return function (_, i) {
-            const [row, col, freshColumn] = [i % d, Math.floor(i / d), i % d === 0]
-
-            if (freshColumn) {
-                const pivotRow = LinearAlgebraUtils.seekPivotRow(A, col)
-
-                if (pivotRow !== row) {
-                    LinearAlgebraUtils.swapRows(A, row, pivotRow)
-                    LinearAlgebraUtils.swapRows(I, row, pivotRow)
-                }
-
-                const pivot = A.slice(row, col)
-
-                A.set(row).to(A.slice(row).divide(pivot))
-                I.set(row).to(I.slice(row).divide(pivot))
-            }
-
-            if (row !== col) {
-                LinearAlgebraUtils.eliminate(A, row, col)
-                LinearAlgebraUtils.eliminate(I, row, col)
-            }
-
-            return I.slice(row, col)
-        }
-    }
-
     static swapRows(A, r1, r2) {
         const temp = A.slice(r1)
         A.set(r1).to(A.slice(r2))
@@ -65,12 +36,7 @@ export default class LinearAlgebraUtils {
     }
 
     static eliminate(A, row, col) {
-        const pivotRow = A.slice(col) // Square Matrix! 
-        const rowToEliminate = A.slice(row)
-        const eliminator = pivotRow.multiply(A.slice(row, col))
-        const eliminatedRow = rowToEliminate.subtract(eliminator)
-
-        A.set(row).to(eliminatedRow)
+        A.set(row).to(A.slice(row).subtract(A.slice(col).multiply(knockout)))
     }
 
     static seekPivotRow(A, col) {

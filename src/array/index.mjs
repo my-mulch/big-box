@@ -86,13 +86,6 @@ export default class MultiDimArray {
         })
     }
 
-    static inv(A) {
-        return new MultiDimArray({
-            data: LinearAlgebraOperator.invert(A, MultiDimArray.eye(...A.header.shape)),
-            shape: new Header({ shape: A.header.shape })
-        })
-    }
-
     static cross(A, B) {
         [A, B] = MultiDimArray.convert(A, B)
 
@@ -100,6 +93,12 @@ export default class MultiDimArray {
             data: LinearAlgebraOperator.cross(A, B),
             header: new Header({ shape: utils.linalg.matrixShape(A, B) })
         })
+    }
+
+    static inv(A) {
+        [A] = MultiDimArray.convert(A)
+
+        return LinearAlgebraOperator.invert(A, MultiDimArray.eye(...A.header.shape))
     }
 
     axis(...axes) {
