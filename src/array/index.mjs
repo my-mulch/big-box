@@ -65,14 +65,6 @@ export default class MultiDimArray {
         })
     }
 
-
-    static inv(A) {
-        return new MultiDimArray({
-            data: LinearAlgebraOperator.invert(A, MultiDimArray.eye(...A.header.shape)),
-            shape: new Header({ shape: A.header.shape })
-        })
-    }
-
     static dot(A, B) {
         [A, B] = MultiDimArray.convert(A, B)
 
@@ -86,11 +78,18 @@ export default class MultiDimArray {
             return A.multiply(B)
 
         if (utils.linalg.matrixSize(A, B) === 1)
-            return LinearAlgebraOperator.matMult(A, B).pop()
+            return LinearAlgebraOperator.matMult(A, B)[0]
 
         return new MultiDimArray({
-            data: new Float64Array(LinearAlgebraOperator.matMult(A, B)),
+            data: LinearAlgebraOperator.matMult(A, B),
             header: new Header({ shape: utils.linalg.matrixShape(A, B) })
+        })
+    }
+
+    static inv(A) {
+        return new MultiDimArray({
+            data: LinearAlgebraOperator.invert(A, MultiDimArray.eye(...A.header.shape)),
+            shape: new Header({ shape: A.header.shape })
         })
     }
 
@@ -99,7 +98,7 @@ export default class MultiDimArray {
 
         return new MultiDimArray({
             data: LinearAlgebraOperator.cross(A, B),
-            header: new Header({ shape: A.header.shape })
+            header: new Header({ shape: utils.linalg.matrixShape(A, B) })
         })
     }
 
