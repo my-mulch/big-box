@@ -3,6 +3,9 @@ export default class FakeJest {
     static expect(stuff) {
         return {
             toEqual: function (otherStuff) {
+                if (stuff.header) stuff = stuff.toRawArray()
+                if (otherStuff.header) otherStuff = otherStuff.toRawArray()
+
                 stuff = JSON.stringify(stuff)
                 otherStuff = JSON.stringify(otherStuff)
                 console.log(stuff === otherStuff
