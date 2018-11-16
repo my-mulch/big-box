@@ -107,7 +107,7 @@ export default class MultiDimArray {
     }
 
     axisOperate(axes, operator) {
-        if (!axis.length)
+        if (!axes.length)
             return operator(this.data)
 
         return new MultiDimArray({

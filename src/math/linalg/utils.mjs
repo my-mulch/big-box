@@ -35,10 +35,6 @@ export default class LinearAlgebraUtils {
         A.set(r2).to(temp)
     }
 
-    static eliminate(A, row, col) {
-        A.set(row).to(A.slice(row).subtract(A.slice(col).multiply(knockout)))
-    }
-
     static seekPivotRow(A, col) {
         for (let row = col; row < A.header.shape[0]; row++)
             if (A.slice(row, col)) // return non zero pivot
