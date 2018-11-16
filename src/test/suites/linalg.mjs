@@ -32,9 +32,7 @@ export default function (FakeJest) {
 
     FakeJest.expect(nd.inv(D)).toEqual([[-0.5, -0.125, 0.625], [1., 0., -0.5], [0., 0.25, -0.25]])
     FakeJest.expect(nd.inv([[6, 4], [5, 2]])).toEqual([[-0.25, 0.5], [0.625, -0.75]])
-
-
-
+    FakeJest.expect(nd.cross([3, -3, 1], [4, 9, 2])).toEqual([-15, -2, 39])
 
     console.log('\n\n-------- End Linear Algebra Suite --------\n\n')
 }

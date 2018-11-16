@@ -91,7 +91,7 @@ export default class MultiDimArray {
 
         return new MultiDimArray({
             data: LinearAlgebraOperator.cross(A, B),
-            header: new Header({ shape: utils.linalg.matrixShape(A, B) })
+            header: new Header({ shape: A.header.shape })
         })
     }
 
