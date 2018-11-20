@@ -1,3 +1,4 @@
+import constants from '../top/contants'
 
 export default class HeaderUtils {
 
@@ -21,8 +22,43 @@ export default class HeaderUtils {
         return true
     }
 
+    static upshift(index, shift) {
+        return (index + shift) % shift
+    }
+
+    static explode(index) {
+        return index.split(constants.ND_SLICE_CHARACTER).map(Number)
+    }
+
+
+    static shape(newShape, index, i) {
+        const upshift = HeaderUtils.upshift.bind(null, this.shape[i])
+
+        return newShape.concat(HeaderUtils.explode(index).reduce(function (low, high) {
+            if (high === undefined) return []
+
+            return upshift(high) - upshift(low) || this.shape[i]
+        }))
+    }
+
+    static stride(newStride, index, i) {
+        return newStride.concat(HeaderUtils.explode(index).reduce(function (low, high) {
+            if (high === undefined) return []
+
+            return this.stride[i]
+        }))
+    }
+
+    static offset(newOffset, index, i) {
+        return newOffset + HeaderUtils.explode(index).reduce(function (low, high) {
+            return (low + this.shape[i]) % this.shape[i] * this.stride[i]
+        })
+    }
+
+
+
     static flatten(globalIndex, index, dim) {
-        return flatIndex + index * this.stride[dim]
+        return globalIndex + index * this.stride[dim]
     }
 
     static inflate(index) {

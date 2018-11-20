@@ -9,8 +9,8 @@ export default class Header {
         this.offset = 'offset' in opts ? opts.offset : 0
         this.contig = 'contig' in opts ? opts.contig : true
 
-        this.stride.local = 'local' in opts.stride ? opts.stride.local : utils.header.getStride(this.shape)
-        this.stride.global = 'global' in opts.stride ? opts.stride.global : this.stride.local
+        this.stride.local = utils.header.getStride(this.shape)
+        this.stride.global = 'stride' in opts.stride ? opts.stride : this.stride.local
 
         this.size = this.shape.reduce(ScalarOperator.multiply)
     }
@@ -33,6 +33,13 @@ export default class Header {
     }
 
     slice(indices) {
+
+        return new Header({
+            offset: indices.reduce(utils.header.offset, this.offset),
+            shape: indices.reduce(utils.header.shape, new Array()),
+            stride: indices.reduce(utils.header.stride, new Array()),
+            contig: indices.reduce()
+        })
         const newHeader = this.copy()
 
         for (let i = 0, del = 0; i < this.shape.length; i++) {
@@ -73,20 +80,18 @@ export default class Header {
     }
 
     reshape(shape) {
-        const newShape = shape.map(utils.header.reshape)
-        const lastStride = this.stride.slice(-1).pop()
-
         return new Header({
-            shape: newShape,
-            stride: { global: utils.header.getStride(newShape, lastStride) }
+            shape: shape.map(utils.header.reshape),
+            stride: utils.header.getStride(shape.map(utils.header.reshape), this.stride.slice(-1).pop())
         })
     }
 
     transpose() {
         return new Header({
             shape: this.shape.slice().reverse(),
-            stride: { global: this.stride.slice().reverse() },
+            stride: this.stride.slice().reverse(),
             contig: false
         })
     }
+
 }
