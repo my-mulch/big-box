@@ -23,13 +23,7 @@ export default class ArrayUtils {
         return this.read(ndArray, index)
     }
 
-    static lookup(ndArray, index) {
-        // gets flat index from multidim index
-        return ndArray.header.offset + index.reduce(function (finalIndex, idxValue, dimension) {
-            return finalIndex + idxValue * ndArray.header.stride[dimension]
-        }, 0)
-    }
-
+   
     static write(ndArray, index, data) {
         ndArray.data[this.lookup(ndArray, index)] = data
 

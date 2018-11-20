@@ -1,15 +1,18 @@
 import ScalarOperator from '../math/scalar'
-import TensorOperator from '../math/tensor'
 import utils from '../top/utils'
 
 export default class Header {
     constructor(opts) {
-        this.shape = opts.shape
-        this.size = TensorOperator.multiply(this.shape)
+        this.stride = {}
 
-        this.stride = opts.stride !== undefined ? opts.stride : utils.header.getStride(this.shape)
-        this.offset = opts.offset !== undefined ? opts.offset : 0
-        this.contig = opts.contig !== undefined ? opts.contig : true
+        this.shape = 'shape' in opts ? opts.shape : []
+        this.offset = 'offset' in opts ? opts.offset : 0
+        this.contig = 'contig' in opts ? opts.contig : true
+
+        this.stride.local = 'local' in opts.stride ? opts.stride.local : utils.header.getStride(this.shape)
+        this.stride.global = 'global' in opts.stride ? opts.stride.global : this.stride.local
+
+        this.size = this.shape.reduce(ScalarOperator.multiply)
     }
 
     copy() {
@@ -17,7 +20,44 @@ export default class Header {
     }
 
     fullySpecified(indices) {
-        return indices.length === this.shape.length && indices.every(utils.header.isNumber)
+        return indices.length === this.shape.length
+            && indices.every(function (index) { return index.constructor === Number })
+    }
+
+    flatten(indices) {
+        return indices.reduce(utils.header.flatten.bind(this), this.offset)
+    }
+
+    inflate(index) {
+        return this.stride.local.reduce(utils.header.inflate(index).bind(this), this.offset)
+    }
+
+    slice(indices) {
+        const newHeader = this.copy()
+
+        for (let i = 0, del = 0; i < this.shape.length; i++) {
+            if (indices[i] === undefined) break
+
+            let [low, high] = indices[i].split(':').map(Number)
+
+            if (high === 0 && low === 0) continue // sliced entire axis
+            if (high <= 0) high += this.shape[i]
+            if (low < 0) low += this.shape[i]
+
+            newHeader.shape[i - del] = high - low
+            newHeader.offset += this.stride[i] * low
+
+            if (high === undefined) { // if a simple index is specified
+                newHeader.stride.splice(i - del, 1)
+                newHeader.shape.splice(i - del, 1)
+                del++
+            }
+        }
+
+        newHeader.contig = utils.header.isContiguousSlice(indices)
+        newHeader.size = newHeader.shape.reduce(ScalarOperator.multiply)
+
+        return newHeader
     }
 
     axis(axes) {
@@ -32,50 +72,21 @@ export default class Header {
         })
     }
 
-    slice(indices) {
-        const newHeader = this.copy()
-
-        for (let i = 0, del = 0; i < this.shape.length; i++) {
-            if (indices[i] === undefined) break
-
-            let [low, high] = indices[i].split(':').map(Number)
-
-            if (high === 0 && low === 0) continue // sliced entire axis
-            if (high <= 0) high += this.shape[i]
-
-            newHeader.shape[i - del] = high - low
-            newHeader.offset += this.stride[i] * low
-
-            if (high === undefined) { // if a simple index is specified
-                newHeader.stride.splice(i - del, 1)
-                newHeader.shape.splice(i - del, 1)
-                del++
-            }
-        }
-
-        newHeader.contig = utils.header.isContiguousSlice(indices)
-        newHeader.size = TensorOperator.multiply(newHeader.shape)
-
-        return newHeader
-    }
-
     reshape(shape) {
-        const newHeader = this.copy()
-        const lastDim = newHeader.stride[newHeader.stride.length - 1]
+        const newShape = shape.map(utils.header.reshape)
+        const lastStride = this.stride.slice(-1).pop()
 
-        newHeader.shape = shape.map(utils.header.smartReshape(shape, this.size))
-        newHeader.stride = utils.header.getStride(newHeader.shape, lastDim)
-
-        return newHeader
+        return new Header({
+            shape: newShape,
+            stride: { global: utils.header.getStride(newShape, lastStride) }
+        })
     }
 
     transpose() {
-        const newHeader = this.copy()
-
-        newHeader.stride.reverse()
-        newHeader.shape.reverse()
-        newHeader.contig = false
-
-        return newHeader
+        return new Header({
+            shape: this.shape.slice().reverse(),
+            stride: { global: this.stride.slice().reverse() },
+            contig: false
+        })
     }
 }

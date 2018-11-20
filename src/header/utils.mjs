@@ -7,10 +7,6 @@ export default class HeaderUtils {
         }, [lastDim]).slice(1)
     }
 
-    static isNumber(index) {
-        return index.constructor === Number
-    }
-
     static isContiguousSlice(indices) {
         let lastSeenSLice = -1
 
@@ -25,10 +21,18 @@ export default class HeaderUtils {
         return true
     }
 
-    static smartReshape(shape, size) {
-        return function (dim) {
-            return dim > 0 ? dim : size / -TensorOperator.multiply(shape)
+    static flatten(globalIndex, index, dim) {
+        return flatIndex + index * this.stride[dim]
+    }
+
+    static inflate(index) {
+        return function (globalIndex, stride, dim) {
+            return globalIndex + Math.floor(index / stride) % this.shape[dim]
         }
+    }
+
+    static reshape(dim, _, shape) {
+        return dim > 0 ? dim : size / -TensorOperator.multiply(shape)
     }
 
 }

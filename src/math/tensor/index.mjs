@@ -17,8 +17,8 @@ export default class TensorOperator {
     static * range(start, stop, step) { do yield start; while ((start += step) < stop) }
 
     static elementwise(operation, ...ndArrays) {
-        return [...utils.array.indices(ndArrays[0].header.shape)].map(function (index) {
-            return operation(utils.array.readMany(ndArrays, index))
+        return new Float64Array(ndArrays[0].header.size).map(function (_, i) {
+            return operation(utils.array.readMany(ndArrays, i))
         })
     }
 }

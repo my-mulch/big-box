@@ -111,14 +111,14 @@ export default class MultiDimArray {
             return operator(this.data)
 
         return new MultiDimArray({
-            data: new Float64Array(TensorOperator.elementwise(operator, ...this.axis(...axes))),
+            data: TensorOperator.elementwise(operator, ...this.axis(...axes)),
             header: new Header({ shape: this.header.shape })
         })
     }
 
     dataOperate(A, operator) {
         return new MultiDimArray({
-            data: new Float64Array(TensorOperator.elementwise(operator, this, ...MultiDimArray.convert(A))),
+            data: TensorOperator.elementwise(operator, this, ...MultiDimArray.convert(A)),
             header: new Header({ shape: this.header.shape })
         })
     }
@@ -165,7 +165,7 @@ export default class MultiDimArray {
 
     slice(...indices) {
         if (this.header.fullySpecified(indices))
-            return utils.array.read(this, indices)
+            return this.data[this.header.flatten(indices)]
 
         return new MultiDimArray({
             data: this.data,
