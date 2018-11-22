@@ -58,13 +58,6 @@ export default class MultiDimArray {
         })
     }
 
-    copy() {
-        return new MultiDimArray({
-            data: this.data.slice(),
-            header: this.header.copy()
-        })
-    }
-
     static dot(A, B) {
         [A, B] = MultiDimArray.convert(A, B)
 
@@ -99,6 +92,10 @@ export default class MultiDimArray {
         [A] = MultiDimArray.convert(A)
 
         return LinearAlgebraOperator.invert(A, MultiDimArray.eye(...A.header.shape))
+    }
+
+    read(index) {
+        return this.data[this.header.inflate(index)]
     }
 
     axis(...axes) {

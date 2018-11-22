@@ -2,7 +2,7 @@ import ScalarOperator from '../scalar'
 import utils from '../../top/utils'
 
 export default class TensorOperator {
-    static add(rawArray) { return rawArray.reduce(ScalarOperator.add) }
+    static add(index) { return rawArray.reduce(ScalarOperator.add) }
     static multiply(rawArray) { return rawArray.reduce(ScalarOperator.multiply, 1) }
     static divide(rawArray) { return rawArray.reduce(ScalarOperator.divide) }
     static subtract(rawArray) { return rawArray.reduce(ScalarOperator.subtract) }
@@ -16,9 +16,12 @@ export default class TensorOperator {
     static norm(rawArray) { return Math.sqrt(TensorOperator.add(TensorOperator.square(rawArray))) }
     static * range(start, stop, step) { do yield start; while ((start += step) < stop) }
 
-    static elementwise(operation, ...ndArrays) {
-        return new Float64Array(ndArrays[0].header.size).map(function (_, i) {
-            return operation(utils.array.readMany(ndArrays, i))
-        })
+
+    static elementwise(result, operation, ...ndArrays) {
+        for (let i = 0; i < result.length; i++)
+            for (const ndArray of ndArrays)
+                result[i] = operation(ndArray.read(i))
+
+        return result
     }
 }

@@ -23,23 +23,6 @@ export default class ArrayUtils {
         return this.read(ndArray, index)
     }
 
-   
-    static write(ndArray, index, data) {
-        ndArray.data[this.lookup(ndArray, index)] = data
-
-        return ndArray
-    }
-
-    static read(ndArray, index) {
-        return ndArray.data[this.lookup(ndArray, index)]
-    }
-
-    static readMany(ndArrays, index) {
-        return ndArrays.map(function (ndArray) {
-            return this.broadcast(ndArray, index)
-        }, this)
-    }
-
     static * flatten(rawArray) {
         if (rawArray.constructor === Number)
             yield rawArray
