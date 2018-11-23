@@ -3,16 +3,16 @@ import utils from '../top/utils'
 
 export default class Header {
     constructor(opts) {
-        this.stride = {}
-
         this.shape = 'shape' in opts ? opts.shape : []
         this.offset = 'offset' in opts ? opts.offset : 0
         this.contig = 'contig' in opts ? opts.contig : true
 
-        this.stride.local = this.shape.reduceRight(utils.header.reshape.stride.bind(this), [1])
-        this.stride.global = 'stride' in opts.stride ? opts.stride : this.stride.local
-
         this.size = this.shape.reduce(ScalarOperator.multiply)
+
+        this.stride = {}
+        this.stride.local = utils.header.stridesFor(this.shape, 1)
+        this.stride.global = 'stride' in opts.stride ? opts.stride : this.stride.local
+        this.lastStride = this.stride.global.slice(-1).pop()
     }
 
     copy() {
@@ -61,22 +61,22 @@ export default class Header {
     }
 
     reshape(newShape) {
-        const shape = utils.header.resolveReshape(newShape)
+        const shape = utils.header.resolveReshape(newShape, this.size)
         const stride = utils.header.stridesFor(shape, this.lastStride)
 
         return new Header({ shape, stride })
     }
 
-    fullySpecified(indices) {
-        return indices.length === this.shape.length
-            && indices.every(function (index) { index.constructor === Number })
+    fullySpecified(index) {
+        return index.length === this.shape.length
+            && index.every(function (value) { value.constructor === Number })
     }
 
     flattenIndex(index) {
         let result = this.offset
 
-        for (let i = 0; i < this.stride.local.length; i++)
-            result += index[i] * this.stride[i]
+        for (let i = 0; i < this.stride.global.length; i++)
+            result += index[i] * this.stride.global[i]
 
         return result
     }
