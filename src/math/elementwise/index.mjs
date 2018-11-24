@@ -7,7 +7,7 @@ export default class ScalarOperator {
     static subtract(a, b) { return a - b }
     static min(a, b) { return Math.min(a, b) }
     static max(a, b) { return Math.max(a, b) }
-    static noop(a, _) { return a }
+    static noop(a, b) { return a }
 
     /** MAPPERS */
     static square(a) { return a * a }
@@ -18,7 +18,5 @@ export default class ScalarOperator {
         for (let i = 0; i < result.length; i++)
             for (let j = 0; j < ndArrays.length; j++)
                 result[i] = reducer(mapper(ndArrays[j].read(i)), result[i])
-
-        return result
     }
 }

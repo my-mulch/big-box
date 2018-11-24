@@ -1,5 +1,5 @@
 import ProbabilityOperator from '../math/probability'
-import TensorOperator from '../math/tensor'
+import ScalarOperator from '../math/elementwise'
 import LinearAlgebraOperator from '../math/linalg'
 
 import util from 'util' // node's
@@ -14,16 +14,21 @@ export default class MultiDimArray {
     }
 
     static convert(...arrays) {
-        return arrays.map(function (array) {
-            return array.constructor !== MultiDimArray ? MultiDimArray.array(array) : array
-        })
+        const cArrays = new Array(arrays.length)
+
+        for (let i = 0; i < arrays.length; i++)
+            cArrays[i] = arrays[i] instanceof MultiDimArray ? array : MultiDimArray.array(array)
+
+        return cArrays
     }
 
     static array(A) {
-        return new MultiDimArray({
-            data: new Float64Array(utils.array.flatten(A)),
-            header: new Header({ shape: utils.array.getShape(A) })
-        })
+        const header = new Header({ shape: utils.array.getShape(A) })
+        const result = new Float64Array(header.size)
+        
+        utils.array.flatten({ result }, A, header)
+
+        return new MultiDimArray({ data, header })
     }
 
     static zeros(...shape) {

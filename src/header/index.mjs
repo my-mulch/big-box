@@ -72,24 +72,6 @@ export default class Header {
             && index.every(function (value) { value.constructor === Number })
     }
 
-    flattenIndex(index) {
-        let result = this.offset
-
-        for (let i = 0; i < this.stride.global.length; i++)
-            result += index[i] * this.stride.global[i]
-
-        return result
-    }
-
-    inflateIndex(index) {
-        let result = this.offset
-
-        for (let i = 0; i < this.stride.local.length; i++)
-            result += Math.floor(index / this.stride.local[i]) % this.shape[i]
-
-        return result
-    }
-
     axis(axes) {
         axes.sort(ScalarOperator.subtract)
 

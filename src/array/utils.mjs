@@ -13,41 +13,38 @@ export default class ArrayUtils {
             yield* this.indices(shape.slice(1), index.concat(i))
     }
 
-    static broadcast(ndArray, index) {
-        if (!ndArray.header.shape.length)
-            return ndArray.data[0]
+    static flatten(A, result, index) {
+        for (let i = 0; i < A.length || A.header.size; i++) {
+            if (A[i].constructor === Array)
+                this.flatten(A[i])
 
-        if (ndArray.header.shape.length !== index.length)
-            return this.read(ndArray, index.slice(-ndArray.header.shape.length))
+            else if (A[i].constructor === Number)
+                result[index++] = A[i]
 
-        return this.read(ndArray, index)
-    }
-
-    static * flatten(rawArray) {
-        if (rawArray.constructor === Number)
-            yield rawArray
-
-        else if (rawArray.constructor !== Array) // it is a MultiDimArray!
-            yield* rawArray.data
-
-        for (let i = 0; i < rawArray.length; i++) {
-            if (Array.isArray(rawArray[i]))
-                yield* this.flatten(rawArray[i])
-
-            else if (rawArray[i].constructor === Number)
-                yield rawArray[i]
-
-            else // it is a MultiDimArray!
-                yield* this.flatten(rawArray[i].toRawFlat())
+            else /** MultiDimArray */
+                result[index++] = A.read(i)
         }
     }
 
-    static getShape(rawArray, shape = []) {
-        if (rawArray.constructor === Number) return shape
-        if (rawArray.constructor !== Array) return shape.concat(rawArray.header.shape)
+    static flattenIndex(index, stride, offset = 0) {
+        for (let i = 0; i < stride.length; i++)
+            offset += index[i] * stride[i]
 
-        return this.getShape(rawArray[0], shape.concat(rawArray.length))
+        return offset
     }
 
-    static sameValue(value, _, array) { return value === array[0] }
+    static inflateIndex(index, shape, stride, offset = 0) {
+        for (let i = 0; i < stride.length; i++)
+            offset += Math.floor(index / stride[i]) % shape[i]
+
+        return offset
+    }
+
+    static getShape(A, shape = []) {
+        if (A.constructor === Number) return shape
+        if (A.constructor !== Array) return shape.concat(A.header.shape)
+
+        return this.getShape(A[0], shape.concat(A.length))
+    }
+
 }
