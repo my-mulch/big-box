@@ -14,6 +14,15 @@ export default class LinearAlgebraOperator {
         ])
     }
 
+    static identity(shape, result) {
+        const diagonal = stride.reduce(sum)
+        const numDiags = shape.reduce(min)
+
+        for (let i = 0; i < numDiags; i += diagonal)
+            result[i] = 1
+    }
+
+
     static invert(A, I) {
         A = A.copy()
 
