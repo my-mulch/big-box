@@ -12,11 +12,10 @@ export default class ScalarOperator {
     /** MAPPERS */
     static square(a) { return a * a }
 
-    static elementwise(operation, ...ndArrays) {
-        const { mapper, reducer, result } = operation
+    static elementwise(A, B, mapper, reducer, result) {
+        const axis = A.header.size / result.length
 
-        for (let i = 0; i < result.length; i++)
-            for (let j = 0; j < ndArrays.length; j++)
-                result[i] = reducer(mapper(ndArrays[j].read(i)), result[i])
+        for (let i = 0, ri = 0; i < A.header.size; i++ , ri = Math.floor(i / axis))
+            result[ri] = reducer(mapper(A._(i)), mapper(B._(i)) || result[ri])
     }
 }

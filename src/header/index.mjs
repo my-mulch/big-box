@@ -1,4 +1,4 @@
-import ScalarOperator from '../math/scalar'
+import { multiply } from '../math/scalar'
 import utils from '../top/utils'
 
 export default class Header {
@@ -7,7 +7,7 @@ export default class Header {
         this.offset = 'offset' in opts ? opts.offset : 0
         this.contig = 'contig' in opts ? opts.contig : true
 
-        this.size = this.shape.reduce(ScalarOperator.multiply)
+        this.size = this.shape.reduce(multiply)
 
         this.stride = {}
         this.stride.local = utils.header.stridesFor(this.shape, 1)
@@ -52,6 +52,18 @@ export default class Header {
         return new Header({ shape, stride, offset, contig })
     }
 
+    axis(axes) {
+        const shape = new Array(this.shape.length - axes.length)
+        const stride = new Array(this.stride.global.length - axes.length)
+
+        for (let i = 0, ai = 0; i < this.shape.length; i++)
+            if (axes[ai] === i) ai++
+            else shape[i - ai] = this.shape[i],
+                stride[i - ai] = this.stride[i]
+
+        return new Header({ shape, stride })
+    }
+
     transpose() {
         const shape = this.shape.slice().reverse()
         const stride = this.stride.slice().reverse()
@@ -72,16 +84,6 @@ export default class Header {
             && index.every(function (value) { value.constructor === Number })
     }
 
-    axis(axes) {
-        axes.sort(ScalarOperator.subtract)
 
-        return this.shape.map(function (dim, i) {
-            if (axes[0] !== i)
-                return ':'
-
-            axes.shift()
-            return dim
-        })
-    }
 
 }

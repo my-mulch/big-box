@@ -36,4 +36,11 @@ export default class HeaderUtils {
         return reshape
     }
 
+    static axisSlice(shape, axis) {
+        const newShape = new Array(shape.length - axis.length)
+
+        for (let i = 0; i < axis.length; i++)
+            newShape[]
+    }
+
 }

@@ -1,6 +1,6 @@
 import { matMult, matInv, matEye } from '../math/linalg'
+import { sum, min, range, max, mean, norm, elementwise } from '../math/elementwise'
 import { randInt } from '../math/probability'
-import { sum, min, range } from '../math/elementwise'
 
 import { flatten, sizeup } from '../array/utils'
 import { matSize, matShape } from '../math/linear-algebra/utils'
@@ -97,43 +97,25 @@ export default class MultiDimArray {
         [A] = MultiDimArray.convert(A)
 
         const header = new Header({ shape: A.header.shape })
-        const data = matInv(A, new Float64Array(header.shape))
+        const data = matInv(A, new Float64Array(header.size))
 
         return new MultiDimArray({ data, header })
     }
 
-
-    axis(...axes) {
-        return [...utils.array.indices(this.header.axis(axes))]
-            .map(function (index) { return this.slice(...index) }, this)
+    min(...axis) {
+        const header = this.header.axis(axes)
+        const 
     }
 
-    axisOperate(axes, operator) {
-        if (!axes.length)
-            return operator(this.data)
 
-        return new MultiDimArray({
-            data: TensorOperator.elementwise(operator, ...this.axis(...axes)),
-            header: new Header({ shape: this.header.shape })
-        })
-    }
+    max(...axis) { return this.axisOperate(axis, max) }
+    mean(...axis) { return this.axisOperate(axis, mean) }
+    norm(...axis) { return this.axisOperate(axis, norm) }
 
-    dataOperate(A, operator) {
-        return new MultiDimArray({
-            data: TensorOperator.elementwise(operator, this, ...MultiDimArray.convert(A)),
-            header: new Header({ shape: this.header.shape })
-        })
-    }
-
-    min(...axis) { return this.axisOperate(axis, TensorOperator.min) }
-    max(...axis) { return this.axisOperate(axis, TensorOperator.max) }
-    mean(...axis) { return this.axisOperate(axis, TensorOperator.mean) }
-    norm(...axis) { return this.axisOperate(axis, TensorOperator.norm) }
-
-    add(A) { return this.dataOperate(A, TensorOperator.add) }
-    subtract(A) { return this.dataOperate(A, TensorOperator.subtract) }
-    multiply(A) { return this.dataOperate(A, TensorOperator.multiply) }
-    divide(A) { return this.dataOperate(A, TensorOperator.divide) }
+    add(A) { return this.dataOperate(A, add) }
+    subtract(A) { return this.dataOperate(A, subtract) }
+    multiply(A) { return this.dataOperate(A, multiply) }
+    divide(A) { return this.dataOperate(A, divide) }
 
     dot(A) { return MultiDimArray.dot(this, ...MultiDimArray.convert(A)) }
     cross(A) { return MultiDimArray.cross(this, ...MultiDimArray.convert(A)) }
@@ -219,7 +201,7 @@ class Random {
         }
 
         return new MultiDimArray({
-            data: new Float64Array(TensorOperator.multiply(shape)).map(randomNumbers),
+            data: new Float64Array(multiply(shape)).map(randomNumbers),
             header: new Header({ shape })
         })
     }
