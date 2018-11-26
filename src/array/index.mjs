@@ -1,5 +1,5 @@
 import { matMult, matInv, matEye } from '../math/linalg'
-import { sum, min, range, max, mean, norm, elementwise } from '../math/elementwise'
+import { sum, min, range, max, mean, norm, noop, elementwise } from '../math/elementwise'
 import { randInt } from '../math/probability'
 
 import { flatten, sizeup } from '../array/utils'
@@ -102,15 +102,26 @@ export default class MultiDimArray {
         return new MultiDimArray({ data, header })
     }
 
-    min(...axis) {
+    axisOperate(axes, mapper, reducer) {
         const header = this.header.axis(axes)
-        const 
+        const data = elementwise(A, null, mapper, reducer, new Float64Array(header.size))
+
+        return new MultiDimArray({ data, header })
     }
 
+    dataOperate(A, reducer) {
+        [A] = MultiDimArray.convert(A)
 
-    max(...axis) { return this.axisOperate(axis, max) }
-    mean(...axis) { return this.axisOperate(axis, mean) }
-    norm(...axis) { return this.axisOperate(axis, norm) }
+        const header = A.header.copy()
+        const data = elementwise(this, A, noop, reducer, new Float64Array(header.size))
+
+        return new MultiDimArray({ data, header })
+    }
+
+    min(...axes) { return this.axisOperate(axes, noop, min) }
+    max(...axis) { return this.axisOperate(axis, noop, max) }
+    mean(...axis) { return this.axisOperate(axis, noop, mean) }
+    norm(...axis) { return Math.sqrt(this.axisOperate(axis, square, sum)) }
 
     add(A) { return this.dataOperate(A, add) }
     subtract(A) { return this.dataOperate(A, subtract) }
