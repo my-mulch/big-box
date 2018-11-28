@@ -1,5 +1,5 @@
 import { matMult, matInv, matEye } from '../math/linalg'
-import { sum, min, range, max, mean, norm, noMap, noReduce, axisWise, pairWise, round } from '../math/elementwise'
+import { sum, min, range, max, mean, norm, noop, axisWise, pairWise, round } from '../math/elementwise'
 import { randInt } from '../math/probability'
 
 import { stridesFor } from '../header/utils'
@@ -12,6 +12,7 @@ import Header from '../header'
 MultiDimArray.random = Random
 MultiDimArray.element = ElementWise
 MultiDimArray.linalg = LinearAlgebra
+
 export default class MultiDimArray {
 
     constructor(props) {
@@ -20,12 +21,11 @@ export default class MultiDimArray {
     }
 
     static convert(...arrays) {
-        const cArrays = new Array(arrays.length)
-
         for (let i = 0; i < arrays.length; i++)
-            cArrays[i] = arrays[i] instanceof MultiDimArray ? array : MultiDimArray.array(array)
+            if (!(arrays[i] instanceof MultiDimArray))
+                arrays[i] = MultiDimArray.array(array)
 
-        return cArrays
+        return arrays
     }
 
     static array(A) {
@@ -49,42 +49,35 @@ export default class MultiDimArray {
         return new MultiDimArray({ data, header })
     }
 
-    min(...axis) {
-        return ElementWise.axisOperate({
-            axis: axis,
-            mapper: noop,
-            reducer: min
-        })
+    static arange(...args) {
+        const start = args.length === 1 ? 0 : args[0]
+        const step = args.length === 3 ? args[2] : 1
+        const stop = args.length === 1 ? args[0] : args[1]
+
+        const header = new Header({ shape: [Math.ceil((stop - start) / step)] })
+        const data = range(start, step, stop, new Float64Array(header.size))
+
+        return new MultiDimArray({ data, header })
     }
 
-    max(...axis) {
-        return ElementWise.axisOperate({
-            axis: axis,
-            mapper: noop,
-            reducer: max
-        })
-    }
+    min(...axis) { return ElementWise.axisOperate(this, axis, noop, min) }
+    max(...axis) { return ElementWise.axisOperate(this, axis, noop, max) }
+    mean(...axis) { return ElementWise.axisOperate(this, axis, noop, mean) }
+    norm(...axis) { return ElementWise.axisOperate(this, axis, square, norm) }
 
-    mean(...axis) {
-        return ElementWise.axisOperate({
-            axis: axis,
-            mapper: noop,
-            reducer: sum
-        })
-    }
+    plus(B) { return ElementWise.pairOperate(this, B, sum) }
+    minus(B) { return ElementWise.pairOperate(this, B, diff) }
+    times(B) { return ElementWise.pairOperate(this, B, prod) }
+    divide(B) { return ElementWise.pairOperate(this, B, quot) }
 
-
-    mean(...axis) { return ElementWise.axisOperate(axis, noop, mean) }
-    norm(...axis) { return ElementWise.axisOperate(axis, square, sum) }
-
-    add(B) { return ElementWise.pairOperate(B, sum) }
-    subtract(B) { return ElementWise.pairOperate(B, diff) }
-    multiply(B) { return ElementWise.pairOperate(B, prod) }
-    divide(B) { return ElementWise.pairOperate(B, quot) }
-
-    dot(B) { return LinearAlgebra.dot(this, ...MultiDimArray.convert(B)) }
-    cross(B) { return LinearAlgebra.cross(this, ...MultiDimArray.convert(B)) }
+    dot(B) { return LinearAlgebra.dot(this, B) }
+    cross(B) { return LinearAlgebra.cross(this, B) }
     inv() { return LinearAlgebra.inv(this) }
+
+    /** Set & Get are index read, write */
+
+    get(index) { this.data[this.header.lookup(index)] }
+    set(index) { return { to: (function (value) { this.data[this.header.lookup(index)] = value }).bind(this) } }
 
     /** Write & Slice are chunk read, write */
 
@@ -112,18 +105,6 @@ export default class MultiDimArray {
 
                 return this
             }).bind(this)
-        }
-    }
-
-    /** Set & Get are index read, write */
-
-    get(index) {
-        this.data[this.header.lookup(index)]
-    }
-
-    set(index) {
-        return {
-            to: (function (value) { this.data[this.header.lookup(index)] = value }).bind(this)
         }
     }
 
@@ -237,31 +218,24 @@ class LinearAlgebra {
 }
 
 class ElementWise {
-    static axisOperate(axis, mapper, reducer) {
+    static axisOperate(A, axis, mapper, reducer) {
         const strides = axisStride(this.header.shape, 1, axis)
 
         const header = this.header.axis(new Set(axis))
-        const data = axisWise(A, strides, mapper, reducer, new Float64Array(header.size))
+        const data = new Float64Array(header.size)
+
+        axisWise({ A, strides, mapper, reducer, result: data })
 
         return new MultiDimArray({ data, header })
     }
 
-    static pairOperate(A, reducer) {
-        [A] = MultiDimArray.convert(A)
+    static pairOperate(A, B, reducer) {
+        [A, B] = MultiDimArray.convert(A, B)
 
-        const header = new Header({ shape: this.header.shape })
-        const data = pairWise(this, A, reducer, new Float64Array(header.size))
+        const header = new Header({ shape: A.header.shape })
+        const data = new Float64Array(header.size)
 
-        return new MultiDimArray({ data, header })
-    }
-
-    static arange(...args) {
-        const start = args.length === 1 ? 0 : args[0]
-        const step = args.length === 3 ? args[2] : 1
-        const stop = args.length === 1 ? args[0] : args[1]
-
-        const header = new Header({ shape: [Math.ceil((stop - start) / step)] })
-        const data = range(start, step, stop, new Float64Array(header.size))
+        pairWise({ A, B, reducer, result: data })
 
         return new MultiDimArray({ data, header })
     }
