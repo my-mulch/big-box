@@ -9,10 +9,10 @@ export default class Header {
 
         this.size = this.shape.reduce(multiply)
 
-        this.stride = {}
-        this.stride.local = utils.header.stridesFor(this.shape, 1)
-        this.stride.global = 'stride' in opts.stride ? opts.stride : this.stride.local
-        this.lastStride = this.stride.global.slice(-1).pop()
+        this.strides = {}
+        this.strides.local = utils.header.stridesFor(this.shape, 1)
+        this.strides.global = 'strides' in opts.strides ? opts.strides : this.strides.local
+        this.lastStride = this.strides.global.slice(-1).pop()
     }
 
     copy() {
@@ -20,16 +20,20 @@ export default class Header {
     }
 
     slice(index) {
+        const shape = new Array()
+        const strides = new Array()
+
         let offset = this.offset
         let contig = utils.header.isContiguousSlice(index)
 
-        const shape = []
-        const stride = []
-
         for (let i = 0; i < this.shape.length; i++) {
 
-            if (index[i].constructor === Number)
-                offset += this.stride[i] * index[i]
+            if (index[i] === constants.ND_SLICE_CHARACTER)
+                shape.push(this.shape[i]),
+                    strides.push(this.strides.global[i])
+
+            else if (index[i].constructor === Number)
+                offset += this.strides.global[i] * index[i]
 
             else if (index[i].constructor === String) {
                 let [low, high] = index[i].split(constants.ND_SLICE_CHARACTER).map(Number)
@@ -37,46 +41,35 @@ export default class Header {
                 low = (low + this.shape[i]) % this.shape[i]
                 high = (high + this.shape[i]) % this.shape[i]
 
-                offset += this.stride[i] * low
+                offset += this.strides.global[i] * low
 
                 shape.push(high - low)
-                stride.push(this.stride[i])
-            }
-
-            else if (index[i] === constants.ND_SLICE_CHARACTER) {
-                shape.push(this.shape[i])
-                stride.push(this.stride[i])
+                strides.push(this.strides.global[i])
             }
         }
 
-        return new Header({ shape, stride, offset, contig })
-    }
-
-    axis(axes) {
-        const shape = new Array(this.shape.length - axes.length)
-        const stride = new Array(this.stride.global.length - axes.length)
-
-        for (let i = 0, ai = 0; i < this.shape.length; i++)
-            if (axes[ai] === i) ai++
-            else shape[i - ai] = this.shape[i],
-                stride[i - ai] = this.stride[i]
-
-        return new Header({ shape, stride })
+        return new Header({ shape, strides, offset, contig })
     }
 
     transpose() {
         const shape = this.shape.slice().reverse()
-        const stride = this.stride.slice().reverse()
+        const strides = this.strides.slice().reverse()
         const contig = false
 
-        return new Header({ shape, stride, contig })
+        return new Header({ shape, strides, contig })
     }
 
     reshape(newShape) {
         const shape = utils.header.resolveReshape(newShape, this.size)
-        const stride = utils.header.stridesFor(shape, this.lastStride)
+        const strides = utils.header.stridesFor(shape, this.lastStride)
 
-        return new Header({ shape, stride })
+        return new Header({ shape, strides })
+    }
+
+    axis(axis) {
+        const shape = axisReshape(axis, this.shape)
+
+        return new Header({ shape })
     }
 
     fullySpecified(index) {
@@ -84,6 +77,16 @@ export default class Header {
             && index.every(function (value) { value.constructor === Number })
     }
 
+    lookup(index, local = this.strides.local) {
+        let offset = this.offset
 
+        for (let i = 0; i < this.shape.length; i++)
+            /** Whoa.. what's this ugly shit? Peep the README */
+            offset += this.strides.global[i] *
+                (index.constructor === Number
+                    ? Math.floor(index / local[i]) % this.shape[i]
+                    : index[i])
 
+        return offset
+    }
 }

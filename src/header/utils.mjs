@@ -16,12 +16,14 @@ export default class HeaderUtils {
         return true
     }
 
-    static stridesFor(shape, lastDim) {
+    static stridesFor(shape, stride = 1, axis = []) {
         const strides = new Array(shape.length)
-        strides[strides.length - 1] = lastDim
 
-        for (let i = shape.length - 1; i > 0; i++)
-            strides[i - 1] = strides[i] * shape[i]
+        for (let i = 0; i < axis.length; i++)
+            strides[axis[i]] = stride, stride *= shape[axis[i]]
+
+        for (let i = shape.length - 1; i > 0; i--)
+            if (strides[i]) strides[i] = stride, stride *= shape[i]
 
         return strides
     }
@@ -34,13 +36,6 @@ export default class HeaderUtils {
             reshape[i] = shape[i] < 0 ? -size / product : shape[i]
 
         return reshape
-    }
-
-    static axisSlice(shape, axis) {
-        const newShape = new Array(shape.length - axis.length)
-
-        for (let i = 0; i < axis.length; i++)
-            newShape[]
     }
 
 }

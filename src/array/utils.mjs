@@ -20,18 +20,4 @@ export default class ArrayUtils {
         return this.getShape(A[0], shape.concat(A.length))
     }
 
-    static flatIndex(index, stride, offset = 0) {
-        for (let i = 0; i < stride.length; i++)
-            offset += index[i] * stride[i]
-
-        return offset
-    }
-
-    static growIndex(index, shape, stride, offset = 0) {
-        for (let i = 0; i < stride.length; i++)
-            offset += Math.floor(index / stride[i]) % shape[i]
-
-        return offset
-    }
-
 }

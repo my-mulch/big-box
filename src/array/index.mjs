@@ -1,9 +1,12 @@
 import { matMult, matInv, matEye } from '../math/linalg'
-import { sum, min, range, max, mean, norm, noop, elementwise } from '../math/elementwise'
+import { sum, min, range, max, mean, norm, noop, axisWise, pairWise } from '../math/elementwise'
 import { randInt } from '../math/probability'
 
-import { flatten, sizeup } from '../array/utils'
+import { strideAxis, shapeAxis } from '../header/utils'
+import { arrFlat, arrSize } from '../array/utils'
 import { matSize, matShape } from '../math/linear-algebra/utils'
+
+import { FLAT_INDEX, MULT_INDEX } from '../contants'
 
 import util from 'util' // node's
 import Header from '../header'
@@ -25,8 +28,8 @@ export default class MultiDimArray {
     }
 
     static array(A) {
-        const header = new Header({ shape: sizeup(A) })
-        const data = flatten(A, new Float64Array(header.size))
+        const header = new Header({ shape: arrSize(A) })
+        const data = arrFlat(A, new Float64Array(header.size))
 
         return new MultiDimArray({ data, header })
     }
@@ -102,52 +105,81 @@ export default class MultiDimArray {
         return new MultiDimArray({ data, header })
     }
 
-    axisOperate(axes, mapper, reducer) {
-        const header = this.header.axis(axes)
-        const data = elementwise(A, null, mapper, reducer, new Float64Array(header.size))
+    axisOperate(axis, mapper, reducer) {
+        const strides = axisStride(this.header.shape, 1, axis)
+
+        const header = this.header.axis(new Set(axis))
+        const data = axisWise(A, strides, mapper, reducer, new Float64Array(header.size))
 
         return new MultiDimArray({ data, header })
     }
 
-    dataOperate(A, reducer) {
+    pairOperate(A, reducer) {
         [A] = MultiDimArray.convert(A)
 
-        const header = A.header.copy()
-        const data = elementwise(this, A, noop, reducer, new Float64Array(header.size))
+        const header = new Header({ shape: this.header.shape })
+        const data = pairWise(this, A, reducer, new Float64Array(header.size))
 
         return new MultiDimArray({ data, header })
     }
 
-    min(...axes) { return this.axisOperate(axes, noop, min) }
+    min(...axis) { return this.axisOperate(axis, noop, min) }
     max(...axis) { return this.axisOperate(axis, noop, max) }
     mean(...axis) { return this.axisOperate(axis, noop, mean) }
     norm(...axis) { return Math.sqrt(this.axisOperate(axis, square, sum)) }
 
-    add(A) { return this.dataOperate(A, add) }
-    subtract(A) { return this.dataOperate(A, subtract) }
-    multiply(A) { return this.dataOperate(A, multiply) }
-    divide(A) { return this.dataOperate(A, divide) }
+    add(A) { return this.pairOperate(A, sum) }
+    subtract(A) { return this.pairOperate(A, diff) }
+    multiply(A) { return this.pairOperate(A, prod) }
+    divide(A) { return this.pairOperate(A, quot) }
+
 
     dot(A) { return MultiDimArray.dot(this, ...MultiDimArray.convert(A)) }
     cross(A) { return MultiDimArray.cross(this, ...MultiDimArray.convert(A)) }
     inv() { return MultiDimArray.inv(this) }
 
+    /** Write & Slice are chunk read, write */
 
-    set(...indices) {
-        return {
-            to: (function (A) {
-                [A] = MultiDimArray.convert(A)
-                const region = this.slice(...indices)
+    write(...indices) {
+        return function (A) {
+            [A] = MultiDimArray.convert(A)
+            const region = this.slice(...indices)
 
-                if (region.constructor === Number)
-                    return utils.array.write(this, indices, A)
+            if (region.constructor === Number)
+                this.set(indices, MULT_INDEX)(region)
 
-                for (const index of utils.array.indices(region.header.shape))
-                    utils.array.write(region, index, utils.array.broadcast(A, index))
+            for (let i = 0; i < region.size; i++)
+                region.set(i, FLAT_INDEX)(A.get(i))
 
-                return this
+            return this
+        }
+    }
 
-            }).bind(this)
+    slice(...indices) {
+        if (this.header.fullySpecified(indices))
+            return this.get()
+
+        return new MultiDimArray({
+            data: this.data,
+            header: this.header.slice(indices.map(String)),
+        })
+    }
+
+    /** Set & Get are index read, write */
+
+    get(index, flag) {
+        switch (flag) {
+            case FLAT_INDEX: return this.data[this.header.inflate(index)]
+            case MULT_INDEX: return this.data[this.header.deflate(index)]
+        }
+    }
+
+    set(index, flag) {
+        return function (V) {
+            switch (flag) {
+                case FLAT_INDEX: this.data[this.header.inflate(index)] = V; break
+                case MULT_INDEX: this.data[this.header.deflate(index)] = V; break
+            }
         }
     }
 
@@ -158,15 +190,7 @@ export default class MultiDimArray {
         })
     }
 
-    slice(...indices) {
-        if (this.header.fullySpecified(indices))
-            return this.data[this.header.flatten(indices)]
 
-        return new MultiDimArray({
-            data: this.data,
-            header: this.header.slice(indices.map(String)),
-        })
-    }
 
     T() {
         return new MultiDimArray({
