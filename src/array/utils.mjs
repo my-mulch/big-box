@@ -21,5 +21,4 @@ export default class MultiDimArrayUtils {
     }
 
     static stringify(A) { /** TODO */ }
-
 }

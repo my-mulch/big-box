@@ -9,6 +9,9 @@ import { matSize, matShape } from '../math/linear-algebra/utils'
 import util from 'util' // node's
 import Header from '../header'
 
+MultiDimArray.random = Random
+MultiDimArray.element = ElementWise
+MultiDimArray.linalg = LinearAlgebra
 export default class MultiDimArray {
 
     constructor(props) {
@@ -46,95 +49,42 @@ export default class MultiDimArray {
         return new MultiDimArray({ data, header })
     }
 
-    static eye(...shape) {
-        const header = new Header({ shape })
-        const data = identity(shape, new Float64Array(header.size))
-
-        return new MultiDimArray({ data, header })
+    min(...axis) {
+        return ElementWise.axisOperate({
+            axis: axis,
+            mapper: noop,
+            reducer: min
+        })
     }
 
-    static arange(...args) {
-        const start = args.length === 1 ? 0 : args[0]
-        const step = args.length === 3 ? args[2] : 1
-        const stop = args.length === 1 ? args[0] : args[1]
-
-        const header = new Header({ shape: [Math.ceil((stop - start) / step)] })
-        const data = range(start, step, stop, new Float64Array(header.size))
-
-        return new MultiDimArray({ data, header })
+    max(...axis) {
+        return ElementWise.axisOperate({
+            axis: axis,
+            mapper: noop,
+            reducer: max
+        })
     }
 
-    static dot(A, B) {
-        [A, B] = MultiDimArray.convert(A, B)
-
-        if (!A.header.shape.length && !B.header.shape.length)
-            return A.data[0] * B.data[0]
-
-        if (!A.header.shape.length)
-            return B.multiply(A)
-
-        if (!B.header.shape.length)
-            return A.multiply(B)
-
-        if (matSize(A, B) === 1)
-            return matMult(A, B, new Float64Array(1))[0]
-
-        const header = new Header({ shape: matShape(A, B) })
-        const data = matMult(A, B, new Float64Array(header.size))
-
-        return new MultiDimArray({ data, header })
+    mean(...axis) {
+        return ElementWise.axisOperate({
+            axis: axis,
+            mapper: noop,
+            reducer: sum
+        })
     }
 
-    static cross(A, B) {
-        [A, B] = MultiDimArray.convert(A, B)
 
-        const header = new Header({ shape: A.header.shape })
-        const data = cross(A, B, new Float64Array(header.size))
+    mean(...axis) { return ElementWise.axisOperate(axis, noop, mean) }
+    norm(...axis) { return ElementWise.axisOperate(axis, square, sum) }
 
-        return new MultiDimArray({ data, header })
-    }
+    add(B) { return ElementWise.pairOperate(B, sum) }
+    subtract(B) { return ElementWise.pairOperate(B, diff) }
+    multiply(B) { return ElementWise.pairOperate(B, prod) }
+    divide(B) { return ElementWise.pairOperate(B, quot) }
 
-    static inv(A) {
-        [A] = MultiDimArray.convert(A)
-
-        const header = new Header({ shape: A.header.shape })
-        const data = matInv(A, new Float64Array(header.size))
-
-        return new MultiDimArray({ data, header })
-    }
-
-    axisOperate(axis, mapper, reducer) {
-        const strides = axisStride(this.header.shape, 1, axis)
-
-        const header = this.header.axis(new Set(axis))
-        const data = axisWise(A, strides, mapper, reducer, new Float64Array(header.size))
-
-        return new MultiDimArray({ data, header })
-    }
-
-    pairOperate(A, reducer) {
-        [A] = MultiDimArray.convert(A)
-
-        const header = new Header({ shape: this.header.shape })
-        const data = pairWise(this, A, reducer, new Float64Array(header.size))
-
-        return new MultiDimArray({ data, header })
-    }
-
-    min(...axis) { return this.axisOperate(axis, noop, min) }
-    max(...axis) { return this.axisOperate(axis, noop, max) }
-    mean(...axis) { return this.axisOperate(axis, noop, mean) }
-    norm(...axis) { return Math.sqrt(this.axisOperate(axis, square, sum)) }
-
-    add(A) { return this.pairOperate(A, sum) }
-    subtract(A) { return this.pairOperate(A, diff) }
-    multiply(A) { return this.pairOperate(A, prod) }
-    divide(A) { return this.pairOperate(A, quot) }
-
-
-    dot(A) { return MultiDimArray.dot(this, ...MultiDimArray.convert(A)) }
-    cross(A) { return MultiDimArray.cross(this, ...MultiDimArray.convert(A)) }
-    inv() { return MultiDimArray.inv(this) }
+    dot(B) { return LinearAlgebra.dot(this, ...MultiDimArray.convert(B)) }
+    cross(B) { return LinearAlgebra.cross(this, ...MultiDimArray.convert(B)) }
+    inv() { return LinearAlgebra.inv(this) }
 
     /** Write & Slice are chunk read, write */
 
@@ -228,15 +178,91 @@ export default class MultiDimArray {
 
 class Random {
     static randint(low, high, shape) {
-        function randomNumbers() {
-            return ProbabilityOperator.randInt(low, high)
-        }
+        const header = new Header({ shape })
+        const data = new Float64Array(header.size)
 
-        return new MultiDimArray({
-            data: new Float64Array(multiply(shape)).map(randomNumbers),
-            header: new Header({ shape })
-        })
+        for (let i = 0; i < data.length; i++)
+            data[i] = randInt(low, high)
+
+        return new MultiDimArray({ header, data })
     }
 }
 
-MultiDimArray.random = Random
+class LinearAlgebra {
+    static dot(A, B) {
+        [A, B] = MultiDimArray.convert(A, B)
+
+        if (!A.header.shape.length && !B.header.shape.length)
+            return A.data[0] * B.data[0]
+
+        if (!A.header.shape.length)
+            return B.multiply(A)
+
+        if (!B.header.shape.length)
+            return A.multiply(B)
+
+        if (matSize(A, B) === 1)
+            return matMult(A, B, new Float64Array(1))[0]
+
+        const header = new Header({ shape: matShape(A, B) })
+        const data = matMult(A, B, new Float64Array(header.size))
+
+        return new MultiDimArray({ data, header })
+    }
+
+    static cross(A, B) {
+        [A, B] = MultiDimArray.convert(A, B)
+
+        const header = new Header({ shape: A.header.shape })
+        const data = cross(A, B, new Float64Array(header.size))
+
+        return new MultiDimArray({ data, header })
+    }
+
+    static inv(A) {
+        [A] = MultiDimArray.convert(A)
+
+        const header = new Header({ shape: A.header.shape })
+        const data = matInv(A, new Float64Array(header.size))
+
+        return new MultiDimArray({ data, header })
+    }
+
+    static eye(...shape) {
+        const header = new Header({ shape })
+        const data = identity(shape, new Float64Array(header.size))
+
+        return new MultiDimArray({ data, header })
+    }
+}
+
+class ElementWise {
+    static axisOperate(axis, mapper, reducer) {
+        const strides = axisStride(this.header.shape, 1, axis)
+
+        const header = this.header.axis(new Set(axis))
+        const data = axisWise(A, strides, mapper, reducer, new Float64Array(header.size))
+
+        return new MultiDimArray({ data, header })
+    }
+
+    static pairOperate(A, reducer) {
+        [A] = MultiDimArray.convert(A)
+
+        const header = new Header({ shape: this.header.shape })
+        const data = pairWise(this, A, reducer, new Float64Array(header.size))
+
+        return new MultiDimArray({ data, header })
+    }
+
+    static arange(...args) {
+        const start = args.length === 1 ? 0 : args[0]
+        const step = args.length === 3 ? args[2] : 1
+        const stop = args.length === 1 ? args[0] : args[1]
+
+        const header = new Header({ shape: [Math.ceil((stop - start) / step)] })
+        const data = range(start, step, stop, new Float64Array(header.size))
+
+        return new MultiDimArray({ data, header })
+    }
+}
