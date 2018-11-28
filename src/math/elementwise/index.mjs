@@ -16,14 +16,21 @@ export default class ElementWiseOperator {
     static sqrt(a) { return Math.sqrt(a) }
     static abs(a) { return Math.abs(a) }
 
+    /** BOUND MAPPERS (fn must bind first argument before calling) */
+    static round(p, a) { return +a.toFixed(p) }
+
     /** OPERATORS */
-    static axis(A, strides, mapper, reducer, result) {
+    static axisWise(args) {
+        const { A, strides, mapper, reducer, result } = args
+
         for (let i = 0, ri = 0; i < A.header.size; i++ , ri = Math.floor(i / axis))
-            result[ri] = reducer(mapper(A.read(i, strides), result[ri]))
+            result[ri] = reducer(mapper(A.get(i, strides)), result[ri])
     }
 
-    static pair(A, B, reducer, result) {
+    static pairWise(args) {
+        const { A, B, reducer, result } = args
+
         for (let i = 0; i < result.length; i++)
-            result[i] = reducer(A.read(i), B.read(i))
+            result[i] = reducer(A.get(i), B.get(i))
     }
 }

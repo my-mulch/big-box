@@ -1,7 +1,9 @@
 import { multiply } from '../math/scalar'
-import utils from '../top/utils'
+import { ND_SLICE_CHARACTER } from '../contants'
+import { stridesFor, isContiguousSlice, resolveReshape } from './utils'
 
 export default class Header {
+
     constructor(opts) {
         this.shape = 'shape' in opts ? opts.shape : []
         this.offset = 'offset' in opts ? opts.offset : 0
@@ -10,7 +12,7 @@ export default class Header {
         this.size = this.shape.reduce(multiply)
 
         this.strides = {}
-        this.strides.local = utils.header.stridesFor(this.shape, 1)
+        this.strides.local = stridesFor(this.shape, 1)
         this.strides.global = 'strides' in opts.strides ? opts.strides : this.strides.local
         this.lastStride = this.strides.global.slice(-1).pop()
     }
@@ -24,7 +26,7 @@ export default class Header {
         const strides = new Array()
 
         let offset = this.offset
-        let contig = utils.header.isContiguousSlice(index)
+        let contig = isContiguousSlice(index)
 
         for (let i = 0; i < this.shape.length; i++) {
 
@@ -60,8 +62,8 @@ export default class Header {
     }
 
     reshape(newShape) {
-        const shape = utils.header.resolveReshape(newShape, this.size)
-        const strides = utils.header.stridesFor(shape, this.lastStride)
+        const shape = resolveReshape(newShape, this.size)
+        const strides = stridesFor(shape, this.lastStride)
 
         return new Header({ shape, strides })
     }

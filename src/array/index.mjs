@@ -1,12 +1,10 @@
 import { matMult, matInv, matEye } from '../math/linalg'
-import { sum, min, range, max, mean, norm, noop, axisWise, pairWise } from '../math/elementwise'
+import { sum, min, range, max, mean, norm, noop, axisWise, pairWise, round } from '../math/elementwise'
 import { randInt } from '../math/probability'
 
-import { strideAxis, shapeAxis } from '../header/utils'
+import { stridesFor } from '../header/utils'
 import { arrFlat, arrSize } from '../array/utils'
 import { matSize, matShape } from '../math/linear-algebra/utils'
-
-import { FLAT_INDEX, MULT_INDEX } from '../contants'
 
 import util from 'util' // node's
 import Header from '../header'
@@ -140,24 +138,9 @@ export default class MultiDimArray {
 
     /** Write & Slice are chunk read, write */
 
-    write(...indices) {
-        return function (A) {
-            [A] = MultiDimArray.convert(A)
-            const region = this.slice(...indices)
-
-            if (region.constructor === Number)
-                this.set(indices, MULT_INDEX)(region)
-
-            for (let i = 0; i < region.size; i++)
-                region.set(i, FLAT_INDEX)(A.get(i))
-
-            return this
-        }
-    }
-
     slice(...indices) {
         if (this.header.fullySpecified(indices))
-            return this.get()
+            return this.get(indices)
 
         return new MultiDimArray({
             data: this.data,
@@ -165,47 +148,70 @@ export default class MultiDimArray {
         })
     }
 
-    /** Set & Get are index read, write */
+    write(...indices) {
+        return {
+            to: (function (A) {
+                [A] = MultiDimArray.convert(A)
+                const region = this.slice(...indices)
 
-    get(index, flag) {
-        switch (flag) {
-            case FLAT_INDEX: return this.data[this.header.inflate(index)]
-            case MULT_INDEX: return this.data[this.header.deflate(index)]
+                if (region.constructor === Number)
+                    this.set(indices).to(region)
+
+                for (let i = 0; i < region.size; i++)
+                    region.set(i).to(A.get(i))
+
+                return this
+            }).bind(this)
         }
     }
 
-    set(index, flag) {
-        return function (V) {
-            switch (flag) {
-                case FLAT_INDEX: this.data[this.header.inflate(index)] = V; break
-                case MULT_INDEX: this.data[this.header.deflate(index)] = V; break
-            }
+    /** Set & Get are index read, write */
+
+    get(index) {
+        this.data[this.header.lookup(index)]
+    }
+
+    set(index) {
+        return {
+            to: (function (value) { this.data[this.header.lookup(index)] = value }).bind(this)
         }
     }
 
     round(precision) {
-        return new MultiDimArray({
-            data: this.data.map(function (value) { return value.toFixed(precision) }),
-            header: this.header
+        const header = new Header({ shape: this.header.shape })
+        const data = new Float64Array(header.size)
+
+        axisWise({
+            A: this,
+            strides: this.header.strides.local,
+            mapper: round.bind(null, precision),
+            reducer: noop,
+            result: data
         })
+
+        return new MultiDimArray({ header, data })
     }
 
-
-
     T() {
-        return new MultiDimArray({
-            data: this.data,
-            header: this.header.transpose(),
-        })
+        const data = this.data
+        const header = this.header.transpose()
+
+        return new MultiDimArray({ data, header })
     }
 
     reshape(...shape) {
-        // if the array is not contigous, a reshape means data copy
-        if (!this.header.contig)
-            return new MultiDimArray({
-                data: new Float64Array(this.toRawFlat()),
-                header: new Header({ shape })
-            })
+        /**  if the array is not contigous, a reshape means data copy */
+        if (!this.header.contig) {
+            const header = new Header({ shape })
+            const data = new Float64Array(header.size)
+
+            for ()
+
+                return new MultiDimArray({ data, header })
+        }
+
+        const data = this.data
+        const header = 
 
         return new MultiDimArray({
             data: this.data,
