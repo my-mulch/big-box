@@ -1,10 +1,18 @@
 import utils from '../../top/utils'
 
 export default class LinearAlgebraOperator {
-    static matMult(A, B) {
-        return new Float64Array(utils.linalg.matrixSize(A, B))
-            .map(utils.linalg.matrixProduct(A, B))
+    static matMult(A, B, result) {
+        for (let i = 0; i < result.length; i++)
+            /** Whoa.. more crazy shit. Yes, it's in the readme */
+            result[i] +=
+                A.read(
+                    i % A.header.shape[1] * A.header.strides.global[1]
+                    + Math.floor(i / B.header.shape[0] * B.header.shape[1]) * A.header.strides.global[0])
+                * B.read(
+                    i % B.header.shape[0] * B.header.strides.global[0]
+                    + Math.floor(i / B.header.shape[0]) % B.header.shape[1] * B.header.strides.global[1])
     }
+
 
     static cross(A, B) {
         return new Float64Array([
