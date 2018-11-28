@@ -1,5 +1,5 @@
 import { matMult, matInv, matEye } from '../math/linalg'
-import { sum, min, range, max, mean, norm, noop, axisWise, pairWise, round } from '../math/elementwise'
+import { sum, min, range, max, mean, norm, noMap, noReduce, axisWise, pairWise, round } from '../math/elementwise'
 import { randInt } from '../math/probability'
 
 import { stridesFor } from '../header/utils'
@@ -205,33 +205,25 @@ export default class MultiDimArray {
             const header = new Header({ shape })
             const data = new Float64Array(header.size)
 
-            for ()
+            axisWise({
+                A: this,
+                strides: this.header.strides.local,
+                mapper: noop,
+                reducer: noop,
+                result: data
+            })
 
-                return new MultiDimArray({ data, header })
+            return new MultiDimArray({ data, header })
         }
 
         const data = this.data
-        const header = 
+        const header = this.header.reshape(shape)
 
-        return new MultiDimArray({
-            data: this.data,
-            header: this.header.reshape(shape)
-        })
+        return new MultiDimArray({ data, header })
     }
 
-    toRawArray() {
-        return [...this].map(function (slice) {
-            if (slice instanceof MultiDimArray)
-                return slice.toRawArray()
-
-            return slice
-        })
-    }
-
-    toRawFlat() { return [...this.axis(...this.header.shape.keys())] }
+    
     toString() { return util.inspect(this.toRawArray(), { showHidden: false, depth: null }) }
-
-    *[Symbol.iterator]() { yield* this.axis(0) }
     [util.inspect.custom]() { return this.toString() }
 }
 

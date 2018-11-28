@@ -9,12 +9,13 @@ export default class ElementWiseOperator {
     static min(a, b) { return Math.min(a, b) }
     static max(a, b) { return Math.max(a, b) }
     static pow(a, b) { return Math.pow(a, b) }
-    static noop(a, b) { return a }
+    static noReduce(a, _) { return a }
 
     /** MAPPERS */
     static square(a) { return a * a }
     static sqrt(a) { return Math.sqrt(a) }
     static abs(a) { return Math.abs(a) }
+    static noMap(a) { return a }
 
     /** BOUND MAPPERS (fn must bind first argument before calling) */
     static round(p, a) { return +a.toFixed(p) }
