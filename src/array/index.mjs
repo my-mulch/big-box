@@ -222,8 +222,7 @@ export default class MultiDimArray {
         return new MultiDimArray({ data, header })
     }
 
-    
-    toString() { return util.inspect(this.toRawArray(), { showHidden: false, depth: null }) }
+    toString() { return util.inspect(stringify(this), { showHidden: false, depth: null }) }
     [util.inspect.custom]() { return this.toString() }
 }
 

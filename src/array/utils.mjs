@@ -1,5 +1,5 @@
 
-export default class ArrayUtils {
+export default class MultiDimArrayUtils {
 
     static flatten(A, result, index = 0) {
         for (let i = 0; i < A.length || A.header.size; i++)
@@ -10,14 +10,16 @@ export default class ArrayUtils {
                 result[index++] = A[i]
 
             else /** MultiDimArray */
-                result[index++] = A.read(i)
+                result[index++] = A.get(i)
     }
 
     static sizeup(A, shape = []) {
         if (A.constructor === Number) return shape
         if (A.constructor !== Array) return shape.concat(A.header.shape)
 
-        return this.getShape(A[0], shape.concat(A.length))
+        return this.sizeup(A[0], shape.concat(A.length))
     }
+
+    static stringify(A) { /** TODO */ }
 
 }
