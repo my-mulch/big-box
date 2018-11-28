@@ -1,5 +1,5 @@
-import { multiply } from '../math/scalar'
-import { ND_SLICE_CHARACTER } from '../contants'
+import { prod } from '../math/elementwise'
+import { SLICE_CHARACTER } from '../contants'
 import { stridesFor, isContiguousSlice, resolveReshape } from './utils'
 
 export default class Header {
@@ -9,7 +9,7 @@ export default class Header {
         this.offset = 'offset' in opts ? opts.offset : 0
         this.contig = 'contig' in opts ? opts.contig : true
 
-        this.size = this.shape.reduce(multiply)
+        this.size = this.shape.reduce(prod)
 
         this.strides = {}
         this.strides.local = stridesFor(this.shape, 1)
@@ -30,15 +30,27 @@ export default class Header {
 
         for (let i = 0; i < this.shape.length; i++) {
 
-            if (index[i] === constants.ND_SLICE_CHARACTER)
-                shape.push(this.shape[i]),
-                    strides.push(this.strides.global[i])
+            /**
+             *  If the index is a ':', the user wants that entire dimension 
+             * */
+
+            if (index[i] === SLICE_CHARACTER)
+                shape.push(this.shape[i]), strides.push(this.strides.global[i])
+
+            /** 
+             * If the index is a number, the user wants that index. duh. 
+             * */
 
             else if (index[i].constructor === Number)
                 offset += this.strides.global[i] * index[i]
 
+            /** 
+             * If the index is a slice of the form 'a:b', the user wants a slice from a to b 
+             * The logic below supports negative indexing. It's a python thing, if you ain't know
+            */
+
             else if (index[i].constructor === String) {
-                let [low, high] = index[i].split(constants.ND_SLICE_CHARACTER).map(Number)
+                let [low, high] = index[i].split(SLICE_CHARACTER).map(Number)
 
                 low = (low + this.shape[i]) % this.shape[i]
                 high = (high + this.shape[i]) % this.shape[i]

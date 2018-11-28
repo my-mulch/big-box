@@ -219,9 +219,9 @@ class LinearAlgebra {
 
 class ElementWise {
     static axisOperate(A, axis, mapper, reducer) {
-        const strides = axisStride(this.header.shape, 1, axis)
+        const strides = stridesFor(A.header.shape, 1, axis)
 
-        const header = this.header.axis(new Set(axis))
+        const header = A.header.axis(new Set(axis))
         const data = new Float64Array(header.size)
 
         axisWise({ A, strides, mapper, reducer, result: data })

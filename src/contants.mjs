@@ -1,3 +1,1 @@
-export default {
-    ND_SLICE_CHARACTER: ':'
-}
+export default { SLICE_CHARACTER: ':' }
