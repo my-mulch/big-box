@@ -1,4 +1,6 @@
 
+import { axisWiseWorker } from './utils'
+
 export default class ElementWiseOperator {
 
     /** REDUCERS */
@@ -28,13 +30,17 @@ export default class ElementWiseOperator {
     static round(p, a) { return +a.toFixed(p) } // bind me!
 
     /** OPERATORS */
-    static axisWise(args) {
-        const { A, strides, mapper, reducer, result } = args
-        const axis = A.header.size / result.size
+    static axisWise(opts) {
+        const { A, axis, mapper, reducer, result } = opts
 
-        let ri = 0
-        for (let i = 0; i < A.header.size; i++ , ri = Math.floor(i / axis))
-            result[ri] = reducer(mapper(A.get(i, strides)), result[ri], i % axis, axis)
+            (function worker(index = 0, k = 0) {
+                if (k === axis.shape.length)
+                    for (let j = 0; j < result.header.shape.length; j++)
+                        result.data[j] = reducer(mapper(A.data[index]), result.data[j])
+
+                for (let i = 0; i < axis.shape.length; i++)
+                    worker(index + i * axis.strides[j], k + 1)
+            })()
     }
 
     static pairWise(args) {
