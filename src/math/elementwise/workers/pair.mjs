@@ -26,4 +26,11 @@ export default class PairWiseWorkerSuite {
         }
 
     }
+
+    run(args) {
+        const { A, B, R, reducer } = args
+        const worker = this.suite[A.header.shape.length]
+
+        return worker(A, B, R, reducer)
+    }
 }

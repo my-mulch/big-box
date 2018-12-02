@@ -28,6 +28,11 @@ export default class AxisWiseWorkerSuite {
             }
         }
     }
-}
 
-console.log(new AxisWiseWorkerSuite().suite[2][2].toString())
+    run(args) {
+        const { A, R, mapper, reducer } = args
+        const worker = this.suite[A.header.shape.length][R.header.shape.length]
+
+        return worker(A, R, mapper, reducer)
+    }
+}

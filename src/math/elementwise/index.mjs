@@ -24,6 +24,6 @@ export default class ElementWiseOperator {
     static round(p, a) { return +a.toFixed(p) } // bind me!
 
     /** OPERATORS */
-    static axisWise(args) { return axisWorker(args) }
-    static pairWise(args) { return pairWorker(args) }
+    static axisWise(args) { return axisWorker.run(args) }
+    static pairWise(args) { return pairWorker.run(args) }
 }
