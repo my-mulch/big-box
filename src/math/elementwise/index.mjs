@@ -1,5 +1,5 @@
 
-import { axisWiseWorker } from './utils'
+import { axisWiseWorker, pairWiseWorker } from './worker'
 
 export default class ElementWiseOperator {
 
@@ -32,8 +32,6 @@ export default class ElementWiseOperator {
     /** OPERATORS */
     static axisWise(opts) {
         const { A, axis, mapper, reducer, result } = opts
-
-        
 
 
     }
