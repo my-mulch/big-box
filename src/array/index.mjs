@@ -1,10 +1,17 @@
-import ProbabilityOperator from '../math/probability'
-import TensorOperator from '../math/tensor'
-import LinearAlgebraOperator from '../math/linalg'
+import { matMult, matInv, matEye } from '../math/linalg'
+import { sum, min, range, max, mean, norm, noop, axisWise, pairWise, round } from '../math/elementwise'
+import { randInt } from '../math/probability'
+
+import { stridesFor } from '../header/utils'
+import { arrFlat, arrSize } from '../array/utils'
+import { matSize, matShape } from '../math/linear-algebra/utils'
 
 import util from 'util' // node's
-import utils from '../top/utils' // mine
 import Header from '../header'
+
+MultiDimArray.random = Random
+MultiDimArray.element = ElementWise
+MultiDimArray.linalg = LinearAlgebra
 
 export default class MultiDimArray {
 
@@ -14,37 +21,32 @@ export default class MultiDimArray {
     }
 
     static convert(...arrays) {
-        return arrays.map(function (array) {
-            return array.constructor !== MultiDimArray ? MultiDimArray.array(array) : array
-        })
+        for (let i = 0; i < arrays.length; i++)
+            if (!(arrays[i] instanceof MultiDimArray))
+                arrays[i] = MultiDimArray.array(array)
+
+        return arrays
     }
 
     static array(A) {
-        return new MultiDimArray({
-            data: new Float64Array(utils.array.flatten(A)),
-            header: new Header({ shape: utils.array.getShape(A) })
-        })
+        const header = new Header({ shape: arrSize(A) })
+        const data = arrFlat(A, new Float64Array(header.size))
+
+        return new MultiDimArray({ data, header })
     }
 
     static zeros(...shape) {
-        return new MultiDimArray({
-            data: new Float64Array(TensorOperator.multiply(shape)),
-            header: new Header({ shape })
-        })
+        const header = new Header({ shape })
+        const data = new Float64Array(header.size)
+
+        return new MultiDimArray({ data, header })
     }
 
     static ones(...shape) {
-        return new MultiDimArray({
-            data: new Float64Array(TensorOperator.multiply(shape)).fill(1),
-            header: new Header({ shape })
-        })
-    }
+        const header = new Header({ shape })
+        const data = new Float64Array(header.size).fill(1)
 
-    static eye(...shape) {
-        return new MultiDimArray({
-            data: new Float64Array([...utils.array.indices(shape)].map(TensorOperator.equal).map(Number)),
-            header: new Header({ shape })
-        })
+        return new MultiDimArray({ data, header })
     }
 
     static arange(...args) {
@@ -52,19 +54,122 @@ export default class MultiDimArray {
         const step = args.length === 3 ? args[2] : 1
         const stop = args.length === 1 ? args[0] : args[1]
 
+        const header = new Header({ shape: [Math.ceil((stop - start) / step)] })
+        const data = range(start, step, stop, new Float64Array(header.size))
+
+        return new MultiDimArray({ data, header })
+    }
+
+    min(...axis) { return ElementWise.axisOperate(this, axis, noop, min) }
+    max(...axis) { return ElementWise.axisOperate(this, axis, noop, max) }
+    mean(...axis) { return ElementWise.axisOperate(this, axis, noop, mean) }
+    norm(...axis) { return ElementWise.axisOperate(this, axis, square, norm) }
+
+    plus(B) { return ElementWise.pairOperate(this, B, sum) }
+    minus(B) { return ElementWise.pairOperate(this, B, diff) }
+    times(B) { return ElementWise.pairOperate(this, B, prod) }
+    divide(B) { return ElementWise.pairOperate(this, B, quot) }
+
+    dot(B) { return LinearAlgebra.dot(this, B) }
+    cross(B) { return LinearAlgebra.cross(this, B) }
+    inv() { return LinearAlgebra.inv(this) }
+
+    /** Set & Get are index read, write */
+
+    get(index) { this.data[this.header.lookup(index)] }
+    set(index) { return { to: (function (value) { this.data[this.header.lookup(index)] = value }).bind(this) } }
+
+    /** Write & Slice are chunk read, write */
+
+    slice(...indices) {
+        if (this.header.fullySpecified(indices))
+            return this.get(indices)
+
         return new MultiDimArray({
-            data: new Float64Array(TensorOperator.range(start, stop, step)),
-            header: new Header({ shape: [Math.ceil((stop - start) / step)] })
+            data: this.data,
+            header: this.header.slice(indices.map(String)),
         })
     }
 
-    copy() {
-        return new MultiDimArray({
-            data: this.data.slice(),
-            header: this.header.copy()
-        })
+    write(...indices) {
+        return {
+            to: (function (A) {
+                [A] = MultiDimArray.convert(A)
+                const region = this.slice(...indices)
+
+                if (region.constructor === Number)
+                    this.set(indices).to(region)
+
+                for (let i = 0; i < region.size; i++)
+                    region.set(i).to(A.get(i))
+
+                return this
+            }).bind(this)
+        }
     }
 
+    round(precision) {
+        const header = new Header({ shape: this.header.shape })
+        const data = new Float64Array(header.size)
+
+        axisWise({
+            A: this,
+            strides: this.header.strides.local,
+            mapper: round.bind(null, precision),
+            reducer: noop,
+            result: data
+        })
+
+        return new MultiDimArray({ header, data })
+    }
+
+    T() {
+        const data = this.data
+        const header = this.header.transpose()
+
+        return new MultiDimArray({ data, header })
+    }
+
+    reshape(...shape) {
+        /**  if the array is not contigous, a reshape means data copy */
+        if (!this.header.contig) {
+            const header = new Header({ shape })
+            const data = new Float64Array(header.size)
+
+            axisWise({
+                A: this,
+                strides: this.header.strides.local,
+                mapper: noop,
+                reducer: noop,
+                result: data
+            })
+
+            return new MultiDimArray({ data, header })
+        }
+
+        const data = this.data
+        const header = this.header.reshape(shape)
+
+        return new MultiDimArray({ data, header })
+    }
+
+    toString() { return util.inspect(stringify(this), { showHidden: false, depth: null }) }
+    [util.inspect.custom]() { return this.toString() }
+}
+
+class Random {
+    static randint(low, high, shape) {
+        const header = new Header({ shape })
+        const data = new Float64Array(header.size)
+
+        for (let i = 0; i < data.length; i++)
+            data[i] = randInt(low, high)
+
+        return new MultiDimArray({ header, data })
+    }
+}
+
+class LinearAlgebra {
     static dot(A, B) {
         [A, B] = MultiDimArray.convert(A, B)
 
@@ -77,150 +182,61 @@ export default class MultiDimArray {
         if (!B.header.shape.length)
             return A.multiply(B)
 
-        if (utils.linalg.matrixSize(A, B) === 1)
-            return LinearAlgebraOperator.matMult(A, B)[0]
+        if (matSize(A, B) === 1)
+            return matMult(A, B, new Float64Array(1))[0]
 
-        return new MultiDimArray({
-            data: LinearAlgebraOperator.matMult(A, B),
-            header: new Header({ shape: utils.linalg.matrixShape(A, B) })
-        })
+        const header = new Header({ shape: matShape(A, B) })
+        const data = matMult(A, B, new Float64Array(header.size))
+
+        return new MultiDimArray({ data, header })
     }
 
     static cross(A, B) {
         [A, B] = MultiDimArray.convert(A, B)
 
-        return new MultiDimArray({
-            data: LinearAlgebraOperator.cross(A, B),
-            header: new Header({ shape: A.header.shape })
-        })
+        const header = new Header({ shape: A.header.shape })
+        const data = cross(A, B, new Float64Array(header.size))
+
+        return new MultiDimArray({ data, header })
     }
 
     static inv(A) {
         [A] = MultiDimArray.convert(A)
 
-        return LinearAlgebraOperator.invert(A, MultiDimArray.eye(...A.header.shape))
+        const header = new Header({ shape: A.header.shape })
+        const data = matInv(A, new Float64Array(header.size))
+
+        return new MultiDimArray({ data, header })
     }
 
-    axis(...axes) {
-        return [...utils.array.indices(this.header.axis(axes))]
-            .map(function (index) { return this.slice(...index) }, this)
-    }
+    static eye(...shape) {
+        const header = new Header({ shape })
+        const data = identity(shape, new Float64Array(header.size))
 
-    axisOperate(axes, operator) {
-        if (!axes.length)
-            return operator(this.data)
-
-        return new MultiDimArray({
-            data: TensorOperator.elementwise(operator, ...this.axis(...axes)),
-            header: new Header({ shape: this.header.shape })
-        })
-    }
-
-    dataOperate(A, operator) {
-        return new MultiDimArray({
-            data: TensorOperator.elementwise(operator, this, ...MultiDimArray.convert(A)),
-            header: new Header({ shape: this.header.shape })
-        })
-    }
-
-    min(...axis) { return this.axisOperate(axis, TensorOperator.min) }
-    max(...axis) { return this.axisOperate(axis, TensorOperator.max) }
-    mean(...axis) { return this.axisOperate(axis, TensorOperator.mean) }
-    norm(...axis) { return this.axisOperate(axis, TensorOperator.norm) }
-
-    add(A) { return this.dataOperate(A, TensorOperator.add) }
-    subtract(A) { return this.dataOperate(A, TensorOperator.subtract) }
-    multiply(A) { return this.dataOperate(A, TensorOperator.multiply) }
-    divide(A) { return this.dataOperate(A, TensorOperator.divide) }
-
-    dot(A) { return MultiDimArray.dot(this, ...MultiDimArray.convert(A)) }
-    cross(A) { return MultiDimArray.cross(this, ...MultiDimArray.convert(A)) }
-    inv() { return MultiDimArray.inv(this) }
-
-
-    set(...indices) {
-        return {
-            to: (function (A) {
-                [A] = MultiDimArray.convert(A)
-                const region = this.slice(...indices)
-
-                if (region.constructor === Number)
-                    return utils.array.write(this, indices, A)
-
-                for (const index of utils.array.indices(region.header.shape))
-                    utils.array.write(region, index, utils.array.broadcast(A, index))
-
-                return this
-
-            }).bind(this)
-        }
-    }
-
-    round(precision) {
-        return new MultiDimArray({
-            data: this.data.map(function (value) { return value.toFixed(precision) }),
-            header: this.header
-        })
-    }
-
-    slice(...indices) {
-        if (this.header.fullySpecified(indices))
-            return this.data[this.header.flatten(indices)]
-
-        return new MultiDimArray({
-            data: this.data,
-            header: this.header.slice(indices.map(String)),
-        })
-    }
-
-    T() {
-        return new MultiDimArray({
-            data: this.data,
-            header: this.header.transpose(),
-        })
-    }
-
-    reshape(...shape) {
-        // if the array is not contigous, a reshape means data copy
-        if (!this.header.contig)
-            return new MultiDimArray({
-                data: new Float64Array(this.toRawFlat()),
-                header: new Header({ shape })
-            })
-
-        return new MultiDimArray({
-            data: this.data,
-            header: this.header.reshape(shape)
-        })
-    }
-
-    toRawArray() {
-        return [...this].map(function (slice) {
-            if (slice instanceof MultiDimArray)
-                return slice.toRawArray()
-
-            return slice
-        })
-    }
-
-    toRawFlat() { return [...this.axis(...this.header.shape.keys())] }
-    toString() { return util.inspect(this.toRawArray(), { showHidden: false, depth: null }) }
-
-    *[Symbol.iterator]() { yield* this.axis(0) }
-    [util.inspect.custom]() { return this.toString() }
-}
-
-class Random {
-    static randint(low, high, shape) {
-        function randomNumbers() {
-            return ProbabilityOperator.randInt(low, high)
-        }
-
-        return new MultiDimArray({
-            data: new Float64Array(TensorOperator.multiply(shape)).map(randomNumbers),
-            header: new Header({ shape })
-        })
+        return new MultiDimArray({ data, header })
     }
 }
 
-MultiDimArray.random = Random
+class ElementWise {
+    static axisOperate(A, axis, mapper, reducer) {
+        const strides = stridesFor(A.header.shape, 1, axis)
+
+        const header = A.header.axis(new Set(axis))
+        const data = new Float64Array(header.size)
+
+        axisWise({ A, strides, mapper, reducer, result: data })
+
+        return new MultiDimArray({ data, header })
+    }
+
+    static pairOperate(A, B, reducer) {
+        [A, B] = MultiDimArray.convert(A, B)
+
+        const header = new Header({ shape: A.header.shape })
+        const data = new Float64Array(header.size)
+
+        pairWise({ A, B, reducer, result: data })
+
+        return new MultiDimArray({ data, header })
+    }
+}

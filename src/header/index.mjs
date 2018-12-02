@@ -1,70 +1,106 @@
-import ScalarOperator from '../math/scalar'
-import utils from '../top/utils'
+import { prod } from '../math/elementwise'
+import { SLICE_CHARACTER } from '../contants'
+import { stridesFor, isContiguousSlice, resolveReshape } from './utils'
 
 export default class Header {
-    constructor(opts) {
-        this.stride = {}
 
+    constructor(opts) {
         this.shape = 'shape' in opts ? opts.shape : []
         this.offset = 'offset' in opts ? opts.offset : 0
         this.contig = 'contig' in opts ? opts.contig : true
 
-        this.stride.local = this.shape.reduceRight(utils.header.reshape.stride, [1])
-        this.stride.global = 'stride' in opts.stride ? opts.stride : this.stride.local
+        this.size = this.shape.reduce(prod)
 
-        this.size = this.shape.reduce(ScalarOperator.multiply)
+        this.strides = {}
+        this.strides.local = stridesFor(this.shape, 1)
+        this.strides.global = 'strides' in opts.strides ? opts.strides : this.strides.local
+        this.lastStride = this.strides.global.slice(-1).pop()
     }
 
     copy() {
         return new Header(JSON.parse(JSON.stringify(this)))
     }
 
-    slice(indices) {
-        return new Header({
-            offset: indices.reduce(utils.header.slice.offset, this.offset),
-            shape: indices.reduce(utils.header.slice.shape, new Array()),
-            stride: indices.reduce(utils.header.slice.stride, new Array()),
-            contig: !indices.some(utils.header.slice.discontiguous)
-        })
+    slice(index) {
+        const shape = new Array()
+        const strides = new Array()
+
+        let offset = this.offset
+        let contig = isContiguousSlice(index)
+
+        for (let i = 0; i < this.shape.length; i++) {
+
+            /**
+             *  If the index is a ':', the user wants that entire dimension 
+             * */
+
+            if (index[i] === SLICE_CHARACTER)
+                shape.push(this.shape[i]), strides.push(this.strides.global[i])
+
+            /** 
+             * If the index is a number, the user wants that index. duh. 
+             * */
+
+            else if (index[i].constructor === Number)
+                offset += this.strides.global[i] * index[i]
+
+            /** 
+             * If the index is a slice of the form 'a:b', the user wants a slice from a to b 
+             * The logic below supports negative indexing. It's a python thing, if you ain't know
+            */
+
+            else if (index[i].constructor === String) {
+                let [low, high] = index[i].split(SLICE_CHARACTER).map(Number)
+
+                low = (low + this.shape[i]) % this.shape[i]
+                high = (high + this.shape[i]) % this.shape[i]
+
+                offset += this.strides.global[i] * low
+
+                shape.push(high - low)
+                strides.push(this.strides.global[i])
+            }
+        }
+
+        return new Header({ shape, strides, offset, contig })
     }
 
     transpose() {
-        return new Header({
-            shape: this.shape.slice().reverse(),
-            stride: this.stride.slice().reverse(),
-            contig: false
-        })
+        const shape = this.shape.slice().reverse()
+        const strides = this.strides.slice().reverse()
+        const contig = false
+
+        return new Header({ shape, strides, contig })
     }
 
-    reshape(shapeRaw, shapeProcessed = shapeRaw.map(utils.header.reshape.resolve)) {
-        return new Header({
-            shape: shapeProcessed,
-            stride: shapeProcessed.reduceRight(utils.header.reshape.stride, [this.stride.slice(-1).pop()])
-        })
+    reshape(newShape) {
+        const shape = resolveReshape(newShape, this.size)
+        const strides = stridesFor(shape, this.lastStride)
+
+        return new Header({ shape, strides })
     }
 
-    fullySpecified(indices) {
-        return indices.length === this.shape.length && indices.every(utils.header.indices.isNumber)
+    axis(axis) {
+        const shape = axisReshape(axis, this.shape)
+
+        return new Header({ shape })
     }
 
-    flatten(indices) {
-        return indices.reduce(utils.header.indices.flatten, this.offset)
+    fullySpecified(index) {
+        return index.length === this.shape.length
+            && index.every(function (value) { value.constructor === Number })
     }
 
-    inflate(index) {
-        return this.stride.local.reduce(utils.header.indices.inflate(index), this.offset)
+    lookup(index, local = this.strides.local) {
+        let offset = this.offset
+
+        for (let i = 0; i < this.shape.length; i++)
+            /** Whoa.. what's this ugly shit? Peep the README */
+            offset += this.strides.global[i] *
+                (index.constructor === Number
+                    ? Math.floor(index / local[i]) % this.shape[i]
+                    : index[i])
+
+        return offset
     }
-
-    axis(axes) {
-        axes.sort(ScalarOperator.subtract)
-
-        return this.shape.map(function (dim, i) {
-            if (axes[0] !== i)
-                return ':'
-
-            axes.shift()
-            return dim
-        })
-    }
-
 }
