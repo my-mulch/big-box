@@ -33,14 +33,9 @@ export default class ElementWiseOperator {
     static axisWise(opts) {
         const { A, axis, mapper, reducer, result } = opts
 
-            (function worker(index = 0, k = 0) {
-                if (k === axis.shape.length)
-                    for (let j = 0; j < result.header.shape.length; j++)
-                        result.data[j] = reducer(mapper(A.data[index]), result.data[j])
+        
 
-                for (let i = 0; i < axis.shape.length; i++)
-                    worker(index + i * axis.strides[j], k + 1)
-            })()
+
     }
 
     static pairWise(args) {
