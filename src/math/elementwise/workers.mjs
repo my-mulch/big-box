@@ -5,9 +5,9 @@ export default class ElementWiseWorkerSuite {
     constructor() {
         this.suite = new Object()
 
-        for (let i = 1; i < constants.GENERATED_AXIS_SIZE; i++) {
+        for (let i = 1; i <= constants.GENERATED_AXIS_SIZE; i++) {
             this.suite[i] = new Object()
-            for (let j = 1; j < constants.GENERATED_AXIS_SIZE; i++) {
+            for (let j = 1; j <= constants.GENERATED_AXIS_SIZE; j++) {
                 const fn = new Array()
 
                 fn.push(...ElementWiseWorkerSuite.openLoop('R', i))
@@ -16,10 +16,12 @@ export default class ElementWiseWorkerSuite {
                 fn.push(...ElementWiseWorkerSuite.defineIndex('R', i))
                 fn.push(...ElementWiseWorkerSuite.defineIndex('A', j))
 
+                fn.push(`R.data[RI] = reducer(mapper(A.data[AI]), R.data[RI])`)
+
                 fn.push(...ElementWiseWorkerSuite.closeLoop(i))
                 fn.push(...ElementWiseWorkerSuite.closeLoop(j))
 
-                this.suite[i][j] = fn
+                this.suite[i][j] = Function('A', 'R', 'mapper', 'reducer', fn.join('\n'))
             }
         }
 
@@ -34,7 +36,7 @@ export default class ElementWiseWorkerSuite {
         return loop
     }
 
-    static closeLoop(A, count) {
+    static closeLoop(count) {
         const loopStop = new Array()
 
         for (let i = 0; i < count; i++)
@@ -49,6 +51,6 @@ export default class ElementWiseWorkerSuite {
         for (let i = 0; i < count; i++)
             index.push(`${A}${i} * ${A}.strides[${i}]`)
 
-        return [`const ${A}I = ${A}.header.offset`, index.join('+')]
+        return [`const ${A}I = ${A}.header.offset + `, index.join('+')]
     }
 }
