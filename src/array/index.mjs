@@ -74,13 +74,6 @@ export default class MultiDimArray {
     cross(B) { return LinearAlgebra.cross(this, B) }
     inv() { return LinearAlgebra.inv(this) }
 
-    /** Set & Get are index read, write */
-
-    get(index) { this.data[this.header.lookup(index)] }
-    set(index) { return { to: (function (value) { this.data[this.header.lookup(index)] = value }).bind(this) } }
-
-    /** Write & Slice are chunk read, write */
-
     slice(...indices) {
         if (this.header.fullySpecified(indices))
             return this.get(indices)
