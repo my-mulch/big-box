@@ -1,20 +1,17 @@
 import { prod } from '../math/elementwise'
-import { SLICE_CHARACTER } from '../contants'
+import { SLICE_CHARACTER, SHAPE, OFFSET, CONTIG } from '../contants'
 import { stridesFor, isContiguousSlice, resolveReshape } from './utils'
 
 export default class Header {
 
     constructor(opts) {
-        this.shape = 'shape' in opts ? opts.shape : []
-        this.offset = 'offset' in opts ? opts.offset : 0
-        this.contig = 'contig' in opts ? opts.contig : true
+        this.shape = SHAPE in opts ? opts.shape : new Array()
+        this.offset = OFFSET in opts ? opts.offset : 0
+        this.contig = CONTIG in opts ? opts.contig : true
 
         this.size = this.shape.reduce(prod)
-
-        this.strides = {}
-        this.strides.local = stridesFor(this.shape, 1)
-        this.strides.global = 'strides' in opts.strides ? opts.strides : this.strides.local
-        this.lastStride = this.strides.global.slice(-1).pop()
+        this.strides = stridesFor(this.shape, 1)
+        this.lastStride = this.strides[this.strides.length - 1]
     }
 
     copy() {
@@ -80,27 +77,8 @@ export default class Header {
         return new Header({ shape, strides })
     }
 
-    axis(axis) {
-        const shape = axisReshape(axis, this.shape)
-
-        return new Header({ shape })
-    }
-
     fullySpecified(index) {
         return index.length === this.shape.length
             && index.every(function (value) { value.constructor === Number })
-    }
-
-    lookup(index, local = this.strides.local) {
-        let offset = this.offset
-
-        for (let i = 0; i < this.shape.length; i++)
-            /** Whoa.. what's this ugly shit? Peep the README */
-            offset += this.strides.global[i] *
-                (index.constructor === Number
-                    ? Math.floor(index / local[i]) % this.shape[i]
-                    : index[i])
-
-        return offset
     }
 }

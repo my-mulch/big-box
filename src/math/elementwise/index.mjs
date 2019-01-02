@@ -1,5 +1,5 @@
-
-import { axisWorker, pairWorker } from './workers'
+import axisSuite from './axis'
+import pairSuite from './pair'
 
 export default class ElementWiseOperator {
 
@@ -24,6 +24,16 @@ export default class ElementWiseOperator {
     static round(p, a) { return +a.toFixed(p) } // bind me!
 
     /** OPERATORS */
-    static axisWise(args) { return axisWorker.run(args) }
-    static pairWise(args) { return pairWorker.run(args) }
+    static axisWise({ R, A, mapper, reducer }) {
+        return axisSuite.lookup(`({ 
+            RL: { repeat: ${R.header.shape.length} }, 
+            AL: { repeat: ${A.header.shape.length} } 
+        })`).call(null, R, A, mapper, reducer)
+    }
+
+    static pairWise({ R, A, B, reducer }) {
+        return pairSuite.lookup(`({ 
+            RL: { repeat: ${R.header.shape.length} }
+        })`).call(null, R, A, B, reducer)
+    }
 }

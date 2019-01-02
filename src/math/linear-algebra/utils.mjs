@@ -11,13 +11,4 @@ export default class LinearAlgebraUtils {
 
         return [A.header.shape[0], B.header.shape[1]]
     }
-
-    static swapRows(A, p) {
-        const size = A.header.shape[0]
-        for (let r = p + 1; r < size; r++)
-            if (A.data[A.offset + r * A.header.strides[0] + p])
-                for (let c = 0; c < size; c++)
-                    swap(A.data, A.offset + r * A.header.strides[0] + c * A.header.strides[0])
-
-    }
 }
