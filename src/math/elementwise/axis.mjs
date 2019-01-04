@@ -1,15 +1,18 @@
 
 export default radley.suite({
-    args: ['$R', '$A', '$mapper', '$reducer'],
+    args: ['R', 'A', 'mapper', 'reducer'],
+    meta: function ({ R, A }) {
+        return `
+            RL.repeat.${R.header.shape.length},
+            AL.repeat.${A.header.shape.length},
+        `
+    },
     nozzle: js,
     code: `
-        { tag: 'RL', type: 'loop' } | @ = 0 ; @ < $R.header.shape[^] ; @++
-            { tag: 'AL', type: 'loop' } | @ = 0 ; @ < $A.header.shape[^] ; @++
-            
-                { tag: 'RL', type: 'assign', op: '+' } | $ri = @ * $R.header.strides[^]
-                { tag: 'AL', type: 'assign', op: '+' } | $ai = @ * $A.header.strides[^]
-
-                { type: 'assign' } | $R.data[$ri] = $reducer($mapper($A.data[$ai]), $R.data[$ri])
-        
-        { type: 'return' } | $R`
+        @ = 0 ; @ < R.header.shape[^] ; @++                             | RL 
+            @ = 0 ; @ < A.header.shape[^] ; @++                         | AL 
+                ri = @ * R.header.strides[^]                            | RL 
+                ai = @ * A.header.strides[^]                            | AL 
+                R.data[ri] = reducer(mapper(A.data[ai]), R.data[ri])    |
+        return R                                                        |`
 })
