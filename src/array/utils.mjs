@@ -1,24 +1,36 @@
 
-export default class MultiDimArrayUtils {
+export const arrShape = function arrShape(A, shape = []) {
+    if (A.constructor === Number) return shape
+    if (A.constructor !== Array) return shape.concat(A.header.shape)
 
-    static flatten(A, result, index = 0) {
-        for (let i = 0; i < A.length || A.header.size; i++)
-            if (A[i].constructor === Array)
-                this.flatten(A[i], result, index)
-
-            else if (A[i].constructor === Number)
-                result[index++] = A[i]
-
-            else /** MultiDimArray */
-                result[index++] = A.get(i)
-    }
-
-    static sizeup(A, shape = []) {
-        if (A.constructor === Number) return shape
-        if (A.constructor !== Array) return shape.concat(A.header.shape)
-
-        return this.sizeup(A[0], shape.concat(A.length))
-    }
-
-    static stringify(A) { /** TODO */ }
+    return arrShape(A[0], shape.concat(A.length))
 }
+
+export const arrIndices = function (array) {
+    const indices = new Array(array.length)
+
+    for (let i = 0; i < indices.length; i++)
+        indices[i] = i
+
+    return indices
+}
+
+export const stringify = function (array, index = 0, dim = 0) {
+    if (dim === array.header.shape.length)
+        return array.data[index]
+
+    const level = array.header.shape.length - 1 - dim
+
+    return '[' + new Array(array.header.shape[dim])
+        .fill(null)
+        .map(function (_, i) {
+            const location = i * array.header.strides[dim] + index
+            const nest = stringify(array, location, dim + 1)
+
+            return `${nest}`
+        })
+        .join(',' + '\n'.repeat(level)) + ']'
+
+}
+
+
