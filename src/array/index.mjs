@@ -1,78 +1,119 @@
 import { sum, min, range, max, noop, axisSuite, pairSuite, round } from '../ops/element'
 import { matMultSuite, invSuite, crossProduct } from '../ops/linalg'
+import { randInt } from '../ops/probability'
 
-import { arrShape } from '../array/utils'
+import { shape, fill } from '../array/utils'
 import util from 'util' // node's
 import Header from './header'
 
 
 export default class MultiDimArray {
 
-    constructor(props) {
-        this.header = props.header
-        this.data = props.data
+    constructor({ header, type, data }) {
+        this.header = header
+        this.type = type
+        this.data = data || new this.type(this.header.size)
     }
 
-    static array(A) {
-        const header = new Header({ shape: arrShape(A) })
-        const data = new Float64Array(A.flat(header.shape.length))
-
-        return new MultiDimArray({ data, header })
+    static array({ A, type = Float64Array }) {
+        return fill({
+            values: A,
+            result: new MultiDimArray({
+                type,
+                header: new Header({ shape: shape(A) }),
+            })
+        })
     }
 
-    static zeros(...shape) {
-        const header = new Header({ shape })
-        const data = new Float64Array(header.size)
-
-        return new MultiDimArray({ data, header })
+    static zeros({ shape, result, type = Float64Array }) {
+        return fill({
+            values: 0,
+            result: result || new MultiDimArray({
+                type,
+                header: new Header({ shape }),
+            })
+        })
     }
 
-    static ones(...shape) {
-        const header = new Header({ shape })
-        const data = new Float64Array(header.size).fill(1)
-
-        return new MultiDimArray({ data, header })
+    static ones({ shape, result, type = Float64Array }) {
+        return fill({
+            values: 1,
+            result: result || new MultiDimArray({
+                type,
+                header: new Header({ shape }),
+            })
+        })
     }
 
-    static arange(...args) {
-        const start = args.length === 1 ? 0 : args[0]
-        const step = args.length === 3 ? args[2] : 1
-        const stop = args.length === 1 ? args[0] : args[1]
-
-        const shape = [Math.ceil((stop - start) / step)]
-        const header = new Header({ shape })
-        const data = new Float64Array(header.size)
-
-        return range({ start, step, stop, R: new MultiDimArray({ data, header }) })
+    static arange({ start = 0, step = 1, stop, result, type = Float64Array }) {
+        return range({
+            start, step, stop,
+            result: result || new MultiDimArray({
+                type,
+                header: new Header({ shape: [Math.ceil((stop - start) / step)] })
+            })
+        })
     }
 
-    static randint(low, high, shape) {
-        const header = new Header({ shape })
-        const data = new Float64Array(header.size)
-
-        for (let i = 0; i < data.length; i++)
-            data[i] = Math.floor(low + Math.random() * (high - low))
-
-        return new MultiDimArray({ header, data })
+    static randint({ low, high, shape, result, type = Int32Array }) {
+        return fill({
+            values: function () { return randInt(low, high) },
+            result: result || new MultiDimArray({
+                type,
+                header: new Header({ shape })
+            })
+        })
     }
 
-    axixOperate({ axes, mapper = noop, reducer = noop }) {
-        const header = this.header.axis(axes)
-        const data = new Float64Array(header.size)
-
-        return axisSuite.call({ A: this, R: new MultiDimArray({ data, header }), axes, mapper, reducer })
+    static axixOperate({ A, axes, mapper = noop, reducer = noop, result, type = Float64Array }) {
+        return axisSuite.call({
+            A, axes, mapper, reducer,
+            result: result || new MultiDimArray({
+                type,
+                header: this.header.axis(axes)
+            })
+        })
     }
 
-    pairOperate({ B, reducer = noop }) {
-        const header = new Header({ shape: this.header.shape })
-        const data = new Float64Array(header.size)
-
-        return pairSuite.call({ A: this, B: B, R: new MultiDimArray({ data, header }), reducer })
+    static pairOperate({ A, B, reducer = noop, result, type = Float64Array }) {
+        return pairSuite.call({
+            A, B, reducer,
+            result: result || new MultiDimArray({
+                type,
+                header: new Header({ shape: this.header.shape })
+            })
+        })
     }
 
-    max(...axes) { return this.axisOperate({ axes, reducer: max }) }
-    min(...axes) { return this.axisOperate({ axes, reducer: min }) }
-    round(place) { return this.axixOperate({ axes: getIndices(this.header.shape), mapper: round.bind(place) }) }
+    round({ precision, result, type }) {
+        return MultiDimArray.axixOperate({
+            A: this,
+            type,
+            result,
+            axes: keys(this.header.shape),
+            mapper: round.bind(precision)
+        })
+    }
+
+    max({ axes, result, type }) {
+        return MultiDimArray.axisOperate({
+            A: this,
+            type,
+            result,
+            axes,
+            reducer: max,
+        })
+    }
+
+    min({ axes, result, type }) {
+        return MultiDimArray.axisOperate({
+            A: this,
+            type,
+            result,
+            axes,
+            reducer: min,
+        })
+    }
 
     plus(B) { return this.pairOperate({ B, reducer: sum }) }
     minus(B) { return this.pairOperate({ B, reducer: diff }) }

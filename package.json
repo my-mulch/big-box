@@ -17,6 +17,6 @@
     },
     "homepage": "https://github.com/trumanpurnell/dimsum#readme",
     "dependencies": {
-        "radley": "^2.0.4"
+        "radley": "^4.0.1"
     }
 }
