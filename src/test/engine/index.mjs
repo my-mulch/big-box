@@ -3,8 +3,8 @@ export default class FakeJest {
     static expect(stuff) {
         return {
             toEqual: function (otherStuff) {
-                if (stuff.header) stuff = stuff.round(8).toRawArray()
-                if (otherStuff.header) otherStuff = otherStuff.round(8).toRawArray()
+                if (stuff.header) stuff = JSON.parse(stuff.toString())
+                if (otherStuff.header) otherStuff = JSON.parse(otherStuff.toString())
 
                 stuff = JSON.stringify(stuff)
                 otherStuff = JSON.stringify(otherStuff)

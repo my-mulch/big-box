@@ -1,5 +1,5 @@
 import { sum, min, range, max, noop, axisSuite, pairSuite, round, fill } from '../ops/element'
-import { matMultSuite, invSuite, crossProduct } from '../ops/linalg'
+import { matMultSuite, invSuite, crossProduct, identity } from '../ops/linalg'
 import { randint } from '../ops/probability'
 
 import { shape, keys, stringify } from '../array/utils'
@@ -98,6 +98,15 @@ export default class MultiDimArray {
         })
     }
 
+    static eye({ shape, result, type = Float64Array }) {
+        return identity({
+            result: result || new MultiDimArray({
+                type,
+                header: new Header({ shape })
+            })
+        })
+    }
+
     static axixOperate({ A, axes, mapper = noop, reducer = noop, result, type = Float64Array }) {
         return axisSuite.call({
             A, axes, mapper, reducer,
@@ -180,7 +189,7 @@ export default class MultiDimArray {
         return MultiDimArray.inv({ A: this, result, type })
     }
 
-    slice(...indices) {
+    slice({ indices }) {
         if (this.header.fullySpecified(indices))
             return MultiDimArray.axixOperate({
                 A: this, axes: keys(this.header.shape)
@@ -201,7 +210,7 @@ export default class MultiDimArray {
         })
     }
 
-    reshape(...shape) {
+    reshape({ shape }) {
         /**  if the array is not contigous, a reshape means data copy */
         if (!this.header.contig)
             return this.axixOperate({ A: this, axes: [] })
