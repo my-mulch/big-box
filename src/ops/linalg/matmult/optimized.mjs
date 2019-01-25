@@ -10,10 +10,10 @@ export default function (args) {
                 args.A.data[${r * args.A.header.strides[0] + s * args.A.header.strides[1]} + args.A.header.offset] * 
                 args.B.data[${c * args.B.header.strides[1] + s * args.B.header.strides[0]} + args.B.header.offset]`)
             }
-            source.push(`args.R.data[${source.length}]=${mults.join('+')}`)
+            source.push(`args.result.data[${source.length}]=${mults.join('+')}`)
         }
     }
 
-    source.push('return args.R')
+    source.push('return args.result')
     return new Function('args', source.join('\n'))
 }

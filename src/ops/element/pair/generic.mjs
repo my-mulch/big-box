@@ -8,11 +8,11 @@ export default function (args) {
         bIndex.push(`i${i} * args.B.header.strides[${i}]`)
     }
 
-    source.push(`args.R.data[ri++] = args.reducer(args.A.data[args.A.header.offset + ${aIndex.join('+')}], 
+    source.push(`args.result.data[ri++] = args.reducer(args.A.data[args.A.header.offset + ${aIndex.join('+')}], 
                         args.B.data[args.B.header.offset + ${bIndex.join('+')}])`)
 
     source.push('}'.repeat(args.A.header.shape.length))
-    source.push(`return args.R`)
+    source.push(`return args.result`)
 
     return new Function('args', source.join('\n'))
 }

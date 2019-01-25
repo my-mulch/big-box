@@ -1,8 +1,8 @@
-import { sum, min, range, max, noop, axisSuite, pairSuite, round } from '../ops/element'
+import { sum, min, range, max, noop, axisSuite, pairSuite, round, fill } from '../ops/element'
 import { matMultSuite, invSuite, crossProduct } from '../ops/linalg'
-import { randInt } from '../ops/probability'
+import { randint } from '../ops/probability'
 
-import { shape, fill } from '../array/utils'
+import { shape, keys, stringify } from '../array/utils'
 import util from 'util' // node's
 import Header from './header'
 
@@ -57,10 +57,43 @@ export default class MultiDimArray {
 
     static randint({ low, high, shape, result, type = Int32Array }) {
         return fill({
-            values: function () { return randInt(low, high) },
+            values: function () { return randint(low, high) },
             result: result || new MultiDimArray({
                 type,
                 header: new Header({ shape })
+            })
+        })
+    }
+
+    static dot({ A, B, result, type = Float64Array }) {
+        return matMultSuite.call({
+            A, B,
+            result: result || new MultiDimArray({
+                type,
+                header: new Header({
+                    type,
+                    shape: [A.header.shape[0], B.header.shape[1]]
+                })
+            })
+        })
+    }
+
+    static cross({ A, B, result, type = Float64Array }) {
+        return crossProduct({
+            A, B,
+            result: result || new MultiDimArray({
+                type,
+                header: new Header({ shape: A.header.shape })
+            })
+        })
+    }
+
+    static inv({ A, result, type = Float64Array }) {
+        return invSuite.call({
+            A,
+            result: result || new MultiDimArray({
+                type,
+                header: new Header({ shape: this.header.shape })
             })
         })
     }
@@ -75,7 +108,7 @@ export default class MultiDimArray {
         })
     }
 
-    static pairOperate({ A, B, reducer = noop, result, type = Float64Array }) {
+    static pairOperate({ A, B, reducer = noop, result = noop, type = Float64Array }) {
         return pairSuite.call({
             A, B, reducer,
             result: result || new MultiDimArray({
@@ -87,9 +120,7 @@ export default class MultiDimArray {
 
     round({ precision, result, type }) {
         return MultiDimArray.axixOperate({
-            A: this,
-            type,
-            result,
+            A: this, type, result,
             axes: keys(this.header.shape),
             mapper: round.bind(precision)
         })
@@ -97,78 +128,91 @@ export default class MultiDimArray {
 
     max({ axes, result, type }) {
         return MultiDimArray.axisOperate({
-            A: this,
-            type,
-            result,
-            axes,
+            A: this, type, result, axes,
             reducer: max,
         })
     }
 
     min({ axes, result, type }) {
         return MultiDimArray.axisOperate({
-            A: this,
-            type,
-            result,
-            axes,
+            A: this, type, result, axes,
             reducer: min,
         })
     }
 
-    plus(B) { return this.pairOperate({ B, reducer: sum }) }
-    minus(B) { return this.pairOperate({ B, reducer: diff }) }
-    times(B) { return this.pairOperate({ B, reducer: prod }) }
-    divide(B) { return this.pairOperate({ B, reducer: quot }) }
-
-    dot(B, R) {
-        // const header = R || new Header({ shape: [this.header.shape[0], B.header.shape[1]] })
-        // const data = R || new Float64Array(header.size)
-
-        return matMultSuite.call({ A: this, B: B, R: R })
+    plus({ B, result, type }) {
+        return MultiDimArray.pairOperate({
+            A: this, B, type, result,
+            reducer: sum,
+        })
     }
 
-    cross(B, R) {
-        const header = R || new Header({ shape: this.header.shape })
-        const data = R || new Float64Array(header.size)
-
-        return crossProduct({ A: this, B: B, R: R || new MultiDimArray({ header, data }) })
+    minus({ B, result, type }) {
+        return MultiDimArray.pairOperate({
+            A: this, B, type, result,
+            reducer: diff,
+        })
     }
 
-    inv(R) {
-        const header = R || new Header({ shape: this.header.shape })
-        const data = R || new Float64Array(header.size)
+    times({ B, result, type }) {
+        return MultiDimArray.pairOperate({
+            A: this, B, type, result,
+            reducer: sum,
+        })
+    }
 
-        return invSuite.call({ A: this, R: R || new MultiDimArray({ header, data }) })
+    divide({ B, result, type }) {
+        return MultiDimArray.pairOperate({
+            A: this, B, type, result,
+            reducer: quot,
+        })
+    }
+
+    dot({ B, result, type }) {
+        return MultiDimArray.dot({ A: this, B, result, type })
+    }
+
+    cross({ B, result, type }) {
+        return MultiDimArray.cross({ A: this, B, result, type })
+    }
+
+    inv({ result, type }) {
+        return MultiDimArray.inv({ A: this, result, type })
     }
 
     slice(...indices) {
         if (this.header.fullySpecified(indices))
-            return this.get(indices)
+            return MultiDimArray.axixOperate({
+                A: this, axes: keys(this.header.shape)
+            }).data[0]
 
         return new MultiDimArray({
             data: this.data,
+            type: this.type,
             header: this.header.slice(indices.map(String)),
         })
     }
 
     T() {
-        const data = this.data
-        const header = this.header.transpose()
-
-        return new MultiDimArray({ data, header })
+        return new MultiDimArray({
+            data: this.data,
+            type: this.type,
+            header: this.header.transpose()
+        })
     }
 
     reshape(...shape) {
         /**  if the array is not contigous, a reshape means data copy */
         if (!this.header.contig)
-            return this.axixOperate(getIndices(this.header.shape))
+            return this.axixOperate({ A: this, axes: [] })
 
-        const data = this.data
-        const header = this.header.reshape(shape)
-
-        return new MultiDimArray({ data, header })
+        return new MultiDimArray({
+            data: this.data,
+            type: this.type,
+            header: this.header.reshape(shape),
+        })
     }
 
-    toString() { return this }
+    toString() { return stringify(this) }
     [util.inspect.custom]() { return this.toString() }
 }

@@ -1,45 +1,39 @@
 import nd from '../../array'
-import { matMultSuite } from '../../ops/linalg'
 
 export default function (FakeJest) {
-    let A, B, C, A1, B1, C1
+    let A, B, C
 
     console.log('\n\n-------- Creation Suite --------\n\n')
 
-    A = nd.array([
-        [10, 72, 91, 13],
-        [57, 44, 49, 33],
-        [90, 66, 23, 21],
-    ])
+    A = nd.array({
+        A: [
+            [10, 72, 91, 13],
+            [57, 44, 49, 33],
+            [90, 66, 23, 21],
+        ]
+    })
 
-    B = nd.array([
-        [1],
-        [2],
-        [3],
-        [4]
-    ])
+    B = nd.array({
+        A: [
+            [1],
+            [2],
+            [3],
+            [4]
+        ]
+    })
 
-    C = nd.array([0, 0, 0])
-
-
-    function anonymous({ A, B, R }) {
-        R.data[0] = A.data[A.header.offset + 0] * B.data[B.header.offset + 0] + A.data[A.header.offset + 1] * B.data[B.header.offset + 1] + A.data[A.header.offset + 2] * B.data[B.header.offset + 2] + A.data[A.header.offset + 3] * B.data[B.header.offset + 3]
-        R.data[1] = A.data[A.header.offset + 4] * B.data[B.header.offset + 0] + A.data[A.header.offset + 5] * B.data[B.header.offset + 1] + A.data[A.header.offset + 6] * B.data[B.header.offset + 2] + A.data[A.header.offset + 7] * B.data[B.header.offset + 3]
-        R.data[2] = A.data[A.header.offset + 8] * B.data[B.header.offset + 0] + A.data[A.header.offset + 9] * B.data[B.header.offset + 1] + A.data[A.header.offset + 10] * B.data[B.header.offset + 2] + A.data[A.header.offset + 11] * B.data[B.header.offset + 3]
-        return R
-    }
-
+    C = nd.array({ A: [0, 0, 0] })
 
     console.time('fast')
     for (let i = 0; i < 1e7; i++)
-        A.dot(B, C)
+        A.dot({ B, result: C })
     console.timeEnd('fast')
 
 
-    console.time('slow')
-    for (let i = 0; i < 1e7; i++)
-        anonymous({ A, B, R: C })
-    console.timeEnd('slow')
+    // console.time('slow')
+    // for (let i = 0; i < 1e7; i++)
+    //     anonymous({ A, B, R: C })
+    // console.timeEnd('slow')
     // console.log()
     // FakeJest.expect(A).toEqual([[10, 72, 91, 13], [57, 44, 49, 33], [90, 66, 23, 21]])
     // FakeJest.expect(B).toEqual([1, 2, 3, 4])

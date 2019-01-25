@@ -68,7 +68,7 @@ export default function (args) {
             const sign = Math.pow(-1, (r + c) % 2)
             const cofactors = cofactorHelper(survivors(template, c, r))
 
-            source.push(`args.R.data[${r * size + c}] = ${sign} * (${cofactors})`)
+            source.push(`args.result.data[${r * size + c}] = ${sign} * (${cofactors})`)
         }
     }
 
@@ -77,12 +77,12 @@ export default function (args) {
             args.A.header.offset +
                 Math.floor(${i} / ${size}) * args.A.header.strides[0] +
                 ${i} / ${size} * args.A.header.strides[1]
-        ] * args.R.data[${i * size}]`)
+        ] * args.result.data[${i * size}]`)
 
     source.push(`const det = ${det.join('+')}`)
     source.push('for(let i =0; i < args.A.data.length; i++)')
-    source.push(`args.R.data[i] /= det`)
-    source.push('return args.R')
+    source.push(`args.result.data[i] /= det`)
+    source.push('return args.result')
 
     return new Function('args', source.join('\n'))
 }
