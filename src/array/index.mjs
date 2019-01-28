@@ -107,22 +107,24 @@ export default class MultiDimArray {
         })
     }
 
-    static axixOperate({ of, axes, mapper = noop, reducer = noop, result, type = Float64Array }) {
+    static axisOperate({ of, axes, mapper = noop, reducer = noop, result, type = Float64Array }) {
         return axisSuite.call({
-            of, axes, mapper, reducer,
+            of, mapper, reducer, axes,
             result: result || new MultiDimArray({
                 type,
-                header: this.header.axis(axes)
+                header: new Header({
+                    shape: axes.result.map(function (axis) { return of.header.shape[axis] })
+                })
             })
         })
     }
 
-    static pairOperate({ of, against, reducer = noop, result = noop, type = Float64Array }) {
+    static pairOperate({ of, against, reducer = noop, result, type = Float64Array }) {
         return pairSuite.call({
             of, against, reducer,
             result: result || new MultiDimArray({
                 type,
-                header: new Header({ shape: this.header.shape })
+                header: new Header({ shape: of.header.shape })
             })
         })
     }

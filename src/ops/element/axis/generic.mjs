@@ -1,22 +1,33 @@
 export default function (args) {
-    const source = [], loops = [], index = []
+    const source = [], index = [], rl = args.axes.result.length, al = args.axes.of.length
 
-    for (let i = 0; i < args.of.header.shape.length; i++) {
-        if (i < args.result.header.shape.length)
-            loops.push(`for(let a${i} = 0; a${i} < args.result.header.shape[${i}]; a${i}++){`)
-        else
-            loops.push(`for(let a${i} = 0; a${i} < args.of.header.shape[args.axes[${i - args.result.header.shape.length}]]; a${i}++){`)
+    source.push('let ri = 0, ai = 0, init')
 
-        index.push(`a${i} * args.of.header.strides[${i}]`)
+    for (let i = 0; i < rl; i++) {
+        source.push(`for(let a${i} = 0; a${i} < args.of.header.shape[args.axes.result[${i}]]; a${i}++){`)
+        index.push(`a${i} * args.of.header.strides[args.axes.result[${i}]]`)
     }
 
-    source.push('let ri = 0')
-    source.push(...loops)
-    source.push(`args.result.data[ri] = args.reducer(args.mapper(args.of.data[args.of.header.offset + ${index.join('+')}]), args.result.data[ri])`)
+    source.push('init = true')
+    for (let i = rl; i < al + rl; i++) {
+        source.push(`for(let a${i} = 0; a${i} < args.of.header.shape[args.axes.of[${i - rl}]]; a${i}++){`)
+        index.push(`a${i} * args.of.header.strides[args.axes.of[${i - rl}]]`)
+    }
 
-    source.push('}'.repeat(args.of.header.shape.length - args.result.header.shape.length))
+
+
+    source.push(`ai = args.of.header.offset + ${index.join('+')}`)
+
+    source.push(`if(init){`)
+    source.push(`args.result.data[ri] = args.of.data[ai]`)
+    source.push('init = false')
+    source.push('}')
+
+    source.push(`args.result.data[ri] = args.reducer(args.mapper(args.of.data[ai]), args.result.data[ri])`)
+
+    source.push('}'.repeat(al))
     source.push('ri++')
-    source.push('}'.repeat(args.result.header.shape.length))
+    source.push('}'.repeat(rl))
 
     source.push(`return args.result`)
 

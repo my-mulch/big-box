@@ -5,15 +5,23 @@ export default function (FakeJest) {
 
     console.log('\n\n-------- Elementwise Suite --------\n\n')
 
-    A = nd.array([[[[17, 36], [29, 36], [-12, 21]], [[1, 21], [21, 24], [-5, 1]]], [[[35, 44], [21, 26], [-8, -15]], [[-2, 16], [-13, 24], [7, 11]]]])
-    B = nd.array([[[[[-15, 0]]], [[[39, 25]]]], [[[[-8, 40]]], [[[32, 6]]]]])
-    C = nd.array([[-46, 19], [-38, 9], [9, -15], [-25, -33]])
+    A = nd.array({
+        of:
+            [[[[17, 36], [29, 36], [-12, 21]], [[1, 21], [21, 24], [-5, 1]]], [[[35, 44], [21, 26], [-8, -15]], [[-2, 16], [-13, 24], [7, 11]]]]
+    })
 
-    FakeJest.expect(A.min()).toEqual(-15)
-    FakeJest.expect(B.min()).toEqual(-15)
+    B = nd.array({
+        of: [[[[[-15, 0]]], [[[39, 25]]]],
+        [[[[-8, 40]]], [[[32, 6]]]]]
+    })
 
-    // FakeJest.expect(A.min(1)).toEqual([[[1, 21], [21, 24], [-12, 1]], [[-2, 16], [-13, 24], [-8, -15]]])
-    C.mean(1)
+    C = nd.array({ of: [[-46, 19], [-38, 9], [9, -15], [-25, -33]] })
+
+    FakeJest.expect(A.min({ axes: { of: [...A.header.shape.keys()], result: [] } })).toEqual(-15)
+    FakeJest.expect(B.min({ axes: { of: [...B.header.shape.keys()], result: [] } })).toEqual(-15)
+    FakeJest.expect(A.min({ axes: { of: [0, 3], result: [1, 2] } })).toEqual([[17, 21, -15], [-2, -13, -5]])
+
+    FakeJest.expect(C.plus({ against: C })).toEqual([[-46 * 2, 19 * 2], [-38 * 2, 9 * 2], [9 * 2, -15 * 2], [-25 * 2, -33 * 2]])
 
     console.log('\n\n-------- End Elementwise Suite --------\n\n')
 }

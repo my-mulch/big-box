@@ -10,7 +10,7 @@ export default class Header {
         this.contig = 'contig' in opts ? opts.contig : true
         this.strides = 'strides' in opts ? opts.strides : strides(this.shape)
 
-        this.size = this.shape.reduce(prod)
+        this.size = this.shape.reduce(prod, 1)
         this.lastStride = this.strides[this.strides.length - 1]
     }
 
@@ -60,14 +60,6 @@ export default class Header {
         }
 
         return new Header({ shape, strides, offset, contig })
-    }
-
-    axis(axes) {
-        return new Header({
-            shape: this.shape.filter(function (_, i) {
-                return !axes.includes(i)
-            })
-        })
     }
 
     transpose() {

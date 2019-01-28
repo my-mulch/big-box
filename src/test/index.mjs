@@ -3,6 +3,6 @@ import { creation, linalg, elementwise } from './suites'
 
 FakeJest.execute(
     // creation,
-    linalg,
-    // elementwise,
+    // linalg,
+    elementwise,
 )
