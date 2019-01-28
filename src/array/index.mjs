@@ -15,12 +15,12 @@ export default class MultiDimArray {
         this.data = data || new this.type(this.header.size)
     }
 
-    static array({ A, type = Float64Array }) {
+    static array({ of, type = Float64Array }) {
         return fill({
-            values: A,
+            values: of,
             result: new MultiDimArray({
                 type,
-                header: new Header({ shape: shape(A) }),
+                header: new Header({ shape: shape(of) }),
             })
         })
     }
@@ -65,35 +65,35 @@ export default class MultiDimArray {
         })
     }
 
-    static dot({ A, B, result, type = Float64Array }) {
+    static dot({ of, against, result, type = Float64Array }) {
         return matMultSuite.call({
-            A, B,
+            of, against,
             result: result || new MultiDimArray({
                 type,
                 header: new Header({
                     type,
-                    shape: [A.header.shape[0], B.header.shape[1]]
+                    shape: [of.header.shape[0], against.header.shape[1]]
                 })
             })
         })
     }
 
-    static cross({ A, B, result, type = Float64Array }) {
+    static cross({ of, against, result, type = Float64Array }) {
         return crossProduct({
-            A, B,
+            of, against,
             result: result || new MultiDimArray({
                 type,
-                header: new Header({ shape: A.header.shape })
+                header: new Header({ shape: of.header.shape })
             })
         })
     }
 
-    static inv({ A, result, type = Float64Array }) {
+    static inv({ of, result, type = Float64Array }) {
         return invSuite.call({
-            A,
+            of,
             result: result || new MultiDimArray({
                 type,
-                header: new Header({ shape: this.header.shape })
+                header: new Header({ shape: of.header.shape })
             })
         })
     }
@@ -107,9 +107,9 @@ export default class MultiDimArray {
         })
     }
 
-    static axixOperate({ A, axes, mapper = noop, reducer = noop, result, type = Float64Array }) {
+    static axixOperate({ of, axes, mapper = noop, reducer = noop, result, type = Float64Array }) {
         return axisSuite.call({
-            A, axes, mapper, reducer,
+            of, axes, mapper, reducer,
             result: result || new MultiDimArray({
                 type,
                 header: this.header.axis(axes)
@@ -117,9 +117,9 @@ export default class MultiDimArray {
         })
     }
 
-    static pairOperate({ A, B, reducer = noop, result = noop, type = Float64Array }) {
+    static pairOperate({ of, against, reducer = noop, result = noop, type = Float64Array }) {
         return pairSuite.call({
-            A, B, reducer,
+            of, against, reducer,
             result: result || new MultiDimArray({
                 type,
                 header: new Header({ shape: this.header.shape })
@@ -129,7 +129,7 @@ export default class MultiDimArray {
 
     round({ precision, result, type }) {
         return MultiDimArray.axixOperate({
-            A: this, type, result,
+            of: this, type, result,
             axes: keys(this.header.shape),
             mapper: round.bind(precision)
         })
@@ -137,62 +137,62 @@ export default class MultiDimArray {
 
     max({ axes, result, type }) {
         return MultiDimArray.axisOperate({
-            A: this, type, result, axes,
+            of: this, type, result, axes,
             reducer: max,
         })
     }
 
     min({ axes, result, type }) {
         return MultiDimArray.axisOperate({
-            A: this, type, result, axes,
+            of: this, type, result, axes,
             reducer: min,
         })
     }
 
-    plus({ B, result, type }) {
+    plus({ against, result, type }) {
         return MultiDimArray.pairOperate({
-            A: this, B, type, result,
+            of: this, against, type, result,
             reducer: sum,
         })
     }
 
-    minus({ B, result, type }) {
+    minus({ against, result, type }) {
         return MultiDimArray.pairOperate({
-            A: this, B, type, result,
+            of: this, against, type, result,
             reducer: diff,
         })
     }
 
-    times({ B, result, type }) {
+    times({ against, result, type }) {
         return MultiDimArray.pairOperate({
-            A: this, B, type, result,
+            of: this, against, type, result,
             reducer: sum,
         })
     }
 
-    divide({ B, result, type }) {
+    divide({ against, result, type }) {
         return MultiDimArray.pairOperate({
-            A: this, B, type, result,
+            of: this, against, type, result,
             reducer: quot,
         })
     }
 
-    dot({ B, result, type }) {
-        return MultiDimArray.dot({ A: this, B, result, type })
+    dot({ against, result, type }) {
+        return MultiDimArray.dot({ of: this, against, result, type })
     }
 
-    cross({ B, result, type }) {
-        return MultiDimArray.cross({ A: this, B, result, type })
+    cross({ against, result, type }) {
+        return MultiDimArray.cross({ of: this, against, result, type })
     }
 
     inv({ result, type }) {
-        return MultiDimArray.inv({ A: this, result, type })
+        return MultiDimArray.inv({ of: this, result, type })
     }
 
     slice({ indices }) {
         if (this.header.fullySpecified(indices))
             return MultiDimArray.axixOperate({
-                A: this, axes: keys(this.header.shape)
+                of: this, axes: keys(this.header.shape)
             }).data[0]
 
         return new MultiDimArray({
@@ -213,7 +213,7 @@ export default class MultiDimArray {
     reshape({ shape }) {
         /**  if the array is not contigous, a reshape means data copy */
         if (!this.header.contig)
-            return this.axixOperate({ A: this, axes: [] })
+            return this.axixOperate({ of: this, axes: [] })
 
         return new MultiDimArray({
             data: this.data,

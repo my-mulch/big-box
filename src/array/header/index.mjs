@@ -1,6 +1,6 @@
 import { prod } from '../../ops/element'
 import { SLICE_CHARACTER } from '../../contants'
-import { getStrides, isContiguousSlice, resolveReshape } from './utils'
+import { strides, isContiguousSlice, resolveReshape } from './utils'
 
 export default class Header {
 
@@ -8,9 +8,9 @@ export default class Header {
         this.shape = 'shape' in opts ? opts.shape : []
         this.offset = 'offset' in opts ? opts.offset : 0
         this.contig = 'contig' in opts ? opts.contig : true
+        this.strides = 'strides' in opts ? opts.strides : strides(this.shape)
 
         this.size = this.shape.reduce(prod)
-        this.strides = getStrides(this.shape)
         this.lastStride = this.strides[this.strides.length - 1]
     }
 
@@ -63,11 +63,11 @@ export default class Header {
     }
 
     axis(axes) {
-        const shape = this.shape.filter(function (_, i) {
-            return !axes.includes(i)
+        return new Header({
+            shape: this.shape.filter(function (_, i) {
+                return !axes.includes(i)
+            })
         })
-
-        return new Header({ shape })
     }
 
     transpose() {
@@ -80,7 +80,7 @@ export default class Header {
 
     reshape(newShape) {
         const shape = resolveReshape(newShape, this.size)
-        const strides = getStrides(shape, this.lastStride)
+        const strides = strides(shape, this.lastStride)
 
         return new Header({ shape, strides })
     }

@@ -5,9 +5,9 @@ import optimized from './optimized'
 
 export default radley.suite({
     methods: { optimized, generic },
-    tractable: function (args) { return args.A.data.length > 500 },
+    tractable: function (args) { return false /** Stub until optimized is written */ },
     router: function (args) {
-        return this.suite[args.A.header.shape.length]
+        return this.suite[args.of.header.shape.length]
     },
 })
 

@@ -7,7 +7,7 @@ export default radley.suite({
     methods: { generic, optimized },
     tractable: function (args) { return false /** Stub until optimized is written */ },
     router: function (args) {
-        return this.suite[args.A.header.shape.length][args.R.header.shape.length]
+        return this.suite[args.of.header.shape.length][args.result.header.shape.length]
     }
 })
 

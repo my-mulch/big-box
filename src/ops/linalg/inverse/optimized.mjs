@@ -2,49 +2,49 @@
 export default function (args) {
     const source = [],
         det = [],
-        size = Math.round(Math.sqrt(args.A.data.length)),
-        template = [...new Array(args.A.data.length).keys()]
+        size = Math.round(Math.sqrt(args.of.data.length)),
+        template = [...new Array(args.of.data.length).keys()]
 
-    function cofactorHelper(A) {
-        const size = Math.round(Math.sqrt(A.length))
+    function cofactorHelper(of) {
+        const size = Math.round(Math.sqrt(of.length))
 
         if (size === 1)
-            return `args.A.data[ 
-                args.A.header.offset +
-                Math.floor(${A[0]} / ${size}) * args.A.header.strides[0] +
-                ${A[0]} / ${size} * args.A.header.strides[1]
+            return `args.of.data[ 
+                args.of.header.offset +
+                Math.floor(${of[0]} / ${args.of.header.shape[0]}) * args.of.header.strides[0] +
+                ${of[0]} % ${args.of.header.shape[0]} * args.of.header.strides[1]
             ]`
 
         if (size === 2)
-            return `args.A.data[
-                args.A.header.offset +
-                Math.floor(${A[0]} / ${size}) * args.A.header.strides[0] +
-                ${A[0]} / ${size} * args.A.header.strides[1]
-            ] * args.A.data[
-                args.A.header.offset +
-                Math.floor(${A[3]} / ${size}) * args.A.header.strides[0] +
-                ${A[3]} / ${size} * args.A.header.strides[1]
-            ] - args.A.data[
-                args.A.header.offset +
-                Math.floor(${A[2]} / ${size}) * args.A.header.strides[0] +
-                ${A[2]} / ${size} * args.A.header.strides[1]
-            ] * args.A.data[
-                args.A.header.offset +
-                Math.floor(${A[1]} / ${size}) * args.A.header.strides[0] +
-                ${A[1]} / ${size} * args.A.header.strides[1]
+            return `args.of.data[
+                args.of.header.offset +
+                Math.floor(${of[0]} / ${args.of.header.shape[0]}) * args.of.header.strides[0] +
+                ${of[0]} % ${args.of.header.shape[0]} * args.of.header.strides[1]
+            ] * args.of.data[
+                args.of.header.offset +
+                Math.floor(${of[3]} / ${args.of.header.shape[0]}) * args.of.header.strides[0] +
+                ${of[3]} % ${args.of.header.shape[0]} * args.of.header.strides[1]
+            ] - args.of.data[
+                args.of.header.offset +
+                Math.floor(${of[2]} / ${args.of.header.shape[0]}) * args.of.header.strides[0] +
+                ${of[2]} % ${args.of.header.shape[0]} * args.of.header.strides[1]
+            ] * args.of.data[
+                args.of.header.offset +
+                Math.floor(${of[1]} / ${args.of.header.shape[0]}) * args.of.header.strides[0] +
+                ${of[1]} % ${args.of.header.shape[0]} * args.of.header.strides[1]
             ]`
 
         const cofactors = []
         for (let i = 0; i < size; i++) {
 
-            const lead = `args.A.data[
-                args.A.header.offset +
-                Math.floor(${A[i]} / ${size}) * args.A.header.strides[0] +
-                ${A[i]} / ${size} * args.A.header.strides[1]
+            const lead = `args.of.data[
+                args.of.header.offset +
+                Math.floor(${of[i]} / ${args.of.header.shape[0]}) * args.of.header.strides[0] +
+                ${of[i]} % ${args.of.header.shape[0]} * args.of.header.strides[1]
             ]`
 
             const sign = Math.pow(-1, i % 2)
-            const cofactor = cofactorHelper(survivors(A, 0, i, size))
+            const cofactor = cofactorHelper(survivors(of, 0, i, size))
 
             cofactors.push(`${sign} * ${lead} * (${cofactor})`)
         }
@@ -52,10 +52,10 @@ export default function (args) {
         return cofactors.join(' + ')
     }
 
-    function survivors(A, r, c) {
-        const size = Math.round(Math.sqrt(A.length))
+    function survivors(of, r, c) {
+        const size = Math.round(Math.sqrt(of.length))
 
-        return A.filter(function (_, index) {
+        return of.filter(function (_, index) {
             if (index % size === c) return false // in column
             if (Math.floor(index / size) === r) return false // in row
 
@@ -73,14 +73,14 @@ export default function (args) {
     }
 
     for (let i = 0; i < size; i++)
-        det.push(`args.A.data[
-            args.A.header.offset +
-                Math.floor(${i} / ${size}) * args.A.header.strides[0] +
-                ${i} / ${size} * args.A.header.strides[1]
+        det.push(`args.of.data[
+            args.of.header.offset +
+                Math.floor(${i} / ${args.of.header.shape[0]}) * args.of.header.strides[0] +
+                ${i} % ${args.of.header.shape[0]} * args.of.header.strides[1]
         ] * args.result.data[${i * size}]`)
 
     source.push(`const det = ${det.join('+')}`)
-    source.push('for(let i =0; i < args.A.data.length; i++)')
+    source.push('for(let i =0; i < args.of.data.length; i++)')
     source.push(`args.result.data[i] /= det`)
     source.push('return args.result')
 

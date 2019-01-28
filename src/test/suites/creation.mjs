@@ -1,7 +1,7 @@
 import nd from '../../array'
 
 export default function (FakeJest) {
-    let A, B, C
+    let A, B
 
     console.log('\n\n-------- Creation Suite --------\n\n')
 
