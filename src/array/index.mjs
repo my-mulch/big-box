@@ -112,100 +112,90 @@ export default class MultiDimArray {
         })
     }
 
-    static axisOperate(args) {
-        return axisSuite.call({
-            of: args.of,
-            axes: args.axes,
-            reducer: args.reducer || noop,
-            mapper: args.mapper || noop,
-            result: args.result || new MultiDimArray({
-                type: args.type || Float64Array,
-                header: new Header({
-                    shape: args.axes[1].map(function (axis) { return args.of.header.shape[axis] })
-                })
-            })
-        })
-    }
-
-    static pairOperate(args) {
-        return pairSuite.call({
-            of: args.of,
-            with: args.with,
-            reducer: args.reducer,
-            result: args.result || new MultiDimArray({
-                type: args.type || Float64Array,
-                header: new Header({ shape: args.of.header.shape })
-            })
-        })
-    }
-
     round(args) {
-        return MultiDimArray.axixOperate({
+        return axisSuite.call({
             of: this,
-            type: args.type,
-            result: args.result,
-            axes: this.header.indices,
-            mapper: round.bind(args.precision)
+            reducer: noop,
+            mapper: round.bind(args.precision),
+            axes: args.axes,
+            result: args.result || new MultiDimArray({
+                type: args.type || this.type,
+                header: this.header.axisSlice(args.axes)
+            })
         })
     }
 
     max(args) {
-        return MultiDimArray.axisOperate({
+        return axisSuite.call({
             of: this,
             reducer: max,
+            mapper: noop,
             axes: args.axes,
-            type: args.type,
-            result: args.result,
+            result: args.result || new MultiDimArray({
+                type: args.type || this.type,
+                header: this.header.axisSlice(args.axes)
+            })
         })
     }
 
     min(args) {
-        return MultiDimArray.axisOperate({
+        return axisSuite.call({
             of: this,
             reducer: min,
+            mapper: noop,
             axes: args.axes,
-            type: args.type,
-            result: args.result,
+            result: args.result || new MultiDimArray({
+                type: args.type || this.type,
+                header: this.header.axisSlice(args.axes)
+            })
         })
     }
 
     add(args) {
-        return MultiDimArray.pairOperate({
+        return pairSuite.call({
             of: this,
             with: args.with,
             reducer: add,
-            type: args.type,
-            result: args.result,
+            result: args.result || new MultiDimArray({
+                type: args.type || this.type,
+                header: new Header({ shape: this.header.shape })
+            })
         })
     }
 
     subtract(args) {
-        return MultiDimArray.pairOperate({
+        return pairSuite.call({
             of: this,
             with: args.with,
             reducer: subtract,
-            type: args.type,
-            result: args.result,
+            result: args.result || new MultiDimArray({
+                type: args.type || this.type,
+                header: new Header({ shape: this.header.shape })
+            })
         })
     }
 
     multiply(args) {
-        return MultiDimArray.pairOperate({
+        return pairSuite.call({
             of: this,
+            with: args.with,
             reducer: multiply,
-            with: args.with,
-            type: args.type,
-            result: args.result,
+            result: args.result || new MultiDimArray({
+                type: args.type || this.type,
+                header: new Header({ shape: this.header.shape })
+            })
         })
     }
 
-    multiply(args) {
-        return MultiDimArray.pairOperate({
+    divide(args) {
+        return pairSuite.call({
             of: this,
-            reducer: divide,
             with: args.with,
-            type: args.type,
-            result: args.result,
+            reducer: divide,
+            result: args.result || new MultiDimArray({
+                type: args.type || this.type,
+                header: new Header({ shape: this.header.shape })
+            })
         })
     }
 
@@ -237,9 +227,7 @@ export default class MultiDimArray {
 
     slice(args) {
         if (this.header.fullySpecified(indices))
-            return MultiDimArray
-                .axixOperate({ of: this, axes: this.header.indices })
-                .data[0]
+            return this.get(args)
 
         return new MultiDimArray({
             data: this.data,
@@ -260,7 +248,7 @@ export default class MultiDimArray {
         /**  if the array is not contigous, a reshape means data copy */
         if (!this.header.contig)
             return this
-                .axixOperate({ of: this, axes: [] })
+                .axixOperate({ of: this, axes: [[], this.header.indices] })
                 .reshape(args)
 
         return new MultiDimArray({

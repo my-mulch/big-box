@@ -1,8 +1,10 @@
-import FakeJest from './engine'
-import { creation, linalg, elementwise } from './suites'
+import creation from './suites/creation'
+import linalg from './suites/linalg'
+import element from './suites/element'
+import indexing from './suites/indexing.mjs'
 
-FakeJest.execute(
-    creation,
-    linalg,
-    elementwise,
-)
+creation.call()
+linalg.call()
+element.call()
+// indexing.call()
+

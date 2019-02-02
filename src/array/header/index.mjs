@@ -19,6 +19,14 @@ export default class Header {
         return new Header(JSON.parse(JSON.stringify(this)))
     }
 
+    axisSlice(axes) {
+        return new Header({
+            shape: axes[1].map((function (axis) {
+                return this.shape[axis]
+            }).bind(this))
+        })
+    }
+
     slice(index) {
         const shape = new Array()
         const strides = new Array()
