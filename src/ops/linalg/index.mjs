@@ -1,4 +1,4 @@
-import { sum, min } from '../element'
+import { add, min } from '../element'
 
 import inverse from './inverse'
 import matMult from './matmult'
@@ -25,7 +25,7 @@ export const crossProduct = function (args) {
 }
 
 export const identity = function (args) {
-    const diagonal = args.result.header.strides.reduce(sum)
+    const diagonal = args.result.header.strides.reduce(add)
     const numDiags = args.result.header.shape.reduce(min)
 
     for (let i = 0; i < numDiags * diagonal; i += diagonal)

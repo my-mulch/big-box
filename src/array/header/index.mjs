@@ -1,6 +1,6 @@
-import { prod } from '../../ops/element'
+import { multiply } from '../../ops/element'
 import { SLICE_CHARACTER } from '../../contants'
-import { strides, isContiguousSlice, resolveReshape } from './utils'
+import { getStrides, isContiguousSlice, resolveReshape } from './utils'
 
 export default class Header {
 
@@ -8,9 +8,10 @@ export default class Header {
         this.shape = 'shape' in opts ? opts.shape : []
         this.offset = 'offset' in opts ? opts.offset : 0
         this.contig = 'contig' in opts ? opts.contig : true
-        this.strides = 'strides' in opts ? opts.strides : strides(this.shape)
+        this.strides = 'strides' in opts ? opts.strides : getStrides(this.shape)
 
-        this.size = this.shape.reduce(prod, 1)
+        this.indices = [...this.shape.keys()]
+        this.size = this.shape.reduce(multiply, 1)
         this.lastStride = this.strides[this.strides.length - 1]
     }
 
@@ -63,18 +64,20 @@ export default class Header {
     }
 
     transpose() {
-        const shape = this.shape.slice().reverse()
-        const strides = this.strides.slice().reverse()
-        const contig = false
-
-        return new Header({ shape, strides, contig })
+        return new Header({
+            shape: this.shape.slice().reverse(),
+            strides: this.strides.slice().reverse(),
+            contig: false
+        })
     }
 
     reshape(newShape) {
-        const shape = resolveReshape(newShape, this.size)
-        const strides = strides(shape, this.lastStride)
+        const resolvedShape = resolveReshape(newShape, this.size)
 
-        return new Header({ shape, strides })
+        return new Header({
+            shape: resolvedShape,
+            strides: getStrides(resolvedShape, this.lastStride)
+        })
     }
 
     fullySpecified(index) {

@@ -6,7 +6,7 @@ export default function (FakeJest) {
     console.log('\n\n-------- Creation Suite --------\n\n')
 
     A = nd.array({
-        A: [
+        from: [
             [10, 72, 91, 13],
             [57, 44, 49, 33],
             [90, 66, 23, 21],
@@ -14,7 +14,7 @@ export default function (FakeJest) {
     })
 
     B = nd.array({
-        A: [
+        from: [
             [1],
             [2],
             [3],

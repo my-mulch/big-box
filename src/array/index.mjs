@@ -12,7 +12,7 @@ export default class MultiDimArray {
     constructor(args) {
         this.header = args.header
         this.type = args.type
-        this.data = args.data || new this.args.type(this.header.size)
+        this.data = args.data || new this.type(this.header.size)
     }
 
     static array(args) {
@@ -46,13 +46,15 @@ export default class MultiDimArray {
     }
 
     static arange(args) {
+        const start = args.start || 0
+        const step = args.step || 1
+        const stop = args.stop
+
         return range({
-            start: args.start || 0,
-            step: args.step || 1,
-            stop: args.stop,
+            start, step, stop,
             result: args.result || new MultiDimArray({
                 type: args.type || Float64Array,
-                header: new Header({ shape: [Math.ceil((args.stop - args.start) / args.step)] })
+                header: new Header({ shape: [Math.ceil((stop - start) / step)] })
             })
         })
     }
@@ -241,7 +243,7 @@ export default class MultiDimArray {
 
         return new MultiDimArray({
             data: this.data,
-            type: this.args.type,
+            type: this.type,
             header: this.header.slice(args.indices.map(String)),
         })
     }
@@ -249,7 +251,7 @@ export default class MultiDimArray {
     T() {
         return new MultiDimArray({
             data: this.data,
-            type: this.args.type,
+            type: this.type,
             header: this.header.transpose()
         })
     }
@@ -263,7 +265,7 @@ export default class MultiDimArray {
 
         return new MultiDimArray({
             data: this.data,
-            type: this.args.type,
+            type: this.type,
             header: this.header.reshape(args.shape),
         })
     }
