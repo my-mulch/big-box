@@ -26,20 +26,34 @@ export default function () {
             [7, 11]]]]
     })
 
-    B = nd.array({
-        from: [
-            [[[[-15, 0]]], [[[39, 25]]]],
-            [[[[-8, 40]]], [[[32, 6]]]]
-        ]
-    })
+    B = nd.array({ from: [[-46, 19], [-38, 9], [9, -15], [-25, -33]] })
 
-    C = nd.array({ from: [[-46, 19], [-38, 9], [9, -15], [-25, -33]] })
+    C = nd.array({
+        from: [[[10, 5, 2],
+        [72, 6, 3],
+        [91, 6, 1],
+        [13, 4, 12]],
+
+        [[57, 7, 1],
+        [44, 2, 2],
+        [49, 8, 4],
+        [-33, 8, 5]],
+
+        [[90, 2, 5],
+        [66, 4, 3],
+        [23, 1, 2],
+        [21, 2, 2]]]
+    })
 
     jest.expect(A.min({ axes: [[0, 1, 2, 3], []] })).toEqual(-15)
     jest.expect(A.min({ axes: [[0, 3], [1, 2]] })).toEqual([[17, 21, -15], [-2, -13, -5]])
 
-    jest.expect(C.add({ with: C })).toEqual([[-46 * 2, 19 * 2], [-38 * 2, 9 * 2], [9 * 2, -15 * 2], [-25 * 2, -33 * 2]])
-    jest.expect(C.multiply({ with: C })).toEqual([[-46 * -46, 19 * 19], [-38 * -38, 9 * 9], [9 * 9, -15 * -15], [-25 * -25, -33 * -33]])
+    jest.expect(B.add({ with: B })).toEqual([[-46 * 2, 19 * 2], [-38 * 2, 9 * 2], [9 * 2, -15 * 2], [-25 * 2, -33 * 2]])
+    jest.expect(B.multiply({ with: B })).toEqual([[-46 * -46, 19 * 19], [-38 * -38, 9 * 9], [9 * 9, -15 * -15], [-25 * -25, -33 * -33]])
+
+    jest.expect(C.slice({ indices: [':', 0, ':'] }).min({ axes: [[0, 1], []] })).toEqual(1)
+    jest.expect(C.slice({ indices: [':', 0, ':'] }).divide({ with: C.slice({ indices: [':', 0, ':'] }) })).toEqual([[1, 1, 1], [1, 1, 1], [1, 1, 1]])
+
 
     console.log('\n\n-------- End Elementwise Suite --------\n\n')
 }

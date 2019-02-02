@@ -38,17 +38,17 @@ export default class Header {
 
             /**
              *  If the index is a ':', the user wants that entire dimension 
-             * */
+             */
 
             if (index[i] === SLICE_CHARACTER)
                 shape.push(this.shape[i]), strides.push(this.strides[i])
 
             /** 
              * If the index is a number, the user wants that index. duh. 
-             * */
+             */
 
-            else if (!isNaN(index[i]))
-                offset += this.strides[i] * +index[i]
+            else if (index[i].constructor === Number)
+                offset += this.strides[i] * index[i]
 
             /** 
              * If the index is a slice of the form 'a:b', the user wants a slice from a to b 
@@ -71,6 +71,7 @@ export default class Header {
         return new Header({
             shape: this.shape.slice().reverse(),
             strides: this.strides.slice().reverse(),
+            offset: this.offset,
             contig: false
         })
     }

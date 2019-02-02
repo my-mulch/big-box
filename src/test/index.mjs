@@ -5,6 +5,6 @@ import indexing from './suites/indexing.mjs'
 
 // creation.call()
 // linalg.call()
-// element.call()
-indexing.call()
+element.call()
+// indexing.call()
 

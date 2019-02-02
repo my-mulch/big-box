@@ -97,10 +97,7 @@ export default class MultiDimArray {
     static inv(args) {
         return invSuite.call({
             of: args.of,
-            result: args.result || new MultiDimArray({
-                type: args.type || Float64Array,
-                header: new Header({ shape: args.of.header.shape })
-            })
+            result: args.result || this.eye({ shape: args.of.header.shape })
         })
     }
 
@@ -233,7 +230,7 @@ export default class MultiDimArray {
         return new MultiDimArray({
             data: this.data,
             type: this.type,
-            header: this.header.slice(args.indices.map(String)),
+            header: this.header.slice(args.indices),
         })
     }
 
@@ -248,9 +245,16 @@ export default class MultiDimArray {
     reshape(args) {
         /**  if the array is not contigous, a reshape means data copy */
         if (!this.header.contig)
-            return this
-                .axixOperate({ of: this, axes: [[], this.header.indices] })
-                .reshape(args)
+            return axisSuite.call({
+                of: this,
+                reducer: noop,
+                mapper: noop,
+                axes: [[], this.header.indices],
+                result: new MultiDimArray({
+                    type: args.type || this.type,
+                    header: new Header({ shape: args.shape })
+                })
+            })
 
         return new MultiDimArray({
             data: this.data,
