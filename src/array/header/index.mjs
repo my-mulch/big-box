@@ -30,9 +30,9 @@ export default class Header {
     slice(index) {
         const shape = new Array()
         const strides = new Array()
+        const contig = isContiguousSlice(index)
 
         let offset = this.offset
-        let contig = isContiguousSlice(index)
 
         for (let i = 0; i < this.shape.length; i++) {
 
@@ -41,30 +41,26 @@ export default class Header {
              * */
 
             if (index[i] === SLICE_CHARACTER)
-                shape.push(this.shape[i]), strides.push(this.strides.global[i])
+                shape.push(this.shape[i]), strides.push(this.strides[i])
 
             /** 
              * If the index is a number, the user wants that index. duh. 
              * */
 
-            else if (index[i].constructor === Number)
-                offset += this.strides.global[i] * index[i]
+            else if (!isNaN(index[i]))
+                offset += this.strides[i] * +index[i]
 
             /** 
              * If the index is a slice of the form 'a:b', the user wants a slice from a to b 
-             * The logic below supports negative indexing. It's a python thing, if you ain't know
             */
 
             else if (index[i].constructor === String) {
                 let [low, high] = index[i].split(SLICE_CHARACTER).map(Number)
 
-                low = (low + this.shape[i]) % this.shape[i]
-                high = (high + this.shape[i]) % this.shape[i]
-
-                offset += this.strides.global[i] * low
+                offset += this.strides[i] * low
 
                 shape.push(high - low)
-                strides.push(this.strides.global[i])
+                strides.push(this.strides[i])
             }
         }
 
@@ -90,6 +86,6 @@ export default class Header {
 
     fullySpecified(index) {
         return index.length === this.shape.length
-            && index.every(function (value) { value.constructor === Number })
+            && index.every(function (value) { return value.constructor === Number })
     }
 }

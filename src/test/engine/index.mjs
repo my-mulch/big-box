@@ -1,5 +1,5 @@
 
-export default class FakeJest {
+export default class Jest {
     static expect(stuff) {
         return {
             toEqual: function (otherStuff) {
@@ -26,7 +26,5 @@ export default class FakeJest {
             }
         }
     }
-
-    static execute(...suites) { suites.map(function (suite) { suite(FakeJest) }) }
 
 }

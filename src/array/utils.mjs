@@ -6,28 +6,27 @@ export const shape = function getShape(A, shape = []) {
     return getShape(A[0], shape.concat(A.length))
 }
 
-export const keys = function keys(array) {
-    const indices = new Array(array.length)
+export const getFullySpecifiedIndex = function getFullySpecifiedIndex(indices) {
+    let index = this.header.offset
 
     for (let i = 0; i < indices.length; i++)
-        indices[i] = i
+        index += indices[i] * this.header.strides[i]
 
-    return indices
+    return index
 }
 
-export const stringify = function stringify(array, index = 0, dim = 0) {
-    if (dim === array.header.shape.length)
-        return array.data[index]
+export const stringify = function stringify(index, dim = 0) {
+    if (dim === this.header.shape.length)
+        return this.data[index]
 
-    const level = array.header.shape.length - 1 - dim
+    const level = this.header.shape.length - 1 - dim
 
     return '[' +
-        new Array(array.header.shape[dim])
+        new Array(this.header.shape[dim])
             .fill(null)
             .map(function (_, i) {
-                const location = i * array.header.strides[dim] + index
-                return stringify(array, location, dim + 1)
-            })
+                return stringify.call(this, i * this.header.strides[dim] + index, dim + 1)
+            }, this)
             .join(',' + '\n'.repeat(level))
         + ']'
 

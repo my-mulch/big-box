@@ -2,6 +2,7 @@ import { add, multiply, subtract, divide, min, range, max, noop, axisSuite, pair
 import { matMultSuite, invSuite, crossProduct, identity } from '../ops/linalg'
 import { randint } from '../ops/probability'
 
+import { getFullySpecifiedIndex } from './utils.mjs'
 import { shape, stringify } from '../array/utils'
 import util from 'util' // node's
 import Header from './header'
@@ -226,8 +227,8 @@ export default class MultiDimArray {
     }
 
     slice(args) {
-        if (this.header.fullySpecified(indices))
-            return this.get(args)
+        if (this.header.fullySpecified(args.indices))
+            return this.data[getFullySpecifiedIndex.call(this, args.indices)]
 
         return new MultiDimArray({
             data: this.data,
@@ -258,6 +259,12 @@ export default class MultiDimArray {
         })
     }
 
-    toString() { return stringify(this) }
+    set(args) {
+        return {
+            to: (function () { }).bind(this)
+        }
+    }
+
+    toString() { return stringify.call(this, this.header.offset) }
     [util.inspect.custom]() { return this.toString() }
 }
