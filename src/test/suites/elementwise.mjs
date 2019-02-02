@@ -17,9 +17,9 @@ export default function (FakeJest) {
 
     C = nd.array({ of: [[-46, 19], [-38, 9], [9, -15], [-25, -33]] })
 
-    FakeJest.expect(A.min({ axes: { of: [...A.header.shape.keys()], result: [] } })).toEqual(-15)
-    FakeJest.expect(B.min({ axes: { of: [...B.header.shape.keys()], result: [] } })).toEqual(-15)
-    FakeJest.expect(A.min({ axes: { of: [0, 3], result: [1, 2] } })).toEqual([[17, 21, -15], [-2, -13, -5]])
+    FakeJest.expect(A.min({ axes: [[...A.header.shape.keys()], []] })).toEqual(-15)
+    FakeJest.expect(B.min({ axes: [[...B.header.shape.keys()], []] })).toEqual(-15)
+    FakeJest.expect(A.min({ axes: [[0, 3], [1, 2]] })).toEqual([[17, 21, -15], [-2, -13, -5]])
 
     FakeJest.expect(C.plus({ against: C })).toEqual([[-46 * 2, 19 * 2], [-38 * 2, 9 * 2], [9 * 2, -15 * 2], [-25 * 2, -33 * 2]])
 

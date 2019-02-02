@@ -1,17 +1,17 @@
 export default function (args) {
-    const source = [], index = [], rl = args.axes.result.length, al = args.axes.of.length
+    const source = [], index = [], rl = args.axes[1].length, al = args.axes[0].length
 
     source.push('let ri = 0, ai = 0, init')
 
     for (let i = 0; i < rl; i++) {
-        source.push(`for(let a${i} = 0; a${i} < args.of.header.shape[args.axes.result[${i}]]; a${i}++){`)
-        index.push(`a${i} * args.of.header.strides[args.axes.result[${i}]]`)
+        source.push(`for(let a${i} = 0; a${i} < args.of.header.shape[args.axes[1][${i}]]; a${i}++){`)
+        index.push(`a${i} * args.of.header.strides[args.axes[1][${i}]]`)
     }
 
     source.push('init = true')
     for (let i = rl; i < al + rl; i++) {
-        source.push(`for(let a${i} = 0; a${i} < args.of.header.shape[args.axes.of[${i - rl}]]; a${i}++){`)
-        index.push(`a${i} * args.of.header.strides[args.axes.of[${i - rl}]]`)
+        source.push(`for(let a${i} = 0; a${i} < args.of.header.shape[args.axes[0][${i - rl}]]; a${i}++){`)
+        index.push(`a${i} * args.of.header.strides[args.axes[0][${i - rl}]]`)
     }
 
 
