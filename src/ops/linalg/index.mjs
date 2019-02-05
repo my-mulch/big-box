@@ -6,20 +6,12 @@ import matMult from './matmult'
 /** --------------------- SINGLES --------------------- */
 
 export const crossProduct = function (args) {
-    args.result.data[0] = args.A.data[1 * args.A.header.strides[0] + args.A.header.offset]
-        * args.B.data[2 * args.B.header.strides + args.B.header.offset]
-        - args.A.data[2 * args.A.header.strides[0] + args.A.header.offset]
-        * args.B.data[1 * args.B.header.strides + args.B.header.offset]
+    const ofStrides = args.of.header.shape[0] === 3 ? args.of.header.strides[0] : args.of.header.strides[1]
+    const withStrides = args.with.header.shape[0] === 3 ? args.with.header.strides[0] : args.with.header.strides[1]
 
-    args.result.data[1] = args.A.data[2 * args.A.header.strides[0] + args.A.header.offset]
-        * args.B.data[0 * args.B.header.strides + args.B.header.offset]
-        - args.A.data[0 * args.A.header.strides[0] + args.A.header.offset]
-        * args.B.data[2 * args.B.header.strides + args.B.header.offset]
-
-    args.result.data[2] = args.A.data[0 * args.A.header.strides[0] + args.A.header.offset]
-        * args.B.data[1 * args.B.header.strides + args.B.header.offset]
-        - args.A.data[1 * args.A.header.strides[0] + args.A.header.offset]
-        * args.B.data[0 * args.B.header.strides + args.B.header.offset]
+    args.result.data[0] = args.of.data[1 * ofStrides + args.of.header.offset] * args.with.data[2 * withStrides + args.with.header.offset] - args.of.data[2 * ofStrides + args.of.header.offset] * args.with.data[1 * withStrides + args.with.header.offset]
+    args.result.data[1] = args.of.data[2 * ofStrides + args.of.header.offset] * args.with.data[0 * withStrides + args.with.header.offset] - args.of.data[0 * ofStrides + args.of.header.offset] * args.with.data[2 * withStrides + args.with.header.offset]
+    args.result.data[2] = args.of.data[0 * ofStrides + args.of.header.offset] * args.with.data[1 * withStrides + args.with.header.offset] - args.of.data[1 * ofStrides + args.of.header.offset] * args.with.data[0 * withStrides + args.with.header.offset]
 
     return args.result
 }

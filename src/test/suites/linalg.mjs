@@ -57,13 +57,17 @@ export default function () {
     jest.expect(nd.inv({ of: D })).toEqual([[-0.5, -0.125, 0.625], [1., 0., -0.5], [0., 0.25, -0.25]])
     jest.expect(nd.inv({ of: nd.array({ from: [[6, 4], [5, 2]] }) })).toEqual([[-0.25, 0.5], [0.625, -0.75]])
 
+    jest.expect(E.slice({ indices: ['1:2', 0, ':'] }).cross({ with: C })).toEqual([19, -170, 107])
+
     jest.expect(E.slice({ indices: [':', 0, ':'] }).dot({ with: C })).toEqual([[26], [74], [109]])
-    jest.expect(E.slice({ indices: [':', 0, ':'] }).inv({}))
+
+    jest.expect(E.slice({ indices: [':', 0, ':'] }).inv({}).round({ precision: 3 }))
         .toEqual([
-            [-0.019677996422182466, 0.012522361359570666, 0.005366726296958853],
-            [0.11627906976744196, 0.07751937984496123, -0.062015503875968984],
-            [0.3076923076923075, -0.2564102564102564, 0.1282051282051282]
-        ])
+            [-0.02, 0.013, 0.005],
+            [0.116, 0.078, -0.062],
+            [0.308, -0.256, 0.128]])
+
+    E.slice({ indices: [':', 0, ':'] }).set({ to: 1 })
 
     console.log('\n\n-------- End Linear Algebra Suite --------\n\n')
 }

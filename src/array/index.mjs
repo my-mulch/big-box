@@ -89,7 +89,7 @@ export default class MultiDimArray {
             with: args.with,
             result: args.result || new MultiDimArray({
                 type: args.type || Float64Array,
-                header: new Header({ shape: args.of.header.shape })
+                header: new Header({ shape: [3] })
             })
         })
     }
@@ -110,15 +110,23 @@ export default class MultiDimArray {
         })
     }
 
+    copy() {
+        return new MultiDimArray({
+            type: this.type,
+            header: this.header,
+            data: this.data.slice()
+        })
+    }
+
     round(args) {
         return axisSuite.call({
             of: this,
             reducer: noop,
-            mapper: round.bind(args.precision),
-            axes: args.axes,
+            mapper: round.bind(null, args.precision),
+            axes: [[], this.header.indices],
             result: args.result || new MultiDimArray({
                 type: args.type || this.type,
-                header: this.header.axisSlice(args.axes)
+                header: this.header
             })
         })
     }
@@ -224,9 +232,6 @@ export default class MultiDimArray {
     }
 
     slice(args) {
-        if (this.header.fullySpecified(args.indices))
-            return this.data[getFullySpecifiedIndex.call(this, args.indices)]
-
         return new MultiDimArray({
             data: this.data,
             type: this.type,
@@ -264,9 +269,13 @@ export default class MultiDimArray {
     }
 
     set(args) {
-        return {
-            to: (function () { }).bind(this)
-        }
+        return axisSuite.call({
+            of: this,
+            reducer: noop,
+            mapper: function (i) { console.log(i) },
+            axes: [[], this.header.indices],
+            result: this
+        })
     }
 
     toString() { return stringify.call(this, this.header.offset) }

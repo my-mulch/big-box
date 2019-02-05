@@ -14,16 +14,22 @@ export default function (args) {
         index.push(`a${i} * args.of.header.strides[args.axes[0][${i - rl}]]`)
     }
 
-
-
     source.push(`ai = args.of.header.offset + ${index.join('+')}`)
-
     source.push(`if(init){`)
     source.push(`args.result.data[ri] = args.of.data[ai]`)
     source.push('init = false')
     source.push('}')
 
-    source.push(`args.result.data[ri] = args.reducer(args.mapper(args.of.data[ai]), args.result.data[ri])`)
+    const mdi = `[${'a'.repeat(rl + al).split('').map(function (a, i) { return a + i }).join(',')}]`
+
+    source.push(`args.result.data[ri] = args.reducer(
+        args.mapper(
+            args.of.data[ai], 
+            ${mdi}
+        ), 
+        args.result.data[ri],
+        ${mdi}
+    )`)
 
     source.push('}'.repeat(al))
     source.push('ri++')

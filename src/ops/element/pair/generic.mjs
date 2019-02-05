@@ -8,8 +8,11 @@ export default function (args) {
         bIndex.push(`i${i} * args.with.header.strides[${i}]`)
     }
 
-    source.push(`args.result.data[ri++] = args.reducer(args.of.data[args.of.header.offset + ${aIndex.join('+')}], 
-                        args.with.data[args.with.header.offset + ${bIndex.join('+')}])`)
+    source.push(`args.result.data[ri++] = args.reducer(
+        args.of.data[args.of.header.offset + ${aIndex.join('+')}], 
+        args.with.data[args.with.header.offset + ${bIndex.join('+')}],
+        [${'a'.repeat(args.of.header.shape.length).split('').map(function (a, i) { return a + i }).join(',')}]
+    )`)
 
     source.push('}'.repeat(args.of.header.shape.length))
     source.push(`return args.result`)
