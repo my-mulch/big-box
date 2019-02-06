@@ -1,9 +1,9 @@
-import { add, multiply, subtract, divide, min, range, max, noop, axisSuite, pairSuite, round, fill } from '../ops/element'
+import { add, multiply, subtract, divide, min, range, max, noop, axisSuite, pairSuite, round } from '../ops/element'
 import { matMultSuite, invSuite, crossProduct, identity } from '../ops/linalg'
 import { randint } from '../ops/probability'
 
 import { getFullySpecifiedIndex } from './utils.mjs'
-import { shape, stringify } from '../array/utils'
+import { shape, stringify, fill } from '../array/utils'
 import util from 'util' // node's
 import Header from './header'
 
@@ -272,7 +272,13 @@ export default class MultiDimArray {
         return axisSuite.call({
             of: this,
             reducer: noop,
-            mapper: function (i) { console.log(i) },
+            mapper: function (_, ai, mdi) {
+                if (args.to.constructor === Number)
+                    return args.to
+
+                if (args.to.constructor === MultiDimArray)
+                    return getFullySpecifiedIndex.call(args.to, mdi)
+            },
             axes: [[], this.header.indices],
             result: this
         })

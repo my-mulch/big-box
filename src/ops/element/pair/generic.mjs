@@ -11,7 +11,6 @@ export default function (args) {
     source.push(`args.result.data[ri++] = args.reducer(
         args.of.data[args.of.header.offset + ${aIndex.join('+')}], 
         args.with.data[args.with.header.offset + ${bIndex.join('+')}],
-        [${'a'.repeat(args.of.header.shape.length).split('').map(function (a, i) { return a + i }).join(',')}]
     )`)
 
     source.push('}'.repeat(args.of.header.shape.length))

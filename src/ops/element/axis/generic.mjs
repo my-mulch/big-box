@@ -1,41 +1,34 @@
 export default function (args) {
-    const source = [], index = [], rl = args.axes[1].length, al = args.axes[0].length
+    const source = [], rIndex = [], aIndex = [], rl = args.axes[1].length, al = args.axes[0].length
 
-    source.push('let ri = 0, ai = 0, init')
+    source.push('let ri = 0, ai = 0, ii = 0')
 
     for (let i = 0; i < rl; i++) {
-        source.push(`for(let a${i} = 0; a${i} < args.of.header.shape[args.axes[1][${i}]]; a${i}++){`)
-        index.push(`a${i} * args.of.header.strides[args.axes[1][${i}]]`)
+        source.push(`for(let r${i} = 0; r${i} < args.of.header.shape[args.axes[1][${i}]]; r${i}++){`)
+        rIndex.push(`r${i} * args.of.header.strides[args.axes[1][${i}]]`)
     }
 
-    source.push('init = true')
-    for (let i = rl; i < al + rl; i++) {
-        source.push(`for(let a${i} = 0; a${i} < args.of.header.shape[args.axes[0][${i - rl}]]; a${i}++){`)
-        index.push(`a${i} * args.of.header.strides[args.axes[0][${i - rl}]]`)
+    source.push('ii = 0')
+
+    for (let i = 0; i < al; i++) {
+        source.push(`for(let a${i} = 0; a${i} < args.of.header.shape[args.axes[0][${i}]]; a${i}++){`)
+        aIndex.push(`a${i} * args.of.header.strides[args.axes[0][${i}]]`)
     }
 
-    source.push(`ai = args.of.header.offset + ${index.join('+')}`)
-    source.push(`if(init){`)
-    source.push(`args.result.data[ri] = args.of.data[ai]`)
-    source.push('init = false')
-    source.push('}')
+    source.push(
+        `ai = args.of.header.offset + ${aIndex.join('+') || 0}`,
+        `ri = args.result.header.offset + ${rIndex.join('+') || 0}`,
+        `if(!ii) { args.result.data[ri] = args.of.data[ai] } ii++`
+    )
 
     const mdi = `[${'a'.repeat(rl + al).split('').map(function (a, i) { return a + i }).join(',')}]`
 
-    source.push(`args.result.data[ri] = args.reducer(
-        args.mapper(
-            args.of.data[ai], 
-            ${mdi}
-        ), 
-        args.result.data[ri],
-        ${mdi}
-    )`)
-
-    source.push('}'.repeat(al))
-    source.push('ri++')
-    source.push('}'.repeat(rl))
-
-    source.push(`return args.result`)
+    source.push(
+        `args.result.data[ri] = args.reducer(args.mapper(args.of.data[ai], ai, ${mdi}), args.result.data[ri], ii)`,
+        '}'.repeat(al),
+        '}'.repeat(rl),
+        `return args.result`
+    )
 
     return new Function('args', source.join('\n'))
 }

@@ -24,24 +24,6 @@ export const range = function (args) {
     return args.result
 }
 
-export const fill = function (args) {
-    if (args.values.constructor === Number)
-        args.result.data.fill(args.values)
-
-    else if (args.values.constructor === Function)
-        for (let i = 0; i < args.result.data.length; i++)
-            args.result.data[i] = args.values()
-
-    else if (args.values.constructor === Array) {
-        const flat = args.values.flat(args.result.header.shape.length)
-
-        for (let i = 0; i < flat.length; i++)
-            args.result.data[i] = flat[i]
-    }
-
-    return args.result
-}
-
 /** --------------------- SUITES --------------------- */
 
 export const pairSuite = pair

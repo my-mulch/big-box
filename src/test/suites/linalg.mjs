@@ -67,7 +67,7 @@ export default function () {
             [0.116, 0.078, -0.062],
             [0.308, -0.256, 0.128]])
 
-    E.slice({ indices: [':', 0, ':'] }).set({ to: 1 })
+    console.log(E.slice({ indices: [':', 0, ':'] }).set({ to: 1 }))
 
     console.log('\n\n-------- End Linear Algebra Suite --------\n\n')
 }
