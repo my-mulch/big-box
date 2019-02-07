@@ -1,3 +1,5 @@
+const FAIL = '\x1b[31m%s\x1b[0m'
+const PASS = '\x1b[32m%s\x1b[0m'
 
 export default class Jest {
     static expect(stuff) {
@@ -8,21 +10,11 @@ export default class Jest {
 
                 stuff = JSON.stringify(stuff)
                 otherStuff = JSON.stringify(otherStuff)
-                console.log(stuff === otherStuff
-                    ? 'Passed!'
-                    : `Failed: expected ${stuff} to equal ${otherStuff}`)
-            },
 
-            toEqualByReference: function (otherStuff) {
-                console.log(stuff === otherStuff
-                    ? 'Passed!'
-                    : `Failed: expected ${JSON.stringify(otherStuff)} reference to equal ${JSON.stringify(otherStuff)} reference`)
-            },
-
-            toNotEqualByReference: function (otherStuff) {
-                console.log(stuff !== otherStuff
-                    ? 'Passed!'
-                    : `Failed: expected ${JSON.stringify(stuff)} reference to differ from ${JSON.stringify(otherStuff)} reference`)
+                if (stuff === otherStuff)
+                    console.log(PASS, 'Passed!')
+                else
+                    console.log(FAIL, `Failed: expected ${stuff} to equal ${otherStuff}`)
             }
         }
     }

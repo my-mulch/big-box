@@ -45,6 +45,7 @@ export default function () {
         [21, 2, 2]]]
     })
 
+    jest.expect(B.multiply({ with: 6 })).toEqual([[-276, 114], [-228, 54], [54, -90], [-150, -198]])
     jest.expect(A.min({ axes: [[0, 1, 2, 3], []] })).toEqual(-15)
     jest.expect(A.min({ axes: [[0, 3], [1, 2]] })).toEqual([[17, 21, -15], [-2, -13, -5]])
 

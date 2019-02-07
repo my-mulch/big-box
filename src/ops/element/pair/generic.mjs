@@ -9,7 +9,7 @@ export default function (args) {
         rIndex.push(`i${i} * args.result.header.strides[${i}]`)
 
         if (i >= al - bl)
-            bIndex.push(`i${i} * args.with.header.strides[${i}]`)
+            bIndex.push(`i${i} * args.with.header.strides[${i - (al - bl)}]`)
     }
 
     return new Function('args', [

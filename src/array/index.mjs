@@ -83,7 +83,7 @@ export default class MultiDimArray {
     static dot(args) {
         return matMultSuite.call({
             of: args.of,
-            with: args.with,
+            with: MultiDimArray.array({ from: args.with }),
             result: args.result || new MultiDimArray({
                 type: args.type,
                 header: new Header({
@@ -99,7 +99,7 @@ export default class MultiDimArray {
     static cross(args) {
         return crossProduct({
             of: args.of,
-            with: args.with,
+            with: MultiDimArray.array({ from: args.with }),
             result: args.result || new MultiDimArray({
                 type: args.type,
                 header: new Header({ shape: [3] })
@@ -183,7 +183,7 @@ export default class MultiDimArray {
     add(args) {
         return pairSuite.call({
             of: this,
-            with: args.with,
+            with: MultiDimArray.array({ from: args.with }),
             reducer: add,
             result: args.result || new MultiDimArray({
                 type: this.type,
@@ -195,7 +195,7 @@ export default class MultiDimArray {
     subtract(args) {
         return pairSuite.call({
             of: this,
-            with: args.with,
+            with: MultiDimArray.array({ from: args.with }),
             reducer: subtract,
             result: args.result || new MultiDimArray({
                 type: this.type,
@@ -207,7 +207,7 @@ export default class MultiDimArray {
     multiply(args) {
         return pairSuite.call({
             of: this,
-            with: args.with,
+            with: MultiDimArray.array({ from: args.with }),
             reducer: multiply,
             result: args.result || new MultiDimArray({
                 type: this.type,
@@ -219,7 +219,7 @@ export default class MultiDimArray {
     divide(args) {
         return pairSuite.call({
             of: this,
-            with: args.with,
+            with: MultiDimArray.array({ from: args.with }),
             reducer: divide,
             result: args.result || new MultiDimArray({
                 type: this.type,
