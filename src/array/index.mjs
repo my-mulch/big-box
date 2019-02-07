@@ -1,72 +1,82 @@
-import { add, multiply, subtract, divide, min, range, max, noop, axisSuite, pairSuite, round } from '../ops/element'
-import { matMultSuite, invSuite, crossProduct, identity } from '../ops/linalg'
+import { assign, add, multiply, subtract, divide, min, max, noop, axisSuite, pairSuite, round } from '../ops/element'
+import { matMultSuite, invSuite, crossProduct } from '../ops/linalg'
 import { randint } from '../ops/probability'
 
-import { getFullySpecifiedIndex } from './utils.mjs'
-import { shape, stringify, fill } from '../array/utils'
+import { shape, stringify } from '../array/utils'
 import util from 'util' // node's
 import Header from './header'
 
 
 export default class MultiDimArray {
 
-    constructor(args) {
-        this.header = args.header
-        this.type = args.type
-        this.data = args.data || new this.type(this.header.size)
+    constructor({ header, type, init = function () { return new this.type(this.header.size) } }) {
+        this.header = header
+        this.type = type || Float64Array
+        this.data = init.call(this)
     }
 
     static array(args) {
-        return fill({
-            values: args.from,
-            result: new MultiDimArray({
-                type: args.type || Float64Array,
-                header: new Header({ shape: shape(args.from) }),
-            })
+        if (args.from.constructor === MultiDimArray)
+            return args.from
+
+        return new MultiDimArray({
+            type: args.type,
+            header: new Header({ shape: shape(args.from) }),
+            init: function () {
+                if (args.from.constructor === Array)
+                    return new this.type(args.from.flat(Number.POSITIVE_INFINITY))
+                if (args.from.constructor === Number)
+                    return new this.type(this.header.size).fill(args.from)
+            }
         })
     }
 
     static zeros(args) {
-        return fill({
-            values: 0,
-            result: args.result || new MultiDimArray({
-                type: args.type || Float64Array,
-                header: new Header({ shape: args.shape }),
-            })
+        return new MultiDimArray({
+            type: args.type,
+            header: new Header({ shape: args.shape })
         })
     }
 
     static ones(args) {
-        return fill({
-            values: 1,
-            result: args.result || new MultiDimArray({
-                type: args.type || Float64Array,
-                header: new Header({ shape: args.shape }),
-            })
+        return new MultiDimArray({
+            type: args.type,
+            header: new Header({ shape: args.shape }),
+            init: function () {
+                return new this.type(this.header.size).fill(1)
+            }
         })
     }
 
     static arange(args) {
-        const start = args.start || 0
-        const step = args.step || 1
-        const stop = args.stop
+        return new MultiDimArray({
+            type: args.type,
+            header: new Header({
+                shape: [Math.ceil((args.stop - (args.start || 0)) / (args.step || 1))]
+            }),
+            init: function () {
+                const data = new this.type(this.header.size)
 
-        return range({
-            start, step, stop,
-            result: args.result || new MultiDimArray({
-                type: args.type || Float64Array,
-                header: new Header({ shape: [Math.ceil((stop - start) / step)] })
-            })
+                for (let i = args.start || 0, j = 0; i < args.stop; i += args.step || 1, j++)
+                    data[j] = i
+
+                return data
+            }
         })
     }
 
     static randint(args) {
-        return fill({
-            values: function () { return randint(args.low, args.high) },
-            result: args.result || new MultiDimArray({
-                type: args.type || Int32Array,
-                header: new Header({ shape })
-            })
+        return new MultiDimArray({
+            type: args.type || Int32Array,
+            header: new Header({ shape: args.shape }),
+            init: function () {
+                const data = new this.type(this.header.size)
+
+                for (let i = 0; i < data.length; i++)
+                    data[j] = randint(args.low, args.high)
+
+                return data
+            }
         })
     }
 
@@ -75,9 +85,12 @@ export default class MultiDimArray {
             of: args.of,
             with: args.with,
             result: args.result || new MultiDimArray({
-                type: args.type || Float64Array,
+                type: args.type,
                 header: new Header({
-                    shape: [args.of.header.shape[0], args.with.header.shape[1]]
+                    shape: [
+                        args.of.header.shape[0],
+                        args.with.header.shape[1]
+                    ]
                 })
             })
         })
@@ -88,7 +101,7 @@ export default class MultiDimArray {
             of: args.of,
             with: args.with,
             result: args.result || new MultiDimArray({
-                type: args.type || Float64Array,
+                type: args.type,
                 header: new Header({ shape: [3] })
             })
         })
@@ -102,19 +115,29 @@ export default class MultiDimArray {
     }
 
     static eye(args) {
-        return identity({
-            result: args.result || new MultiDimArray({
-                type: args.type || Float64Array,
-                header: new Header({ shape: args.shape })
-            })
+        return new MultiDimArray({
+            type: args.type,
+            header: new Header({ shape: args.shape }),
+            init: function () {
+                const data = new this.type(this.header.size)
+                const diagonal = this.header.strides.reduce(add)
+                const numDiags = this.header.shape.reduce(min)
+
+                for (let i = 0; i < numDiags * diagonal; i += diagonal)
+                    data[i] = 1
+
+                return data
+            }
         })
     }
 
-    copy() {
+    copy(old = this) {
         return new MultiDimArray({
             type: this.type,
             header: this.header,
-            data: this.data.slice()
+            init: function () {
+                return old.data.slice()
+            }
         })
     }
 
@@ -125,7 +148,7 @@ export default class MultiDimArray {
             mapper: round.bind(null, args.precision),
             axes: [[], this.header.indices],
             result: args.result || new MultiDimArray({
-                type: args.type || this.type,
+                type: this.type,
                 header: this.header
             })
         })
@@ -138,7 +161,7 @@ export default class MultiDimArray {
             mapper: noop,
             axes: args.axes,
             result: args.result || new MultiDimArray({
-                type: args.type || this.type,
+                type: this.type,
                 header: this.header.axisSlice(args.axes)
             })
         })
@@ -151,7 +174,7 @@ export default class MultiDimArray {
             mapper: noop,
             axes: args.axes,
             result: args.result || new MultiDimArray({
-                type: args.type || this.type,
+                type: this.type,
                 header: this.header.axisSlice(args.axes)
             })
         })
@@ -163,7 +186,7 @@ export default class MultiDimArray {
             with: args.with,
             reducer: add,
             result: args.result || new MultiDimArray({
-                type: args.type || this.type,
+                type: this.type,
                 header: new Header({ shape: this.header.shape })
             })
         })
@@ -175,7 +198,7 @@ export default class MultiDimArray {
             with: args.with,
             reducer: subtract,
             result: args.result || new MultiDimArray({
-                type: args.type || this.type,
+                type: this.type,
                 header: new Header({ shape: this.header.shape })
             })
         })
@@ -187,7 +210,7 @@ export default class MultiDimArray {
             with: args.with,
             reducer: multiply,
             result: args.result || new MultiDimArray({
-                type: args.type || this.type,
+                type: this.type,
                 header: new Header({ shape: this.header.shape })
             })
         })
@@ -199,7 +222,7 @@ export default class MultiDimArray {
             with: args.with,
             reducer: divide,
             result: args.result || new MultiDimArray({
-                type: args.type || this.type,
+                type: this.type,
                 header: new Header({ shape: this.header.shape })
             })
         })
@@ -209,7 +232,6 @@ export default class MultiDimArray {
         return MultiDimArray.dot({
             of: this,
             with: args.with,
-            type: args.type,
             result: args.result
         })
     }
@@ -218,7 +240,6 @@ export default class MultiDimArray {
         return MultiDimArray.cross({
             of: this,
             with: args.with,
-            type: args.type,
             result: args.result
         })
     }
@@ -226,29 +247,27 @@ export default class MultiDimArray {
     inv(args) {
         return MultiDimArray.inv({
             of: this,
-            type: args.type,
             result: args.result
         })
     }
 
-    slice(args) {
+    slice(args, old = this) {
         return new MultiDimArray({
-            data: this.data,
             type: this.type,
             header: this.header.slice(args.indices),
+            init: function () { return old.data }
         })
     }
 
-    T() {
+    T(old = this) {
         return new MultiDimArray({
-            data: this.data,
             type: this.type,
-            header: this.header.transpose()
+            header: this.header.transpose(),
+            init: function () { return old.data }
         })
     }
 
-    reshape(args) {
-        /**  if the array is not contigous, a reshape means data copy */
+    reshape(args, old = this) {
         if (!this.header.contig)
             return axisSuite.call({
                 of: this,
@@ -256,30 +275,23 @@ export default class MultiDimArray {
                 mapper: noop,
                 axes: [[], this.header.indices],
                 result: new MultiDimArray({
-                    type: args.type || this.type,
+                    type: this.type,
                     header: new Header({ shape: args.shape })
                 })
             })
 
         return new MultiDimArray({
-            data: this.data,
             type: this.type,
             header: this.header.reshape(args.shape),
+            init: function () { return old.data }
         })
     }
 
     set(args) {
-        return axisSuite.call({
+        return pairSuite.call({
             of: this,
-            reducer: noop,
-            mapper: function (_, ai, mdi) {
-                if (args.to.constructor === Number)
-                    return args.to
-
-                if (args.to.constructor === MultiDimArray)
-                    return getFullySpecifiedIndex.call(args.to, mdi)
-            },
-            axes: [[], this.header.indices],
+            with: MultiDimArray.array({ from: args.to }),
+            reducer: assign,
             result: this
         })
     }

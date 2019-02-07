@@ -6,15 +6,6 @@ export const shape = function getShape(A, shape = []) {
     return getShape(A[0], shape.concat(A.length))
 }
 
-export const getFullySpecifiedIndex = function getFullySpecifiedIndex(indices) {
-    let index = this.header.offset
-
-    for (let i = 0; i < indices.length; i++)
-        index += indices[i] * this.header.strides[i]
-
-    return index
-}
-
 export const stringify = function stringify(index, dim = 0) {
     if (dim === this.header.shape.length)
         return this.data[index]
@@ -31,23 +22,3 @@ export const stringify = function stringify(index, dim = 0) {
         + ']'
 
 }
-
-export const fill = function (args) {
-    if (args.values.constructor === Number)
-        args.result.data.fill(args.values)
-
-    else if (args.values.constructor === Function)
-        for (let i = 0; i < args.result.data.length; i++)
-            args.result.data[i] = args.values()
-
-    else if (args.values.constructor === Array) {
-        const flat = args.values.flat(args.result.header.shape.length)
-
-        for (let i = 0; i < flat.length; i++)
-            args.result.data[i] = flat[i]
-    }
-
-    return args.result
-}
-
-

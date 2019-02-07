@@ -67,7 +67,30 @@ export default function () {
             [0.116, 0.078, -0.062],
             [0.308, -0.256, 0.128]])
 
-    console.log(E.slice({ indices: [':', 0, ':'] }).set({ to: 1 }))
+    jest.expect(E.slice({ indices: [':', 0, ':'] }).set({ to: 1 }))
+        .toEqual([
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1]])
+
+    jest.expect(E)
+        .toEqual([
+            [[1, 1, 1],
+            [72, 6, 3],
+            [91, 6, 1],
+            [13, 4, 12]],
+
+            [[1, 1, 1],
+            [44, 2, 2],
+            [49, 8, 4],
+            [33, 8, 5]],
+
+            [[1, 1, 1],
+            [66, 4, 3],
+            [23, 1, 2],
+            [21, 2, 2]]])
+
+
 
     console.log('\n\n-------- End Linear Algebra Suite --------\n\n')
 }

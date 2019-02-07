@@ -16,16 +16,6 @@ export const crossProduct = function (args) {
     return args.result
 }
 
-export const identity = function (args) {
-    const diagonal = args.result.header.strides.reduce(add)
-    const numDiags = args.result.header.shape.reduce(min)
-
-    for (let i = 0; i < numDiags * diagonal; i += diagonal)
-        args.result.data[i] = 1
-
-    return args.result
-}
-
 /** --------------------- SUITES --------------------- */
 
 export const invSuite = inverse
