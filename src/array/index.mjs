@@ -82,7 +82,7 @@ export default class MultiDimArray {
 
     static dot(args) {
         return matMultSuite.call({
-            of: args.of,
+            of: MultiDimArray.array({ from: args.of }),
             with: MultiDimArray.array({ from: args.with }),
             result: args.result || new MultiDimArray({
                 type: args.type,
@@ -98,7 +98,7 @@ export default class MultiDimArray {
 
     static cross(args) {
         return crossProduct({
-            of: args.of,
+            of: MultiDimArray.array({ from: args.of }),
             with: MultiDimArray.array({ from: args.with }),
             result: args.result || new MultiDimArray({
                 type: args.type,
@@ -109,7 +109,7 @@ export default class MultiDimArray {
 
     static inv(args) {
         return invSuite.call({
-            of: args.of,
+            of: MultiDimArray.array({ from: args.of }),
             result: args.result || this.eye({ shape: args.of.header.shape })
         })
     }
@@ -296,6 +296,6 @@ export default class MultiDimArray {
         })
     }
 
-    toString() { return stringify.call(this, this.header.offset) }
+    toString() { return stringify.call(this) }
     [util.inspect.custom]() { return this.toString() }
 }

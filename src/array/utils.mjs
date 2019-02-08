@@ -6,7 +6,7 @@ export const shape = function getShape(A, shape = []) {
     return getShape(A[0], shape.concat(A.length))
 }
 
-export const stringify = function stringify(index, dim = 0) {
+export const stringify = function stringify(index = this.header.offset, dim = 0) {
     if (dim === this.header.shape.length)
         return this.data[index]
 
