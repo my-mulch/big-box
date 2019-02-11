@@ -19,14 +19,6 @@ export default class Header {
         return new Header(JSON.parse(JSON.stringify(this)))
     }
 
-    axisSlice(axes) {
-        return new Header({
-            shape: axes[1].map((function (axis) {
-                return this.shape[axis]
-            }).bind(this))
-        })
-    }
-
     slice(index) {
         const shape = new Array()
         const strides = new Array()
@@ -67,6 +59,14 @@ export default class Header {
         return new Header({ shape, strides, offset, contig })
     }
 
+    axisSlice(axes) {
+        return new Header({
+            shape: axes[1].map((function (axis) {
+                return this.shape[axis]
+            }).bind(this))
+        })
+    }
+
     transpose() {
         return new Header({
             shape: this.shape.slice().reverse(),
@@ -83,10 +83,5 @@ export default class Header {
             shape: resolvedShape,
             strides: getStrides(resolvedShape, this.lastStride)
         })
-    }
-
-    fullySpecified(index) {
-        return index.length === this.shape.length
-            && index.every(function (value) { return value.constructor === Number })
     }
 }

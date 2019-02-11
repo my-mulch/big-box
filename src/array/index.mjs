@@ -276,7 +276,8 @@ export default class MultiDimArray {
                 axes: [[], this.header.indices],
                 result: new MultiDimArray({
                     type: this.type,
-                    header: new Header({ shape: args.shape })
+                    header: new Header({ shape: args.shape }),
+                    init: function () { return old.data }
                 })
             })
 
@@ -296,6 +297,7 @@ export default class MultiDimArray {
         })
     }
 
+    valueOf() { return this.data[0] }
     toString() { return stringify.call(this) }
     [util.inspect.custom]() { return this.toString() }
 }

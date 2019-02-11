@@ -1,10 +1,12 @@
 import creation from './suites/creation'
 import linalg from './suites/linalg'
 import element from './suites/element'
-import indexing from './suites/indexing.mjs'
+import indexing from './suites/indexing'
+import speed from './suites/speed'
 
-creation.call()
-linalg.call()
-element.call()
-indexing.call()
+speed.call()
+// creation.call()
+// linalg.call()
+// element.call()
+// indexing.call()
 
