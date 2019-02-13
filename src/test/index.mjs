@@ -5,8 +5,9 @@ import indexing from './suites/indexing'
 import speed from './suites/speed'
 
 speed.call()
-// creation.call()
-// linalg.call()
-// element.call()
-// indexing.call()
+creation.call()
+linalg.call()
+element.call()
+indexing.call()
+
 

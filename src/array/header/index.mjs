@@ -10,6 +10,7 @@ export default class Header {
         this.contig = 'contig' in opts ? opts.contig : true
         this.strides = 'strides' in opts ? opts.strides : getStrides(this.shape)
 
+        this.id = `${this.shape}|${this.strides}|${this.offset}`
         this.indices = [...this.shape.keys()]
         this.size = this.shape.reduce(multiply, 1)
         this.lastStride = this.strides[this.strides.length - 1]

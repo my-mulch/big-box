@@ -297,7 +297,7 @@ export default class MultiDimArray {
         })
     }
 
-    valueOf() { return this.data[0] }
+    // valueOf() { return this.data[this.header.offset] }
     toString() { return stringify.call(this) }
     [util.inspect.custom]() { return this.toString() }
 }

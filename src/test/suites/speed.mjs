@@ -22,6 +22,32 @@ function matMult(A, B, R) {
     return R
 }
 
+function inverse(A, R) {
+    R.data[0] = A.data[5] * A.data[10] * A.data[15] - A.data[5] * A.data[14] * A.data[11] - A.data[6] * A.data[9] * A.data[15] + A.data[6] * A.data[13] * A.data[11] + A.data[7] * A.data[9] * A.data[14] - A.data[7] * A.data[13] * A.data[10];
+    R.data[1] = -A.data[1] * A.data[10] * A.data[15] + A.data[1] * A.data[14] * A.data[11] + A.data[2] * A.data[9] * A.data[15] - A.data[2] * A.data[13] * A.data[11] - A.data[3] * A.data[9] * A.data[14] + A.data[3] * A.data[13] * A.data[10];
+    R.data[2] = A.data[1] * A.data[6] * A.data[15] - A.data[1] * A.data[14] * A.data[7] - A.data[2] * A.data[5] * A.data[15] + A.data[2] * A.data[13] * A.data[7] + A.data[3] * A.data[5] * A.data[14] - A.data[3] * A.data[13] * A.data[6];
+    R.data[3] = -A.data[1] * A.data[6] * A.data[11] + A.data[1] * A.data[10] * A.data[7] + A.data[2] * A.data[5] * A.data[11] - A.data[2] * A.data[9] * A.data[7] - A.data[3] * A.data[5] * A.data[10] + A.data[3] * A.data[9] * A.data[6];
+
+    R.data[4] = -A.data[4] * A.data[10] * A.data[15] + A.data[4] * A.data[14] * A.data[11] + A.data[6] * A.data[8] * A.data[15] - A.data[6] * A.data[12] * A.data[11] - A.data[7] * A.data[8] * A.data[14] + A.data[7] * A.data[12] * A.data[10];
+    R.data[5] = A.data[0] * A.data[10] * A.data[15] - A.data[0] * A.data[14] * A.data[11] - A.data[2] * A.data[8] * A.data[15] + A.data[2] * A.data[12] * A.data[11] + A.data[3] * A.data[8] * A.data[14] - A.data[3] * A.data[12] * A.data[10];
+    R.data[6] = -A.data[0] * A.data[6] * A.data[15] + A.data[0] * A.data[14] * A.data[7] + A.data[2] * A.data[4] * A.data[15] - A.data[2] * A.data[12] * A.data[7] - A.data[3] * A.data[4] * A.data[14] + A.data[3] * A.data[12] * A.data[6];
+    R.data[7] = A.data[0] * A.data[6] * A.data[11] - A.data[0] * A.data[10] * A.data[7] - A.data[2] * A.data[4] * A.data[11] + A.data[2] * A.data[8] * A.data[7] + A.data[3] * A.data[4] * A.data[10] - A.data[3] * A.data[8] * A.data[6];
+
+    R.data[8] = A.data[4] * A.data[9] * A.data[15] - A.data[4] * A.data[13] * A.data[11] - A.data[5] * A.data[8] * A.data[15] + A.data[5] * A.data[12] * A.data[11] + A.data[7] * A.data[8] * A.data[13] - A.data[7] * A.data[12] * A.data[9];
+    R.data[9] = -A.data[0] * A.data[9] * A.data[15] + A.data[0] * A.data[13] * A.data[11] + A.data[1] * A.data[8] * A.data[15] - A.data[1] * A.data[12] * A.data[11] - A.data[3] * A.data[8] * A.data[13] + A.data[3] * A.data[12] * A.data[9];
+    R.data[10] = A.data[0] * A.data[5] * A.data[15] - A.data[0] * A.data[13] * A.data[7] - A.data[1] * A.data[4] * A.data[15] + A.data[1] * A.data[12] * A.data[7] + A.data[3] * A.data[4] * A.data[13] - A.data[3] * A.data[12] * A.data[5];
+    R.data[11] = -A.data[0] * A.data[5] * A.data[11] + A.data[0] * A.data[9] * A.data[7] + A.data[1] * A.data[4] * A.data[11] - A.data[1] * A.data[8] * A.data[7] - A.data[3] * A.data[4] * A.data[9] + A.data[3] * A.data[8] * A.data[5];
+
+    R.data[12] = -A.data[4] * A.data[9] * A.data[14] + A.data[4] * A.data[13] * A.data[10] + A.data[5] * A.data[8] * A.data[14] - A.data[5] * A.data[12] * A.data[10] - A.data[6] * A.data[8] * A.data[13] + A.data[6] * A.data[12] * A.data[9];
+    R.data[13] = A.data[0] * A.data[9] * A.data[14] - A.data[0] * A.data[13] * A.data[10] - A.data[1] * A.data[8] * A.data[14] + A.data[1] * A.data[12] * A.data[10] + A.data[2] * A.data[8] * A.data[13] - A.data[2] * A.data[12] * A.data[9];
+    R.data[14] = -A.data[0] * A.data[5] * A.data[14] + A.data[0] * A.data[13] * A.data[6] + A.data[1] * A.data[4] * A.data[14] - A.data[1] * A.data[12] * A.data[6] - A.data[2] * A.data[4] * A.data[13] + A.data[2] * A.data[12] * A.data[5];
+    R.data[15] = A.data[0] * A.data[5] * A.data[10] - A.data[0] * A.data[9] * A.data[6] - A.data[1] * A.data[4] * A.data[10] + A.data[1] * A.data[8] * A.data[6] + A.data[2] * A.data[4] * A.data[9] - A.data[2] * A.data[8] * A.data[5];
+
+    var det = A.data[0] * R.data[0] + A.data[1] * R.data[4] + A.data[2] * R.data[8] + A.data[3] * R.data[12];
+    for (var i = 0; i < 16; i++) R.data[i] /= det;
+    return R;
+}
+
 export default function () {
     let A, R
 
@@ -38,16 +64,26 @@ export default function () {
 
     R = nd.zeros({ shape: [4, 4] })
 
-    console.time('fast')
-    for (let i = 0; i < 1e6; i++)
+    console.time('fast - matMult')
+    for (let i = 0; i < 1e7; i++)
         matMult(A, A, R)
-    console.timeEnd('fast')
+    console.timeEnd('fast - matMult')
 
-
-    console.time('slow')
-    for (let i = 0; i < 1e6; i++)
+    console.time('slow - matMult')
+    for (let i = 0; i < 1e7; i++)
         A.dot({ with: A, result: R })
-    console.timeEnd('slow')
+    console.timeEnd('slow - matMult')
+
+
+    console.time('fast - inverse')
+    for (let i = 0; i < 1e6; i++)
+        inverse(A, R)
+    console.timeEnd('fast - inverse')
+
+    console.time('slow - inverse')
+    for (let i = 0; i < 1e6; i++)
+        A.inv({ result: R })
+    console.timeEnd('slow - inverse')
 
 
     console.log('\n\n-------- End Speed Suite --------\n\n')
