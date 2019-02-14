@@ -1,18 +1,27 @@
 
 export default function (args) {
-    const source = []
+    const rows = args.of.header.shape[0],
+        cols = args.with.header.shape[1],
+        shared = args.of.header.shape[1]
 
-    for (let r = 0; r < args.of.header.shape[0]; r++) {
-        for (let c = 0; c < args.with.header.shape[1]; c++) {
-            const mults = []
-            for (let s = 0; s < args.of.header.shape[1]; s++) {
-                mults.push(`args.of.data[${r * args.of.header.strides[0] + s * args.of.header.strides[1] + args.of.header.offset}] * 
-                args.with.data[${c * args.with.header.strides[1] + s * args.with.header.strides[0] + args.with.header.offset}]`)
-            }
-            source.push(`args.result.data[${source.length}]=${mults.join('+')}`)
-        }
-    }
+    return new Function('args', `
+        ${new Array(rows * cols).fill(null).map(function (_, i) {
+            const [r, c] = [
+                Math.floor(i / cols) % rows,
+                Math.floor(i / 1) % cols,
+            ]
+            const ri = args.result.header.offset + r * args.result.header.strides[0] + c * args.result.header.strides[1]
 
-    source.push('return args.result')
-    return new Function('args', source.join('\n'))
+            return `args.result.data[${ri}] = ${new Array(shared).fill(null).map(function (_, s) {
+                const oi = r * args.of.header.strides[0] + s * args.of.header.strides[1] + args.of.header.offset
+                const wi = c * args.with.header.strides[1] + s * args.with.header.strides[0] + args.with.header.offset
+
+                return `args.of.data[${oi}] * args.with.data[${wi}]`
+            }).join('+')}`
+
+        }).join('\n')}
+        
+        return args.result
+    `)
 }
+
