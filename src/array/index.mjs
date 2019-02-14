@@ -141,19 +141,6 @@ export default class MultiDimArray {
         })
     }
 
-    round(args) {
-        return axisSuite.call({
-            of: this,
-            reducer: noop,
-            mapper: round.bind(null, args.precision),
-            axes: [[], this.header.indices],
-            result: args.result || new MultiDimArray({
-                type: this.type,
-                header: this.header
-            })
-        })
-    }
-
     max(args) {
         return axisSuite.call({
             of: this,
@@ -176,6 +163,19 @@ export default class MultiDimArray {
             result: args.result || new MultiDimArray({
                 type: this.type,
                 header: this.header.axisSlice(args.axes)
+            })
+        })
+    }
+
+    round(args) {
+        return axisSuite.call({
+            of: this,
+            reducer: noop,
+            mapper: round.bind(null, args.precision),
+            axes: [[], this.header.indices],
+            result: args.result || new MultiDimArray({
+                type: this.type,
+                header: new Header({ shape: this.header.shape })
             })
         })
     }

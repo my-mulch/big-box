@@ -6,7 +6,7 @@ import optimized from './optimized'
 export default radley.suite({
     methods: { optimized, generic },
     router: function (args) {
-        return this.suite[args.of.header.id][args.with.header.id]
+        return this.suite[args.of.header.id][args.with.header.id][args.result.header.id]
     },
     tractable: function (args) { return true }
 })
