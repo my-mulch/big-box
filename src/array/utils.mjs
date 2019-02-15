@@ -20,5 +20,4 @@ export const stringify = function stringify(index = this.header.offset, dim = 0)
             }, this)
             .join(',' + '\n'.repeat(level))
         + ']'
-
 }
