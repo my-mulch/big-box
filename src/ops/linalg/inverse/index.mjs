@@ -1,12 +1,16 @@
 import radley from 'radley'
 
-import generic from './generic'
-import optimized from './optimized'
+import genericMethod from './generic'
+import optimalMethod from './optimized'
 
 export default radley.suite({
-    methods: { optimized, generic },
-    router: function (args) {
-        return this.suite[args.of.header.id][args.result.header.id]
+    generic: {
+        criteria: 'args.result.header.size > 25',
+        methods: genericMethod
     },
-    tractable: function (args) { return args.of.header.shape[0] < 6 }
+    optimized: {
+        criteria: 'args.result.header.size <= 25',
+        methods: optimalMethod
+    },
+    hash: ['args.of.header.id', 'args.result.header.id']
 })
