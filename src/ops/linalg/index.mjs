@@ -1,5 +1,3 @@
-import { add, min } from '../element'
-
 import inverse from './inverse'
 import matMult from './matmult'
 

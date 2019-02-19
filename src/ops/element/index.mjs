@@ -7,7 +7,6 @@ export const square = function (a) { return a * a }
 export const round = function (p, a) { return +a.toFixed(p) } // bind me!
 
 /** --------------------- REDUCERS --------------------- */
-export const mean = function (a, b) {  }
 export const assign = function (a, b) { return b }
 export const add = function (a, b) { return a + b }
 export const multiply = function (a, b) { return a * b }
