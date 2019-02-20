@@ -2,7 +2,7 @@ import { resultLoops, resultIndex, innerLoops, innerIndex } from './utils'
 
 export default function (args) {
     return `
-        const sizeOfInnerAxes = ${this.of.header.size / this.result.header.size}
+        ${args.global}
         
         ${resultLoops(this.axes, `
             const ri = ${resultIndex(this.axes)}
