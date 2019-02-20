@@ -6,16 +6,17 @@ export const innerLoops = function (axes, body) { return loopGeneric(axes, body,
 export const resultIndex = function (axes) { return indexGeneric(axes, 'result', resultIndexMatch) }
 export const innerIndex = function (axes) { return indexGeneric(axes, 'of', innerIndexMatch) }
 
+export const axisIndex = function (axes, match) { return Array.from(axes).map(match).filter(truthy) }
 
 const index = function (array) { return function (i, j) { return `a${i} * args.${array}.header.strides[${j}]` } }
 const indexGeneric = function (axes, array, match) {
-    const axesNumeric = convert(axes, innerIndexMatch)
+    const axesNumeric = axisIndex(axes, match)
     return `args.${array}.header.offset + ` + axesNumeric.map(index(array))
 }
 
 const loop = function (i) { return `for(let a${i} = 0; a${i} < args.of.header.shape[${i}]; a${i}++){` }
 const loopGeneric = function (axes, body, match) {
-    const axesNumeric = convert(axes, match)
+    const axesNumeric = axisIndex(axes, match)
     return `${axesNumeric.map(loop)} ${body} ${'}'.repeat(axesNumeric.length)}`
 }
 
@@ -26,4 +27,3 @@ const resultIndexMatch = resultLoopMatch
 const innerIndexMatch = function (i) { return i }
 
 const truthy = function () { return true }
-const convert = function (axes, match) { return Array.from(axes).map(match).filter(truthy) }

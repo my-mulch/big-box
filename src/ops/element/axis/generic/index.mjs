@@ -1,12 +1,10 @@
 import template from './template'
+import { axisVariable } from './utils'
 
 export const argmax = function (args) {
     return new Function('args', template.call(args, {
         initialize: `let valmax = Number.POSITIVE_INFINITY, argmax = 0`,
-        operate: `if(args.of.data[ai] > valmax) { 
-            argmax = a0 
-            valmax = args.of.data[ai]
-        }`,
+        operate: `if(args.of.data[ai] > valmax) { valmax = args.of.data[ai]; argmax = a0 }`,
         assign: 'argmax'
     }))
 }
@@ -37,6 +35,7 @@ export const max = function (args) {
 
 export const mean = function (args) {
     return new Function('args', template.call(args, {
+        global: `const sizeOfInnerAxes = ${args.of.header.size / args.result.header.size}`,
         initialize: 'let sum = 0',
         operate: 'sum += args.of.data[ai]',
         assign: 'sum / sizeOfInnerAxes'
@@ -50,7 +49,6 @@ export const norm = function (args) {
         assign: 'Math.sqrt(sumSquares)'
     }))
 }
-
 
 export const prod = function (args) {
     return new Function('args', template.call(args, {
@@ -71,5 +69,23 @@ export const sum = function (args) {
         initialize: 'let sum = 0',
         operate: 'sum += args.of.data[ai]',
         assign: 'sum'
+    }))
+}
+
+export const cumsum = function (args) {
+    const axis = axisIndex(args.axes)
+    return new Function('args', template.call(args, {
+        initialize: `let cumsum = 0, av = a${axis}`,
+        operate: `if(a${axis} <= av) cumsum += args.of.data[ai]`,
+        assign: 'cumsum'
+    }))
+}
+
+export const cumprod = function (args) {
+    const axis = axisIndex(args.axes)
+    return new Function('args', template.call(args, {
+        initialize: `let cumprod = 1, av = a${axis}`,
+        operate: `if(a${axis} <= av) cumprod *= args.of.data[ai]`,
+        assign: 'cumprod'
     }))
 }
