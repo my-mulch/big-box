@@ -1,5 +1,5 @@
 import template from './template'
-import { axisVariable } from './utils'
+import { axisIndex } from './utils'
 
 export const argmax = function (args) {
     return new Function('args', template.call(args, {
