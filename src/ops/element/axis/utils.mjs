@@ -1,33 +1,31 @@
-import { AXIS_INNER_KEEP_CHARACTER, AXIS_INNER_CHARACTER, AXIS_RESULT_CHARACTER } from '../../../../contants'
+import { AXIS_INNER_KEEP_CHARACTER, AXIS_INNER_CHARACTER, AXIS_RESULT_CHARACTER, RESULT, INNER } from '../../../../contants'
 
-/** ------------------------------------------------- GENERIC SUITE UTILITY METHODS ------------------------------------------------- */
 
-export const resultLoops = function (axes, body) { return loopGeneric(axes, body, resultLoopMapper) }
-export const innerLoops = function (axes, body) { return loopGeneric(axes, body, innerLoopMapper) }
+const truthy = function () { return true }
 
-export const resultIndex = function (axes) { return indexGeneric(axes, 'result', resultIndexMapper) }
-export const innerIndex = function (axes) { return indexGeneric(axes, 'of', innerIndexMapper) }
-export const axisIndex = function (axes, match) { return Array.from(axes).map(match).filter(truthy) }
-
-const index = function (array) { return function (i, j) { return `a${i} * args.${array}.header.strides[${j}]` } }
-const indexGeneric = function (axes, array, match) {
-    const axesNumeric = axisIndex(axes, match)
-    return `args.${array}.header.offset + ` + axesNumeric.map(index(array))
-}
-
+const aslice = function (axes, match) { return Array.from(axes).map(match).filter(truthy) }
 const loop = function (i) { return `for(let a${i} = 0; a${i} < args.of.header.shape[${i}]; a${i}++){` }
-const loopGeneric = function (axes, body, match) {
-    const axesNumeric = axisIndex(axes, match)
-    return `${axesNumeric.map(loop)} ${body} ${'}'.repeat(axesNumeric.length)}`
-}
+const index = function (array) { return function (i, j) { return `a${i} * args.${array}.header.strides[${j}]` } }
 
 const resultLoopMapper = function (axis, i) { if (axis === AXIS_RESULT_CHARACTER || axis === AXIS_INNER_KEEP_CHARACTER) return i }
 const innerLoopMapper = function (axis, i) { if (axis === AXIS_INNER_CHARACTER || axis === AXIS_INNER_KEEP_CHARACTER) return i }
-
-const resultIndexMapper = resultLoopMapper
+const resultIndexMapper = function (axis, i) { if (axis === AXIS_RESULT_CHARACTER || axis === AXIS_INNER_KEEP_CHARACTER) return i }
 const innerIndexMapper = function (i) { return i }
 
-const truthy = function () { return true }
+
+/** ------------------------------------------------- GENERIC SUITE UTILITY METHODS ------------------------------------------------- */
+
+export const indexGeneric = function (axes, array) {
+    const axesNumeric = aslice(axes, array === INNER ? innerIndexMapper : resultIndexMapper)
+
+    return `args.${array}.header.offset + ` + axesNumeric.map(index(array))
+}
+
+export const loopGeneric = function (axes, array, body) {
+    const axesNumeric = aslice(axes, array === INNER ? innerLoopMapper : resultLoopMapper)
+
+    return `${axesNumeric.map(loop)} ${body} ${'}'.repeat(axesNumeric.length)}`
+}
 
 /** ------------------------------------------------- GENERIC SUITE UTILITY METHODS ------------------------------------------------- */
 
@@ -38,9 +36,9 @@ const truthy = function () { return true }
 
 export const resultAssign = function (callback) {
     return new Array(this.result.header.size).fill(null).map(function (_, index) {
-        const axisNumeric = axisIndex(this.axes, resultIndexMapper)
-        const rg = axisNumeric.reduce(resultIndexLiteral(index, this.of), this.of.header.offset)
-        const ri = axisNumeric.reduce(resultIndexLiteral(index, this.result), this.result.header.offset)
+        const axisNumeric = aslice(this.axes, resultIndexMapper)
+        const rg = axisNumeric.reduce(resultIndexLiteral.call(this.of, index), this.of.header.offset)
+        const ri = axisNumeric.reduce(resultIndexLiteral.call(this.result, index), this.result.header.offset)
 
         return callback(ri, rg)
     }, this)
@@ -48,11 +46,11 @@ export const resultAssign = function (callback) {
 
 export const innerAssign = function (callback, rg) {
     return new Array(this.of.header.size / this.result.header.size).fill(null).map(function (_, index) {
-        const axisNumeric = axisIndex(this.axes, innerIndexMapper)
-        const ai = axisNumeric.reduce(resultIndexLiteral(index, this.of), rg)
+        const axisNumeric = aslice(this.axes, innerIndexMapper)
+        const ai = axisNumeric.reduce(resultIndexLiteral.call(this.of, index), rg)
 
         return callback(`args.of.data[${ai}]`)
-    })
+    }, this)
 }
 
 const resultIndexLiteral = function (index, array) {
@@ -63,9 +61,5 @@ const resultIndexLiteral = function (index, array) {
             array.header.strides[axis]
     }
 }
-
-
-
-
 
 /** ------------------------------------------------- OPTIMIZED SUITE UTILITY METHODS ------------------------------------------------- */
