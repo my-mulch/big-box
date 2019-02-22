@@ -13,7 +13,7 @@ export default function (args) {
                 ${args.operate || ''}
             `)}
             
-            args.result[ri] = ${args.assign}
+            args.result.data[ri] = ${args.assign}
         `)}
             
         return args.result
