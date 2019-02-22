@@ -7,7 +7,8 @@ export default function (args) {
         ${resultAssign.call(this, function (ri, rg) {
             return `
                 ${args.initialize || ''}  
-                args.result.data[${ri}] = ${args.reducer(innerAssign.call(this, args.mapper, rg))}
+                ${args.reducer(innerAssign.call(this, args.mapper, rg))}
+                args.result.data[${ri}] = ${args.assign}
             `
         })}
         

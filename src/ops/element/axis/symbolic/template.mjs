@@ -1,4 +1,5 @@
 import { indexGeneric, loopGeneric } from '../utils'
+import { RESULT, INNER } from '../../../../contants'
 
 export default function (args) {
     return `

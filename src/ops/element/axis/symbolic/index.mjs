@@ -1,5 +1,4 @@
 import template from './template'
-import { axisIndex } from './utils'
 
 export const argmax = function (args) {
     return new Function('args', template.call(args, {
@@ -73,7 +72,6 @@ export const sum = function (args) {
 }
 
 export const cumsum = function (args) {
-    const axis = axisIndex(args.axes)
     return new Function('args', template.call(args, {
         initialize: `let cumsum = 0, av = a${axis}`,
         operate: `if(a${axis} <= av) cumsum += args.of.data[ai]`,
@@ -82,7 +80,6 @@ export const cumsum = function (args) {
 }
 
 export const cumprod = function (args) {
-    const axis = axisIndex(args.axes)
     return new Function('args', template.call(args, {
         initialize: `let cumprod = 1, av = a${axis}`,
         operate: `if(a${axis} <= av) cumprod *= args.of.data[ai]`,
