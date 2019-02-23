@@ -1,6 +1,34 @@
-import divide from 'divide'
-import multiply from 'multiply'
-import subtract from 'subtract'
-import add from 'add'
+import template from './template'
 
-export default { divide, multiply, subtract, add }
+export default function (args) {
+    return new Function('args', template(Object.assign({
+        assignment: function (ai, bi) {
+            return `args.of.data[${ai}] + args.with.data[${bi}]`
+        }
+    }, args)))
+}
+
+export default function (args) {
+    return new Function('args', template(Object.assign({
+        assignment: function (ai, bi) {
+            return `args.of.data[${ai}] / args.with.data[${bi}]`
+        }
+    }, args)))
+}
+
+
+export default function (args) {
+    return new Function('args', template(Object.assign({
+        assignment: function (ai, bi) {
+            return `args.of.data[${ai}] * args.with.data[${bi}]`
+        }
+    }, args)))
+}
+
+export default function (args) {
+    return new Function('args', template(Object.assign({
+        assignment: function (ai, bi) {
+            return `args.of.data[${ai}] - args.with.data[${bi}]`
+        }
+    }, args)))
+}

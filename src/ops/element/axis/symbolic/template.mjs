@@ -5,12 +5,12 @@ export default function (args) {
     return `
         ${args.global || ''}
         
-        ${loopGeneric(this.axes, RESULT, `
-            const ri = ${indexGeneric(this.axes, RESULT)}
+        ${loopGeneric(this, RESULT, `
+            const ri = ${indexGeneric(this, RESULT)}
             ${args.initialize || ''}
             
-            ${loopGeneric(this.axes, INNER, `
-                const ai = ${indexGeneric(this.axes, INNER)}
+            ${loopGeneric(this, INNER, `
+                const ai = ${indexGeneric(this, INNER)}
                 ${args.operate || ''}
             `)}
             

@@ -1,14 +1,14 @@
-import { innerAssign, resultAssign } from '../utils'
+import { innerAssign, resultAssign, litindex } from '../utils'
 
 export default function (args) {
     return `
         ${args.global || ''}
         
-        ${resultAssign.call(this, function (ri, rg) {
+        ${resultAssign(this, function (i) {
             return `
                 ${args.initialize || ''}  
                 ${args.reducer(innerAssign.call(this, args.mapper, rg))}
-                args.result.data[${ri}] = ${args.assign}
+                args.result.data[${litindex(this, RESULT, i)}] = ${args.assign}
             `
         })}
         

@@ -6,3 +6,5 @@ export const AXIS_RESULT_CHARACTER = 'o'
 
 export const RESULT = 'result'
 export const INNER = 'of'
+export const WITH = 'with'
+export const OF = 'of'

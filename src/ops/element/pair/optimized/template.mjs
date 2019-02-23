@@ -1,14 +1,16 @@
-import { indexify } from '../utils'
+import { litindex } from '../utils'
+import { RESULT, OF, WITH } from '../../../../contants'
 
 export default function (args) {
     return `
-        ${new Array(args.size).fill(null).map(function (_, i) {
-            const ai = indexify.call(args.of, i)
-            const bi = indexify.call(args.with, i)
-            const ri = indexify.call(args.result, i)
-
-            return `args.result.data[${ri}] = ${args.assignment(ai, bi)}`
-        }).join('\n')}
+        ${resultAssign(this, function (i) {
+            return `
+                args.result.data[${litindex(this, RESULT, i)}] = ${args.assignment(
+                    litindex(this, OF, i),
+                    litindex(this, WITH, i)
+                )}
+            `
+        })}
 
         return args.result
     `
