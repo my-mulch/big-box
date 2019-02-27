@@ -1,34 +1,8 @@
 import template from './template'
 
-export default function (args) {
-    return new Function('args', template(Object.assign({
-        assignment: function (ai, bi) {
-            return `args.of.data[${ai}] + args.with.data[${bi}]`
-        }
-    }, args)))
-}
+const genericReducer = function (operation) { return function (ae, be) { return `${ae}${operation}${be}` } }
 
-export default function (args) {
-    return new Function('args', template(Object.assign({
-        assignment: function (ai, bi) {
-            return `args.of.data[${ai}] / args.with.data[${bi}]`
-        }
-    }, args)))
-}
-
-
-export default function (args) {
-    return new Function('args', template(Object.assign({
-        assignment: function (ai, bi) {
-            return `args.of.data[${ai}] * args.with.data[${bi}]`
-        }
-    }, args)))
-}
-
-export default function (args) {
-    return new Function('args', template(Object.assign({
-        assignment: function (ai, bi) {
-            return `args.of.data[${ai}] - args.with.data[${bi}]`
-        }
-    }, args)))
-}
+export const add = function (args) { return new Function('args', template.call(args, { reducer: genericReducer('+') })) }
+export const sub = function (args) { return new Function('args', template.call(args, { reducer: genericReducer('-') })) }
+export const mul = function (args) { return new Function('args', template.call(args, { reducer: genericReducer('*') })) }
+export const div = function (args) { return new Function('args', template.call(args, { reducer: genericReducer('/') })) }

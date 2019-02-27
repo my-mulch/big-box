@@ -1,4 +1,10 @@
 
+Math.add = function (a, b) { return a + b }
+Math.sub = function (a, b) { return a - b }
+Math.div = function (a, b) { return a / b }
+Math.mul = function (a, b) { return a * b }
+export const Math = Math
+
 export const shape = function getShape(A, shape = []) {
     if (A.constructor === Number) return shape
     if (A.constructor !== Array) return shape.concat(A.header.shape)

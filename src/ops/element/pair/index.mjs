@@ -1,16 +1,24 @@
 import radley from 'radley'
 
-import genericMethods from './generic'
-import optimalMethods from './optimized'
+import symbolic from './symbolic'
+import optimized from './optimized'
 
 export default radley.suite({
-    generic: {
-        criteria: 'args.result.header.size > 500',
-        methods: genericMethods
+    add: {
+        'args.with.header.size <= 40': optimized.add,
+        'args.with.header.size > 40': symbolic.add
     },
-    optimized: {
-        criteria: 'args.result.header.size <= 500',
-        methods: optimalMethods
+    subtract: {
+        'args.with.header.size <= 40': optimized.subtract,
+        'args.with.header.size > 40': symbolic.subtract
     },
-    hash: ['args.of.header.id', 'args.with.header.id', 'args.result.header.id']
+    multiply: {
+        'args.with.header.size <= 40': optimized.multiply,
+        'args.with.header.size > 40': symbolic.multiply
+    },
+    divide: {
+        'args.with.header.size <= 40': optimized.divide,
+        'args.with.header.size > 40': symbolic.divide
+    },
+    hash: ['args.of.header.id', 'args.result.header.id']
 })

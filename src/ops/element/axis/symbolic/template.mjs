@@ -1,16 +1,16 @@
-import { indexGeneric, loopGeneric } from '../utils'
+import { symloops, symindex } from '../utils'
 import { RESULT, INNER } from '../../../../contants'
 
 export default function (args) {
     return `
         ${args.global || ''}
         
-        ${loopGeneric(this, RESULT, `
-            const ri = ${indexGeneric(this, RESULT)}
+        ${symloops.call(this, RESULT, `
+            const ri = ${symindex.call(this, RESULT)}
             ${args.initialize || ''}
             
-            ${loopGeneric(this, INNER, `
-                const ai = ${indexGeneric(this, INNER)}
+            ${symloops.call(this, INNER, `
+                const ai = ${symindex.call(this, INNER)}
                 ${args.operate || ''}
             `)}
             

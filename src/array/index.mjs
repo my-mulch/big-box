@@ -1,15 +1,24 @@
-import { assign, add, multiply, subtract, divide, min, max, noop, axisSuite, pairSuite, round } from '../ops/element'
-import { matMultSuite, invSuite, crossProduct } from '../ops/linalg'
+import { AXIS_INNER_CHARACTER, DIVIDE, MULTIPLY, SUBTRACT, ADD, ROUND, MIN, MAX, DEFAULT, ASSIGN } from '../../contants'
+
+import axisSuite from '../ops/element/axis'
+import pairSuite from '../ops/element/pair'
+
+import invSuite from '../ops/linalg/inverse'
+import matMultSuite from '../ops/linalg/matmult'
+import crossProdSuite from '../ops/linalg/cross'
+
 import { randint } from '../ops/probability'
 
-import { shape, stringify } from '../array/utils'
+import { shape, stringify, Math } from '../array/utils'
 import util from 'util' // node's
 import Header from './header'
 
 
 export default class MultiDimArray {
 
-    constructor({ header, type, init = function () { return new this.type(this.header.size) } }) {
+    constructor({ header, type, init = function () {
+        return new this.type(this.header.size)
+    } }) {
         this.header = header
         this.type = type || Float64Array
         this.data = init.call(this)
@@ -42,18 +51,14 @@ export default class MultiDimArray {
         return new MultiDimArray({
             type: args.type,
             header: new Header({ shape: args.shape }),
-            init: function () {
-                return new this.type(this.header.size).fill(1)
-            }
+            init: function () { return new this.type(this.header.size).fill(1) }
         })
     }
 
     static arange(args) {
         return new MultiDimArray({
             type: args.type,
-            header: new Header({
-                shape: [Math.ceil((args.stop - (args.start || 0)) / (args.step || 1))]
-            }),
+            header: new Header({ shape: [Math.ceil((args.stop - (args.start || 0)) / (args.step || 1))] }),
             init: function () {
                 const data = new this.type(this.header.size)
 
@@ -84,22 +89,19 @@ export default class MultiDimArray {
         return matMultSuite.call({
             of: MultiDimArray.array({ from: args.of }),
             with: MultiDimArray.array({ from: args.with }),
+            method: DEFAULT,
             result: args.result || new MultiDimArray({
                 type: args.type,
-                header: new Header({
-                    shape: [
-                        args.of.header.shape[0],
-                        args.with.header.shape[1]
-                    ]
-                })
+                header: new Header({ shape: [args.of.header.shape[0], args.with.header.shape[1]] })
             })
         })
     }
 
     static cross(args) {
-        return crossProduct({
+        return crossProdSuite.call({
             of: MultiDimArray.array({ from: args.of }),
             with: MultiDimArray.array({ from: args.with }),
+            method: DEFAULT,
             result: args.result || new MultiDimArray({
                 type: args.type,
                 header: new Header({ shape: [3] })
@@ -110,6 +112,7 @@ export default class MultiDimArray {
     static inv(args) {
         return invSuite.call({
             of: MultiDimArray.array({ from: args.of }),
+            method: DEFAULT,
             result: args.result || this.eye({ shape: args.of.header.shape })
         })
     }
@@ -120,8 +123,8 @@ export default class MultiDimArray {
             header: new Header({ shape: args.shape }),
             init: function () {
                 const data = new this.type(this.header.size)
-                const diagonal = this.header.strides.reduce(add)
-                const numDiags = this.header.shape.reduce(min)
+                const diagonal = this.header.strides.reduce(Math.add)
+                const numDiags = this.header.shape.reduce(Math.min)
 
                 for (let i = 0; i < numDiags * diagonal; i += diagonal)
                     data[i] = 1
@@ -135,18 +138,15 @@ export default class MultiDimArray {
         return new MultiDimArray({
             type: this.type,
             header: this.header,
-            init: function () {
-                return old.data.slice()
-            }
+            init: function () { return old.data.slice() }
         })
     }
 
     max(args) {
         return axisSuite.call({
             of: this,
-            reducer: max,
-            mapper: noop,
             axes: args.axes,
+            method: MAX,
             result: args.result || new MultiDimArray({
                 type: this.type,
                 header: this.header.axisSlice(args.axes)
@@ -157,9 +157,8 @@ export default class MultiDimArray {
     min(args) {
         return axisSuite.call({
             of: this,
-            reducer: min,
-            mapper: noop,
             axes: args.axes,
+            method: MIN,
             result: args.result || new MultiDimArray({
                 type: this.type,
                 header: this.header.axisSlice(args.axes)
@@ -170,9 +169,8 @@ export default class MultiDimArray {
     round(args) {
         return axisSuite.call({
             of: this,
-            reducer: noop,
-            mapper: round.bind(null, args.precision),
-            axes: [[], this.header.indices],
+            axes: AXIS_INNER_CHARACTER.repeat(this.header.shape.length),
+            method: ROUND,
             result: args.result || new MultiDimArray({
                 type: this.type,
                 header: new Header({ shape: this.header.shape })
@@ -184,7 +182,7 @@ export default class MultiDimArray {
         return pairSuite.call({
             of: this,
             with: MultiDimArray.array({ from: args.with }),
-            reducer: add,
+            method: ADD,
             result: args.result || new MultiDimArray({
                 type: this.type,
                 header: new Header({ shape: this.header.shape })
@@ -196,7 +194,7 @@ export default class MultiDimArray {
         return pairSuite.call({
             of: this,
             with: MultiDimArray.array({ from: args.with }),
-            reducer: subtract,
+            method: SUBTRACT,
             result: args.result || new MultiDimArray({
                 type: this.type,
                 header: new Header({ shape: this.header.shape })
@@ -208,7 +206,7 @@ export default class MultiDimArray {
         return pairSuite.call({
             of: this,
             with: MultiDimArray.array({ from: args.with }),
-            reducer: multiply,
+            method: MULTIPLY,
             result: args.result || new MultiDimArray({
                 type: this.type,
                 header: new Header({ shape: this.header.shape })
@@ -220,7 +218,7 @@ export default class MultiDimArray {
         return pairSuite.call({
             of: this,
             with: MultiDimArray.array({ from: args.with }),
-            reducer: divide,
+            method: DIVIDE,
             result: args.result || new MultiDimArray({
                 type: this.type,
                 header: new Header({ shape: this.header.shape })
@@ -228,28 +226,9 @@ export default class MultiDimArray {
         })
     }
 
-    dot(args) {
-        return MultiDimArray.dot({
-            of: this,
-            with: args.with,
-            result: args.result
-        })
-    }
-
-    cross(args) {
-        return MultiDimArray.cross({
-            of: this,
-            with: args.with,
-            result: args.result
-        })
-    }
-
-    inv(args) {
-        return MultiDimArray.inv({
-            of: this,
-            result: args.result
-        })
-    }
+    dot(args) { return MultiDimArray.dot({ of: this, with: args.with, result: args.result }) }
+    cross(args) { return MultiDimArray.cross({ of: this, with: args.with, result: args.result }) }
+    inv(args) { return MultiDimArray.inv({ of: this, result: args.result }) }
 
     slice(args, old = this) {
         return new MultiDimArray({
@@ -271,9 +250,8 @@ export default class MultiDimArray {
         if (!this.header.contig)
             return axisSuite.call({
                 of: this,
-                reducer: noop,
-                mapper: noop,
-                axes: [[], this.header.indices],
+                axes: AXIS_INNER_CHARACTER.repeat(this.header.shape.length),
+                method: ASSIGN,
                 result: new MultiDimArray({
                     type: this.type,
                     header: new Header({ shape: args.shape }),
@@ -292,7 +270,7 @@ export default class MultiDimArray {
         return pairSuite.call({
             of: this,
             with: MultiDimArray.array({ from: args.to }),
-            reducer: assign,
+            method: ASSIGN,
             result: this
         })
     }

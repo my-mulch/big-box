@@ -1,17 +1,17 @@
-import { innerAssign, resultAssign, litindex } from '../utils'
+import { litassign, inassign } from '../utils'
 
 export default function (args) {
     return `
         ${args.global || ''}
         
-        ${resultAssign(this, function (i) {
+        ${litassign.call(this.result, function (ri, rg) {
             return `
-                ${args.initialize || ''}  
-                ${args.reducer(innerAssign.call(this, args.mapper, rg))}
-                args.result.data[${litindex(this, RESULT, i)}] = ${args.assign}
+                ${args.initialize || ''}
+                ${args.reducer(inassign.call(this, args.mapper, rg))}
+                args.result.data[${ri}] = ${args.assign}
             `
         })}
-        
+            
         return args.result
     `
 }

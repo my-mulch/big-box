@@ -1,0 +1,21 @@
+export const SLICE_CHARACTER = ':'
+
+export const AXIS_INNER_KEEP_CHARACTER = '#'
+export const AXIS_INNER_CHARACTER = 'X'
+export const AXIS_RESULT_CHARACTER = 'o'
+
+export const RESULT = 'result'
+export const INNER = 'of'
+export const WITH = 'with'
+export const OF = 'of'
+
+export const MAX = 'max'
+export const MIN = 'min'
+export const ADD = 'add'
+export const ROUND = 'round'
+export const ASSIGN = 'assign'
+export const DIVIDE = 'divide'
+export const DEFAULT = 'default'
+export const SUBTRACT = 'subtract'
+export const MULTIPLY = 'multiply'
+export const IDENTITY = 'identity'

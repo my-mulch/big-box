@@ -1,6 +1,7 @@
 import { multiply } from '../../ops/element'
-import { SLICE_CHARACTER } from '../../contants'
+import { SLICE_CHARACTER, AXIS_INNER_CHARACTER } from '../../contants'
 import { getStrides, isContiguousSlice, resolveReshape } from './utils'
+
 
 export default class Header {
 
@@ -62,9 +63,10 @@ export default class Header {
 
     axisSlice(axes) {
         return new Header({
-            shape: axes[1].map((function (axis) {
-                return this.shape[axis]
-            }).bind(this))
+            shape: axes
+                .map(function (axis, i) { return axis === AXIS_INNER_CHARACTER ? i : false })
+                .filter(function (element) { return !!element })
+                .map(function (keepAxis) { return this.shape[keepAxis] }, this)
         })
     }
 

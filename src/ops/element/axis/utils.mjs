@@ -1,4 +1,4 @@
-import { AXIS_INNER_KEEP_CHARACTER, AXIS_INNER_CHARACTER, AXIS_RESULT_CHARACTER, RESULT, INNER } from '../../../../contants'
+import { AXIS_INNER_KEEP_CHARACTER, AXIS_INNER_CHARACTER, AXIS_RESULT_CHARACTER, INNER } from '../../../../contants'
 
 
 const truthy = function () { return true }
@@ -15,13 +15,13 @@ const innerIndexMapper = function (i) { return i }
 
 /** ------------------------------------------------- GENERIC SUITE UTILITY METHODS ------------------------------------------------- */
 
-export const indexGeneric = function (axes, array) {
+export const symindex = function (axes, array) {
     const axesNumeric = aslice(axes, array === INNER ? innerIndexMapper : resultIndexMapper)
 
     return `args.${array}.header.offset + ` + axesNumeric.map(index(array))
 }
 
-export const loopGeneric = function (axes, array, body) {
+export const symloops = function (axes, array, body) {
     const axesNumeric = aslice(axes, array === INNER ? innerLoopMapper : resultLoopMapper)
 
     return `${axesNumeric.map(loop)} ${body} ${'}'.repeat(axesNumeric.length)}`
@@ -34,7 +34,7 @@ export const loopGeneric = function (axes, array, body) {
 
 /** ------------------------------------------------- OPTIMIZED SUITE UTILITY METHODS ------------------------------------------------- */
 
-export const resultAssign = function (callback) {
+export const litassign = function (callback) {
     return new Array(this.result.header.size).fill(null).map(function (_, index) {
         const axisNumeric = aslice(this.axes, resultIndexMapper)
         const rg = axisNumeric.reduce(resultIndexLiteral.call(this.of, index), this.of.header.offset)
