@@ -1,35 +1,35 @@
-import { AXIS_INNER_KEEP_CHARACTER, AXIS_INNER_CHARACTER, AXIS_RESULT_CHARACTER, INNER } from '../../../../contants'
+import { AXIS_INNER_CHARACTER } from '../../../../contants'
 
+export const loop = function (array) {
+    return function (i, j) {
+        return `for(let a${i} = 0; a${i} < args.${array}.header.shape[${i}]; a${i}++){`
+    }
+}
 
-const truthy = function () { return true }
+export const index = function (array) {
+    return function (i, j) {
+        return `a${i} * args.${array}.header.strides[${j}]`
+    }
+}
 
-const aslice = function (axes, match) { return Array.from(axes).map(match).filter(truthy) }
-const loop = function (i) { return `for(let a${i} = 0; a${i} < args.of.header.shape[${i}]; a${i}++){` }
-const index = function (array) { return function (i, j) { return `a${i} * args.${array}.header.strides[${j}]` } }
+export const split = function (axes) {
+    const raxes = [], iaxes = [], aaxes = [...axes.keys()]
 
-const resultLoopMapper = function (axis, i) { if (axis === AXIS_RESULT_CHARACTER || axis === AXIS_INNER_KEEP_CHARACTER) return i }
-const innerLoopMapper = function (axis, i) { if (axis === AXIS_INNER_CHARACTER || axis === AXIS_INNER_KEEP_CHARACTER) return i }
-const resultIndexMapper = function (axis, i) { if (axis === AXIS_RESULT_CHARACTER || axis === AXIS_INNER_KEEP_CHARACTER) return i }
-const innerIndexMapper = function (i) { return i }
+    for (let i = 0; i < axes.length; i++)
+        axes[i] === AXIS_INNER_CHARACTER ? iaxes.push(i) : raxes.push(i)
 
-
-/** ------------------------------------------------- GENERIC SUITE UTILITY METHODS ------------------------------------------------- */
+    return [raxes, iaxes, aaxes]
+}
 
 export const symindex = function (axes, array) {
-    const axesNumeric = aslice(axes, array === INNER ? innerIndexMapper : resultIndexMapper)
-
-    return `args.${array}.header.offset + ` + axesNumeric.map(index(array))
+    return `args.${array}.header.offset + ${axes.map(index(array)).join(' + ')}`
 }
 
 export const symloops = function (axes, array, body) {
-    const axesNumeric = aslice(axes, array === INNER ? innerLoopMapper : resultLoopMapper)
-
-    return `${axesNumeric.map(loop)} ${body} ${'}'.repeat(axesNumeric.length)}`
+    return `${axes.map(loop(array)).join('\n')} 
+                ${body} 
+            ${'}'.repeat(axes.length)}`
 }
-
-/** ------------------------------------------------- GENERIC SUITE UTILITY METHODS ------------------------------------------------- */
-
-
 
 
 /** ------------------------------------------------- OPTIMIZED SUITE UTILITY METHODS ------------------------------------------------- */
