@@ -4,7 +4,7 @@ export default function (args) {
     return `
         ${args.global || ''}
         
-        ${litassign.call(this.result, function (ri, rg) {
+        ${litassign.call(this, function (ri, rg) {
             return `
                 ${args.initialize || ''}
                 ${args.reducer(inassign.call(this, args.mapper, rg))}

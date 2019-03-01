@@ -44,7 +44,7 @@ export const litassign = function (callback) {
     }, this)
 }
 
-export const innerAssign = function (callback, rg) {
+export const inassign = function (callback, rg) {
     return new Array(this.of.header.size / this.result.header.size).fill(null).map(function (_, index) {
         const axisNumeric = aslice(this.axes, innerIndexMapper)
         const ai = axisNumeric.reduce(resultIndexLiteral.call(this.of, index), rg)

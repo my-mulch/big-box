@@ -1,13 +1,12 @@
-import { litassign, litindex } from './utils'
+import { litassign } from './utils'
 
 export default function (args) {
     return `
-        ${litassign.call(this.result, function (i) {
-            const ai = litindex.call(this.of, i)
-            const bi = litindex.call(this.with, i)
-            const ri = litindex.call(this.result, i)
+        ${litassign.call(this, function (ai, bi, ri) {
+            const ae = `args.of.data[${ai}]`
+            const be = `args.with.data[${bi}]`
 
-            return `args.result.data[${ri}] = ${args.reducer(`args.of.data[${ai}]`, `args.with.data[${bi}]`)}`
+            return `args.result.data[${ri}] = ${args.reducer(ae, be)}`
         })}
         
         return args.result
