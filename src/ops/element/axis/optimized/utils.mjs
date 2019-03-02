@@ -1,29 +1,40 @@
 
 export const litassign = function (callback) {
-    return new Array(this.result.header.size).fill(null).map(function (_, index) {
-        const axisNumeric = aslice(this.axes, resultIndexMapper)
-        const rg = axisNumeric.reduce(resultIndexLiteral.call(this.of, index), this.of.header.offset)
-        const ri = axisNumeric.reduce(resultIndexLiteral.call(this.result, index), this.result.header.offset)
+    const [raxes, ..._] = split(args.axes)
+    const rinds = [...raxes.keys()]
 
-        return callback(ri, rg)
-    }, this)
+    return new Array(this.result.header.size)
+        .fill(null)
+        .map(function (_, index) {
+
+            return callback(
+                rinds.reduce(flatindex.call(this.result, index), this.result.header.offset),
+                raxes.reduce(flatindex.call(this.of, index), this.of.header.offset)
+            )
+
+        }, this)
 }
 
 export const inassign = function (callback, rg) {
-    return new Array(this.of.header.size / this.result.header.size).fill(null).map(function (_, index) {
-        const axisNumeric = aslice(this.axes, innerIndexMapper)
-        const ai = axisNumeric.reduce(resultIndexLiteral.call(this.of, index), rg)
+    const [_, iaxes, __] = split(args.axes)
 
-        return callback(`args.of.data[${ai}]`)
-    }, this)
+    return new Array(this.of.header.size / this.result.header.size)
+        .fill(null)
+        .map(function (_, index) {
+
+            return callback(`args.of.data[${
+                iaxes.reduce(flatindex.call(this.of, index), rg)
+            }]`)
+
+        }, this)
 }
 
-const resultIndexLiteral = function (index, array) {
+const flatindex = function (index) {
     return function (resultIndex, axis) {
         return resultIndex +
-            Math.floor(index / array.header.strides[axis]) %
-            array.header.shape[axis] *
-            array.header.strides[axis]
+            Math.floor(index / this.header.strides[axis]) %
+            this.header.shape[axis] *
+            this.header.strides[axis]
     }
 }
 
