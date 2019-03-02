@@ -1,19 +1,19 @@
-import { symloops, symindex, split } from '../utils'
-import { RESULT, INNER } from '../../../../contants'
+import { symloops, symindex, split } from '../../utils'
+import { RESULT, INNER } from '../../../../../resources'
 
 export default function (args) {
     const [raxes, iaxes, aaxes] = split(args.axes)
 
     return `
-        ${args.global || ''}
+        ${args.global}
         
         ${symloops(raxes, RESULT, `
             const ri = ${symindex(raxes, RESULT)}
-            ${args.initialize || ''}
+            ${args.init}
             
             ${symloops(iaxes, INNER, `
                 const ai = ${symindex(aaxes, INNER)}
-                ${args.reducer || ''}
+                ${args.reduce}
             `)}
             
             args.result.data[ri] = ${args.assign}
