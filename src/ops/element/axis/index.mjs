@@ -32,7 +32,9 @@ export default radley.suite({
         'args.of.header.size / args.result.header.size <= 40': optimized.prod,
         'args.of.header.size / args.result.header.size > 40': symbolic.prod
     },
-    round: { 'true': symbolic.round },
+    round: {
+        'true': symbolic.round
+    },
     sum: {
         'args.of.header.size / args.result.header.size <= 40': optimized.sum,
         'args.of.header.size / args.result.header.size > 40': symbolic.sum

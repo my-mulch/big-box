@@ -15,17 +15,3 @@ export const symindex = function (array) {
         .map(function (_, i) { return `i${broadcastingDelta + i} * args.${array}.header.strides[${i}]` })
         .join('+') || 0
 }
-
-const litindex = function (index) {
-    let resultIndex = this.header.offset
-
-    for (let j = 0; j < this.header.shape; j++)
-        resultIndex += Math.floor(index / this.header.strides[j]) % this.header.shape[j] * this.header.strides[j]
-
-    return resultIndex
-}
-
-export const litassign = function (callback) {
-
-}
-
