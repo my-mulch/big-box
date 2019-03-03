@@ -13,7 +13,7 @@ export default function (args) {
                 [baxes, this.with, 0], /** bi */
                 [raxes, this.result, 0] /** ci */
             ],
-            map: function(ai, bi, ri){
+            map: function (ai, bi, ri) {
                 return `args.result.data[${ri}] = ${args.reduce(`args.of.data[${ai}]`, `args.with.data[${bi}]`)}`
             }
         })}

@@ -1,24 +1,26 @@
 import radley from 'radley'
 
-import symbolic from './symbolic'
-import optimized from './optimized'
+import symbolic from './symbolic/template'
+import optimized from './optimized/template'
+
+import PairSuiteFactory from './factory'
 
 export default radley.suite({
     add: {
-        'args.with.header.size <= 40': optimized.add,
-        'args.with.header.size > 40': symbolic.add
+        'args.with.header.size <= 40': PairSuiteFactory.call(null, '+', optimized),
+        'args.with.header.size > 40': PairSuiteFactory.call(null, '+', symbolic)
     },
     subtract: {
-        'args.with.header.size <= 40': optimized.subtract,
-        'args.with.header.size > 40': symbolic.subtract
+        'args.with.header.size <= 40': PairSuiteFactory.call(null, '-', optimized),
+        'args.with.header.size > 40': PairSuiteFactory.call(null, '-', symbolic)
     },
     multiply: {
-        'args.with.header.size <= 40': optimized.multiply,
-        'args.with.header.size > 40': symbolic.multiply
+        'args.with.header.size <= 40': PairSuiteFactory.call(null, '*', optimized),
+        'args.with.header.size > 40': PairSuiteFactory.call(null, '*', symbolic)
     },
     divide: {
-        'args.with.header.size <= 40': optimized.divide,
-        'args.with.header.size > 40': symbolic.divide
+        'args.with.header.size <= 40': PairSuiteFactory.call(null, '/', optimized),
+        'args.with.header.size > 40': PairSuiteFactory.call(null, '/', symbolic)
     },
     hash: ['args.of.header.id', 'args.result.header.id']
 })
