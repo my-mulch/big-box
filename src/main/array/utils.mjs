@@ -1,9 +1,10 @@
 
 Math.add = function (a, b) { return a + b }
-Math.sub = function (a, b) { return a - b }
-Math.div = function (a, b) { return a / b }
-Math.mul = function (a, b) { return a * b }
-export const Math = Math
+Math.subtract = function (a, b) { return a - b }
+Math.divide = function (a, b) { return a / b }
+Math.multiply = function (a, b) { return a * b }
+
+export const __Math__ = Math
 
 export const shape = function getShape(A, shape = []) {
     if (A.constructor === Number) return shape

@@ -9,5 +9,3 @@ creation.call()
 linalg.call()
 element.call()
 indexing.call()
-
-

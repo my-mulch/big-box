@@ -1,5 +1,4 @@
-import nd from '../../array'
-import jest from '../engine'
+import nd from '../../main/array'
 
 function matMult(A, B, R) {
     R.data[0] = A.data[0] * B.data[0] + A.data[1] * B.data[4] + A.data[2] * B.data[8] + A.data[3] * B.data[12]

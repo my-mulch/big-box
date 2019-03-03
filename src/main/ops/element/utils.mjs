@@ -1,4 +1,4 @@
-import { AXIS_INNER_CHARACTER } from '../../../../contants'
+import { AXIS_INNER_CHARACTER } from '../../../resources'
 
 export const split = function (axes) {
     const raxes = [], iaxes = [], aaxes = [...axes.keys()]
@@ -23,17 +23,15 @@ export const flatindex = function (axes, array, initial, index) {
     return resultindex
 }
 
-export const toflatindex = function ([axes, array, initial]) {
-    return flatindex(axes, array, initial, i)
-}
-
-export const litassign = function (options) {
-    const assignments = new Array(options.size)
+export const litassign = function (metaassigns) {
+    const assignments = new Array(metaassigns.count)
 
     for (let i = 0; i < assignments.length; i++)
-        assignments[i] = options.assignment(...options.indices.map(toflatindex))
+        assignments[i] = metaassigns.map(...metaassigns.metaindices.map(function (metaindex) {
+            return flatindex(...metaindex, i)
+        }))
 
-    return assignments
+    return metaassigns.reduce ? metaassigns.reduce(assignments) : assignments.join('\n')
 }
 
 
@@ -58,6 +56,3 @@ export const symloops = function (axes, array, body) {
                 ${body} 
             ${'}'.repeat(axes.length)}`
 }
-
-
-

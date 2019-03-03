@@ -1,4 +1,4 @@
-import { symloops, symindex } from './utils'
+import { symloops, symindex } from '../../utils'
 
 export default function (args) {
     const aaxes = [...this.of.header.shape.keys()]

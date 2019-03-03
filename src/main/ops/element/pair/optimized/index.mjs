@@ -1,12 +1,17 @@
 import template from './template'
 
 const genericOperation = function (operation) {
-    return new Function('args', template.call(args, {
-        reducer: function (ae, be) { return `${ae}${operation}${be}` }
-    }))
+    return function (args) {
+        return new Function('args', template.call(args, {
+            reduce: function (ae, be) { return `${ae}${operation}${be}` }
+        }))
+    }
 }
 
-export const add = genericOperation('+')
-export const sub = genericOperation('-')
-export const mul = genericOperation('*')
-export const div = genericOperation('/')
+
+export default {
+    add: genericOperation('+'),
+    subtract: genericOperation('-'),
+    multiply: genericOperation('*'),
+    divide: genericOperation('/')
+}

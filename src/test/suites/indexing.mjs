@@ -1,4 +1,4 @@
-import nd from '../../array'
+import nd from '../../main/array'
 import jest from '../engine'
 
 export default function () {

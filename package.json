@@ -2,7 +2,7 @@
     "name": "multi-dim",
     "version": "6.4.1",
     "description": "A suite of methods to manipulate MDA",
-    "main": "src/array/index.mjs",
+    "main": "src/main/array",
     "scripts": {
         "test": "node --experimental-modules src/test"
     },
@@ -17,6 +17,6 @@
     },
     "homepage": "https://github.com/trumanpurnell/dimsum#readme",
     "dependencies": {
-        "radley": "^4.0.1"
+        "radley": "^6.0.0"
     }
 }

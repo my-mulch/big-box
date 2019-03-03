@@ -1,4 +1,3 @@
-import { multiply } from '../../ops/element'
 
 export const isContiguousSlice = function (index) {
     let lastSeenSLice = -1
@@ -28,7 +27,7 @@ export const getStrides = function (shape, startStride) {
 
 export const resolveReshape = function (shape, size) {
     const reshape = new Array(shape.length)
-    const product = shape.reduce(multiply)
+    const product = shape.reduce(function (a, b) { a * b })
 
     for (let i = 0; i < shape.length; i++)
         reshape[i] = shape[i] < 0 ? -size / product : shape[i]

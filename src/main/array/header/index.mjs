@@ -1,19 +1,18 @@
-import { multiply } from '../../ops/element'
-import { SLICE_CHARACTER, AXIS_INNER_CHARACTER } from '../../contants'
+import { SLICE_CHARACTER, AXIS_INNER_CHARACTER, SHAPE, OFFSET, CONTIG, STRIDES } from '../../../resources'
 import { getStrides, isContiguousSlice, resolveReshape } from './utils'
-
+import { __Math__ } from '../utils'
 
 export default class Header {
 
     constructor(opts) {
-        this.shape = 'shape' in opts ? opts.shape : []
-        this.offset = 'offset' in opts ? opts.offset : 0
-        this.contig = 'contig' in opts ? opts.contig : true
-        this.strides = 'strides' in opts ? opts.strides : getStrides(this.shape)
+        this.shape = SHAPE in opts ? opts.shape : []
+        this.offset = OFFSET in opts ? opts.offset : 0
+        this.contig = CONTIG in opts ? opts.contig : true
+        this.strides = STRIDES in opts ? opts.strides : getStrides(this.shape)
 
         this.id = `${this.shape}|${this.strides}|${this.offset}`
         this.indices = [...this.shape.keys()]
-        this.size = this.shape.reduce(multiply, 1)
+        this.size = this.shape.reduce(__Math__.multiply, 1)
         this.lastStride = this.strides[this.strides.length - 1]
     }
 
@@ -63,10 +62,9 @@ export default class Header {
 
     axisSlice(axes) {
         return new Header({
-            shape: axes
-                .map(function (axis, i) { return axis === AXIS_INNER_CHARACTER ? i : false })
-                .filter(function (element) { return !!element })
-                .map(function (keepAxis) { return this.shape[keepAxis] }, this)
+            shape: Array.from(axes).filter(function (axis) {
+                return axis !== AXIS_INNER_CHARACTER
+            })
         })
     }
 

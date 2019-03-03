@@ -1,8 +1,8 @@
 export const SLICE_CHARACTER = ':'
 
-export const AXIS_INNER_KEEP_CHARACTER = '#'
-export const AXIS_INNER_CHARACTER = 'X'
-export const AXIS_RESULT_CHARACTER = 'o'
+export const AXIS_INNER_KEEP_CHARACTER = '^'
+export const AXIS_INNER_CHARACTER = '-'
+export const AXIS_RESULT_CHARACTER = '*'
 
 export const RESULT = 'result'
 export const INNER = 'of'
@@ -19,3 +19,8 @@ export const DEFAULT = 'default'
 export const SUBTRACT = 'subtract'
 export const MULTIPLY = 'multiply'
 export const IDENTITY = 'identity'
+
+export const SHAPE = 'shape'
+export const OFFSET = 'offset'
+export const CONTIG = 'contig'
+export const STRIDES = 'strides'

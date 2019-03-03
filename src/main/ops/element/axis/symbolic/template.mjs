@@ -2,7 +2,7 @@ import { symloops, symindex, split } from '../../utils'
 import { RESULT, INNER } from '../../../../../resources'
 
 export default function (args) {
-    const [raxes, iaxes, aaxes] = split(args.axes)
+    const [raxes, iaxes, aaxes] = split(Array.from(this.axes))
 
     return `
         ${args.global}

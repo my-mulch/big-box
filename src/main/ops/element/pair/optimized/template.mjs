@@ -1,4 +1,4 @@
-import { litassign } from './utils'
+import { litassign } from '../../utils'
 
 export default function (args) {
     const aaxes = [...this.of.header.shape.keys()]
@@ -8,12 +8,12 @@ export default function (args) {
     return `
         ${litassign({
             count: this.result.header.size,
-            indices: [
+            metaindices: [
                 [aaxes, this.of, 0], /** ai */
                 [baxes, this.with, 0], /** bi */
                 [raxes, this.result, 0] /** ci */
             ],
-            assignment: function(ai, bi, ri){
+            map: function(ai, bi, ri){
                 return `args.result.data[${ri}] = ${args.reduce(`args.of.data[${ai}]`, `args.with.data[${bi}]`)}`
             }
         })}

@@ -1,4 +1,4 @@
-import { AXIS_INNER_CHARACTER, DIVIDE, MULTIPLY, SUBTRACT, ADD, ROUND, MIN, MAX, DEFAULT, ASSIGN } from '../../contants'
+import { AXIS_RESULT_CHARACTER, DIVIDE, MULTIPLY, SUBTRACT, ADD, ROUND, MIN, MAX, DEFAULT, ASSIGN } from '../../resources'
 
 import axisSuite from '../ops/element/axis'
 import pairSuite from '../ops/element/pair'
@@ -9,7 +9,7 @@ import crossProdSuite from '../ops/linalg/cross'
 
 import { randint } from '../ops/probability'
 
-import { shape, stringify, Math } from '../array/utils'
+import { shape, stringify, __Math__ } from '../array/utils'
 import util from 'util' // node's
 import Header from './header'
 
@@ -58,7 +58,7 @@ export default class MultiDimArray {
     static arange(args) {
         return new MultiDimArray({
             type: args.type,
-            header: new Header({ shape: [Math.ceil((args.stop - (args.start || 0)) / (args.step || 1))] }),
+            header: new Header({ shape: [__Math__.ceil((args.stop - (args.start || 0)) / (args.step || 1))] }),
             init: function () {
                 const data = new this.type(this.header.size)
 
@@ -123,8 +123,8 @@ export default class MultiDimArray {
             header: new Header({ shape: args.shape }),
             init: function () {
                 const data = new this.type(this.header.size)
-                const diagonal = this.header.strides.reduce(Math.add)
-                const numDiags = this.header.shape.reduce(Math.min)
+                const diagonal = this.header.strides.reduce(__Math__.add)
+                const numDiags = __Math__.min(...this.header.shape)
 
                 for (let i = 0; i < numDiags * diagonal; i += diagonal)
                     data[i] = 1
@@ -169,8 +169,9 @@ export default class MultiDimArray {
     round(args) {
         return axisSuite.call({
             of: this,
-            axes: AXIS_INNER_CHARACTER.repeat(this.header.shape.length),
+            axes: AXIS_RESULT_CHARACTER.repeat(this.header.shape.length),
             method: ROUND,
+            precision: args.precision,
             result: args.result || new MultiDimArray({
                 type: this.type,
                 header: new Header({ shape: this.header.shape })
