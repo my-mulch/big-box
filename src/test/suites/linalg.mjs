@@ -57,11 +57,11 @@ export default function () {
     jest.expect(nd.inv({ of: D })).toEqual([[-0.5, -0.125, 0.625], [1., 0., -0.5], [0., 0.25, -0.25]])
     jest.expect(nd.inv({ of: nd.array({ from: [[6, 4], [5, 2]] }) })).toEqual([[-0.25, 0.5], [0.625, -0.75]])
 
-    jest.expect(E.slice({ indices: ['1:2', 0, ':'] }).cross({ with: C })).toEqual([19, -170, 107])
+    jest.expect(E.slice({ with: ['1:2', 0, ':'] }).cross({ with: C })).toEqual([19, -170, 107])
 
-    jest.expect(E.slice({ indices: [':', 0, ':'] }).dot({ with: C })).toEqual([[26], [74], [109]])
+    jest.expect(E.slice({ with: [':', 0, ':'] }).dot({ with: C })).toEqual([[26], [74], [109]])
 
-    jest.expect(E.slice({ indices: [':', 0, ':'] }).inv({ result: E.slice({ indices: [':', 0, ':'] }).copy() }).round({ precision: 3 }))
+    jest.expect(E.slice({ with: [':', 0, ':'] }).inv({ result: E.slice({ with: [':', 0, ':'] }).copy() }).round({ precision: 3 }))
         .toEqual([
             [-0.02, 0.013, 0.005],
             [0.116, 0.078, -0.062],

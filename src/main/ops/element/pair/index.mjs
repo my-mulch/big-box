@@ -22,5 +22,9 @@ export default radley.suite({
         'args.with.header.size <= 40': PairSuiteFactory.call(null, '/', optimized),
         'args.with.header.size > 40': PairSuiteFactory.call(null, '/', symbolic)
     },
-    hash: ['args.of.header.id', 'args.result.header.id']
+    assign: {
+        'args.with.header.size <= 40': PairSuiteFactory.call(null, '=', optimized),
+        'args.with.header.size > 40': PairSuiteFactory.call(null, '=', symbolic)
+    },
+    hash: ['args.of.header.id', 'args.with.header.id', 'args.result.header.id']
 })

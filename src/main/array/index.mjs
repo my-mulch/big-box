@@ -234,7 +234,7 @@ export default class MultiDimArray {
     slice(args, old = this) {
         return new MultiDimArray({
             type: this.type,
-            header: this.header.slice(args.indices),
+            header: this.header.slice(args.with),
             init: function () { return old.data }
         })
     }

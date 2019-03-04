@@ -23,29 +23,29 @@ export default function () {
         [21, 2, 2]]]
     })
 
-    jest.expect(A.slice({ indices: [0, 0, 0] })).toEqual(10)
+    jest.expect(A.slice({ with: [0, 0, 0] })).toEqual(10)
 
-    jest.expect(A.slice({ indices: [':', 0, ':'] }))
+    jest.expect(A.slice({ with: [':', 0, ':'] }))
         .toEqual([
             [10, 5, 2],
             [57, 7, 1],
             [90, 2, 5]
         ])
 
-    jest.expect(A.slice({ indices: [':', 0, ':'] }).T())
+    jest.expect(A.slice({ with: [':', 0, ':'] }).T())
         .toEqual([
             [10, 57, 90],
             [5, 7, 2],
             [2, 1, 5]])
 
-    jest.expect(A.slice({ indices: [1, ':3', ':'] }))
+    jest.expect(A.slice({ with: [1, ':3', ':'] }))
         .toEqual([
             [57, 7, 1],
             [44, 2, 2],
             [49, 8, 4]
         ])
 
-    jest.expect(A.slice({ indices: [':', 0, ':'] })
+    jest.expect(A.slice({ with: [':', 0, ':'] })
         .set({ to: 1 }))
         .toEqual([
             [1, 1, 1],
@@ -69,7 +69,7 @@ export default function () {
             [23, 1, 2],
             [21, 2, 2]]])
 
-    jest.expect(A.slice({ indices: [':', 0, ':'] })
+    jest.expect(A.slice({ with: [':', 0, ':'] })
         .set({
             to: [-0.02, 0.013, 0.005]
         }))

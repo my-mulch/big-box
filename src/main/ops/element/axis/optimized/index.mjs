@@ -1,4 +1,5 @@
 import template from './template'
+import { bylines } from '../../utils'
 
 export default {
     argmax: function (args) {
@@ -6,7 +7,7 @@ export default {
             global: 'let argmax, valmax',
             init: 'argmax = 0, valmax = Number.NEGATIVE_INFINITY',
             map: function (item) { return `if(${item} > valmax) valmax = ${item}, argmax = ${i}` },
-            reduce: function (innerItems) { return innerItems.join('\n') },
+            reduce: bylines,
             assign: 'argmax'
         }))
     },
@@ -15,7 +16,7 @@ export default {
             global: 'let argmin, valmin',
             init: 'argmin = 0, valmin = Number.POSITIVE_INFINITY',
             map: function (item) { return `if(${item} > valmin) valmin = ${item}, argmin = ${i}` },
-            reduce: function (innerItems) { return innerItems.join('\n') },
+            reduce: bylines,
             assign: 'argmin'
         }))
     },
@@ -24,7 +25,7 @@ export default {
             global: 'let max',
             init: 'max = Number.NEGATIVE_INFINITY',
             map: function (item) { return `if(${item} > max) max = ${item}` },
-            reduce: function (innerItems) { return innerItems.join('\n') },
+            reduce: bylines,
             assign: 'max'
         }))
     },
@@ -33,7 +34,7 @@ export default {
             global: 'let min',
             init: 'min = Number.POSITIVE_INFINITY',
             map: function (item) { return `if(${item} < min) min = ${item}` },
-            reduce: function (innerItems) { return innerItems.join('\n') },
+            reduce: bylines,
             assign: 'min'
         }))
     },

@@ -1,4 +1,4 @@
-import { litassign, split } from '../../utils'
+import { litassign, split, bylines } from '../../utils'
 
 export default function (args) {
     const [raxes, iaxes, _] = split(Array.from(this.axes))
@@ -13,6 +13,7 @@ export default function (args) {
                 [rinds, this.result, 0], /** ri */
                 [raxes, this.of, 0]  /** rg */
             ],
+            reduce: bylines,
             map: (function (ri, rg) {
                 return `
                     ${args.init}
@@ -20,7 +21,7 @@ export default function (args) {
                     ${litassign({
                         count: this.of.header.size / this.result.header.size,
                         metaindices: [[iaxes, this.of, rg]], /** ai */
-                        map: function(ai) { return args.map(`args.of.data[${ai}]`) },
+                        map: function (ai) { return args.map(`args.of.data[${ai}]`) },
                         reduce: args.reduce
                     })}
 

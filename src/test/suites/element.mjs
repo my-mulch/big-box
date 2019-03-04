@@ -53,9 +53,9 @@ export default function () {
     jest.expect(B.multiply({ with: B })).toEqual([[-46 * -46, 19 * 19], [-38 * -38, 9 * 9], [9 * 9, -15 * -15], [-25 * -25, -33 * -33]])
     jest.expect(B.subtract({ with: B })).toEqual(nd.zeros({ shape: B.header.shape }))
 
-    jest.expect(C.slice({ indices: [':', 0, ':'] }).min({ axes: '--' })).toEqual(1)
+    jest.expect(C.slice({ with: [':', 0, ':'] }).min({ axes: '--' })).toEqual(1)
 
-    jest.expect(C.slice({ indices: [':', 0, ':'] }).divide({ with: C.slice({ indices: [':', 0, ':'] }) }))
+    jest.expect(C.slice({ with: [':', 0, ':'] }).divide({ with: C.slice({ with: [':', 0, ':'] }) }))
         .toEqual([[1, 1, 1], [1, 1, 1], [1, 1, 1]])
 
 

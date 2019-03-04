@@ -1,5 +1,7 @@
 import { AXIS_INNER_CHARACTER } from '../../../resources'
 
+export const bylines = function (items) { return items.join('\n') }
+
 export const split = function (axes) {
     const raxes = [], iaxes = [], aaxes = [...axes.keys()]
 
@@ -11,27 +13,29 @@ export const split = function (axes) {
 
 export const flatindex = function (axes, array, initial, index) {
     let resultindex = initial + array.header.offset
+    let dimensionality = 1
 
-    for (const axis of axes) {
+    for (const axis of axes.slice().reverse()) {
         const base = array.header.shape[axis]
         const place = array.header.strides[axis]
-        const digit = Math.floor(index / place) % base
-
+        const digit = Math.floor(index / dimensionality) % base
+        
+        dimensionality *= base
         resultindex += digit * place
     }
 
     return resultindex
 }
 
-export const litassign = function (metaassigns) {
-    const assignments = new Array(metaassigns.count)
+export const litassign = function ({ count, map, reduce, metaindices }) {
+    const assignments = new Array(count)
 
     for (let i = 0; i < assignments.length; i++)
-        assignments[i] = metaassigns.map(...metaassigns.metaindices.map(function (metaindex) {
+        assignments[i] = map(...metaindices.map(function (metaindex) {
             return flatindex(...metaindex, i)
         }))
 
-    return metaassigns.reduce ? metaassigns.reduce(assignments) : assignments.join('\n')
+    return reduce(assignments)
 }
 
 

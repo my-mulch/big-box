@@ -11,7 +11,6 @@ export default class Header {
         this.strides = STRIDES in opts ? opts.strides : getStrides(this.shape)
 
         this.id = `${this.shape}|${this.strides}|${this.offset}`
-        this.indices = [...this.shape.keys()]
         this.size = this.shape.reduce(__Math__.multiply, 1)
         this.lastStride = this.strides[this.strides.length - 1]
     }
@@ -62,8 +61,8 @@ export default class Header {
 
     axisSlice(axes) {
         return new Header({
-            shape: Array.from(axes).filter(function (axis) {
-                return axis !== AXIS_INNER_CHARACTER
+            shape: this.shape.filter(function (_, i) {
+                return axes[i] !== AXIS_INNER_CHARACTER
             })
         })
     }
