@@ -1,22 +1,22 @@
 {
-  "name": "multi-dim",
-  "version": "6.4.1",
-  "description": "A suite of methods to manipulate MDA",
-  "main": "src/ndarray/index.mjs",
-  "scripts": {
-    "test": "node --experimental-modules src/test"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/trumanpurnell/dimsum.git"
-  },
-  "author": "Truman Purnell",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/trumanpurnell/dimsum/issues"
-  },
-  "homepage": "https://github.com/trumanpurnell/dimsum#readme",
-  "dependencies": {
-    "jasmine": "^3.3.0"
-  }
+    "name": "multi-dim",
+    "version": "6.4.1",
+    "description": "A suite of methods to manipulate MDA",
+    "main": "src/main/array",
+    "scripts": {
+        "test": "node --experimental-modules src/test"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/trumanpurnell/dimsum.git"
+    },
+    "author": "Truman Purnell",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/trumanpurnell/dimsum/issues"
+    },
+    "homepage": "https://github.com/trumanpurnell/dimsum#readme",
+    "dependencies": {
+        "radley": "^6.0.0"
+    }
 }

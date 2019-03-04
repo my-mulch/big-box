@@ -1,38 +1,71 @@
-import nd from '../../array'
+import nd from '../../main/array'
+import jest from '../engine'
 
-export default function (FakeJest) {
-    let A, B, C, D
+export default function () {
+    let A, B, C, D, E
 
     console.log('\n\n-------- Linear Algebra Suite --------\n\n')
 
-    A = nd.array([
-        [10, 72, 91, 13],
-        [57, 44, 49, 33],
-        [90, 66, 23, 21]])
+    A = nd.array({
+        from: [
+            [10, 72, 91, 13],
+            [57, 44, 49, 33],
+            [90, 66, 23, 21]
+        ]
+    })
 
-    B = nd.array([
-        [17, 11, 19],
-        [41, 15, 11],
-        [16, 14, 15]])
+    B = nd.array({
+        from: [
+            [17, 11, 19],
+            [41, 15, 11],
+            [16, 14, 15]
+        ]
+    })
 
-    D = nd.array([
-        [2, 2, 1],
-        [4, 2, 6],
-        [4, 2, 2]])
+    D = nd.array({
+        from: [
+            [2, 2, 1],
+            [4, 2, 6],
+            [4, 2, 2]
+        ]
+    })
 
-    C = nd.array([1, 2, 3])
+    C = nd.array({ from: [[1], [2], [3]] })
 
-    FakeJest.expect(B.dot(A)).toEqual(([[2507, 2962, 2523, 983], [2255, 4338, 4719, 1259], [2308, 2758, 2487, 985]]))
-    FakeJest.expect(nd.array(C).dot(B)).toEqual([147, 83, 86])
-    FakeJest.expect(B.dot(C)).toEqual([96, 104, 89])
+    E = nd.array({
+        from: [[[10, 5, 2],
+        [72, 6, 3],
+        [91, 6, 1],
+        [13, 4, 12]],
 
-    FakeJest.expect(A.T()).toEqual([[10, 57, 90], [72, 44, 66], [91, 49, 23], [13, 33, 21]])
-    FakeJest.expect(nd.array([C]).T()).toEqual([[1], [2], [3]])
-    FakeJest.expect(nd.array([[4, 5, 3]]).T().dot([10])).toEqual([40, 50, 30])
+        [[57, 7, 1],
+        [44, 2, 2],
+        [49, 8, 4],
+        [33, 8, 5]],
 
-    FakeJest.expect(nd.inv(D)).toEqual([[-0.5, -0.125, 0.625], [1., 0., -0.5], [0., 0.25, -0.25]])
-    FakeJest.expect(nd.inv([[6, 4], [5, 2]])).toEqual([[-0.25, 0.5], [0.625, -0.75]])
-    FakeJest.expect(nd.cross([3, -3, 1], [4, 9, 2])).toEqual([-15, -2, 39])
+        [[90, 2, 5],
+        [66, 4, 3],
+        [23, 1, 2],
+        [21, 2, 2]]]
+    })
+
+    jest.expect(B.dot({ with: A })).toEqual(([[2507, 2962, 2523, 983], [2255, 4338, 4719, 1259], [2308, 2758, 2487, 985]]))
+    jest.expect(B.dot({ with: C })).toEqual([[96], [104], [89]])
+
+    jest.expect(A.T()).toEqual([[10, 57, 90], [72, 44, 66], [91, 49, 23], [13, 33, 21]])
+
+    jest.expect(nd.inv({ of: D })).toEqual([[-0.5, -0.125, 0.625], [1., 0., -0.5], [0., 0.25, -0.25]])
+    jest.expect(nd.inv({ of: nd.array({ from: [[6, 4], [5, 2]] }) })).toEqual([[-0.25, 0.5], [0.625, -0.75]])
+
+    jest.expect(E.slice({ with: ['1:2', 0, ':'] }).cross({ with: C })).toEqual([19, -170, 107])
+
+    jest.expect(E.slice({ with: [':', 0, ':'] }).dot({ with: C })).toEqual([[26], [74], [109]])
+
+    jest.expect(E.slice({ with: [':', 0, ':'] }).inv({ result: E.slice({ with: [':', 0, ':'] }).copy() }).round({ precision: 3 }))
+        .toEqual([
+            [-0.02, 0.013, 0.005],
+            [0.116, 0.078, -0.062],
+            [0.308, -0.256, 0.128]])
 
     console.log('\n\n-------- End Linear Algebra Suite --------\n\n')
 }
