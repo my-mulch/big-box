@@ -19,7 +19,7 @@ export const flatindex = function (axes, array, initial, index) {
         const base = array.header.shape[axis]
         const place = array.header.strides[axis]
         const digit = Math.floor(index / dimensionality) % base
-        
+
         dimensionality *= base
         resultindex += digit * place
     }
@@ -38,21 +38,20 @@ export const litassign = function ({ count, map, reduce, metaindices }) {
     return reduce(assignments)
 }
 
-
 export const loop = function (array) {
     return function (i, j) {
         return `for(let a${i} = 0; a${i} < args.${array}.header.shape[${i}]; a${i}++){`
     }
 }
 
-export const index = function (array) {
+export const index = function (array, offset) {
     return function (i, j) {
-        return `a${i} * args.${array}.header.strides[${j}]`
+        return `a${i + offset} * args.${array}.header.strides[${j}]`
     }
 }
 
-export const symindex = function (axes, array, offset) {
-    return `args.${array}.header.offset + ${axes.map(index(array)).join(' + ')}`
+export const symindex = function (axes, array, offset = 0) {
+    return `args.${array}.header.offset + ${axes.map(index(array, offset)).join(' + ')}`
 }
 
 export const symloops = function (axes, array, body) {

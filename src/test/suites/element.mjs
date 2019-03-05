@@ -2,7 +2,7 @@ import nd from '../../main/array'
 import jest from '../engine'
 
 export default function () {
-    let A, B, C
+    let A, B, C, D
 
     console.log('\n\n-------- Elementwise Suite --------\n\n')
 
@@ -45,19 +45,25 @@ export default function () {
         [21, 2, 2]]]
     })
 
+    D = nd.ones({ shape: [41, 47] })
+
     jest.expect(B.multiply({ with: 6 })).toEqual([[-276, 114], [-228, 54], [54, -90], [-150, -198]])
-    jest.expect(A.min({ axes: '----' })).toEqual(-15)
+    jest.expect(A.min()).toEqual(-15)
     jest.expect(A.min({ axes: '-**-' })).toEqual([[17, 21, -15], [-2, -13, -5]])
 
     jest.expect(B.add({ with: B })).toEqual([[-46 * 2, 19 * 2], [-38 * 2, 9 * 2], [9 * 2, -15 * 2], [-25 * 2, -33 * 2]])
     jest.expect(B.multiply({ with: B })).toEqual([[-46 * -46, 19 * 19], [-38 * -38, 9 * 9], [9 * 9, -15 * -15], [-25 * -25, -33 * -33]])
     jest.expect(B.subtract({ with: B })).toEqual(nd.zeros({ shape: B.header.shape }))
 
-    jest.expect(C.slice({ with: [':', 0, ':'] }).min({ axes: '--' })).toEqual(1)
+    jest.expect(D.copy().set({ to: 2 })).toEqual(D.add({ with: D }))
+    jest.expect(D.slice({ with: [0] }).set({ to: 2 })).toEqual([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
+    jest.expect(D.slice({ with: [':'] }).set({ to: [6, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2] })).toEqual(D)
+    jest.expect(D.add({ with: 1 })).toEqual(new Array(41).fill([7, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]))
+
+    jest.expect(C.slice({ with: [':', 0, ':'] }).min()).toEqual(1)
 
     jest.expect(C.slice({ with: [':', 0, ':'] }).divide({ with: C.slice({ with: [':', 0, ':'] }) }))
         .toEqual([[1, 1, 1], [1, 1, 1], [1, 1, 1]])
-
 
     console.log('\n\n-------- End Elementwise Suite --------\n\n')
 }

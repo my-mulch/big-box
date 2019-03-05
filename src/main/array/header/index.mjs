@@ -1,4 +1,4 @@
-import { SLICE_CHARACTER, AXIS_INNER_CHARACTER, SHAPE, OFFSET, CONTIG, STRIDES } from '../../../resources'
+import { SLICE_CHARACTER, AXIS_INNER_CHARACTER, AXIS_RESULT_CHARACTER, SHAPE, OFFSET, CONTIG, STRIDES } from '../../../resources'
 import { getStrides, isContiguousSlice, resolveReshape } from './utils'
 import { __Math__ } from '../utils'
 
@@ -13,6 +13,11 @@ export default class Header {
         this.id = `${this.shape}|${this.strides}|${this.offset}`
         this.size = this.shape.reduce(__Math__.multiply, 1)
         this.lastStride = this.strides[this.strides.length - 1]
+
+        this.axes = {
+            ALL: AXIS_RESULT_CHARACTER.repeat(this.shape.length),
+            NONE: AXIS_INNER_CHARACTER.repeat(this.shape.length)
+        }
     }
 
     copy() {
@@ -32,7 +37,7 @@ export default class Header {
              *  If the index is a ':', the user wants that entire dimension 
              */
 
-            if (index[i] === SLICE_CHARACTER)
+            if (index[i] === SLICE_CHARACTER || index[i] === undefined)
                 shape.push(this.shape[i]), strides.push(this.strides[i])
 
             /** 

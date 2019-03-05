@@ -34,10 +34,22 @@ export default function () {
 
     jest.expect(B.reshape({ shape: [1, 4, 1] })).toEqual([[[1], [2], [3], [4]]])
 
-    jest.expect(nd.zeros({ shape: [2, 3, 2] })).toEqual([[[0, 0], [0, 0], [0, 0]], [[0, 0], [0, 0], [0, 0]]])
-    jest.expect(nd.ones({ shape: [2, 3, 2] })).toEqual([[[1, 1], [1, 1], [1, 1]], [[1, 1], [1, 1], [1, 1]]])
+    jest.expect(nd.zeros({ shape: [2, 3, 2] })).toEqual([
+        [[0, 0], [0, 0], [0, 0]],
+        [[0, 0], [0, 0], [0, 0]]
+    ])
 
-    jest.expect(nd.eye({ shape: [3, 3] })).toEqual([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    jest.expect(nd.ones({ shape: [2, 3, 2] })).toEqual([
+        [[1, 1], [1, 1], [1, 1]],
+        [[1, 1], [1, 1], [1, 1]]
+    ])
+
+    jest.expect(nd.eye({ shape: [3, 3] })).toEqual([
+        [1, 0, 0],
+        [0, 1, 0],
+        [0, 0, 1]
+    ])
+
     jest.expect(nd.eye({ shape: [3, 3, 3] })).toEqual([
         [[1, 0, 0], [0, 0, 0], [0, 0, 0]],
         [[0, 0, 0], [0, 1, 0], [0, 0, 0]],

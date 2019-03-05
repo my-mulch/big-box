@@ -1,4 +1,5 @@
 import { symloops, symindex } from '../../utils'
+import { OF, WITH, RESULT } from '../../../../../resources'
 
 export default function (args) {
     const aaxes = [...this.of.header.shape.keys()]
