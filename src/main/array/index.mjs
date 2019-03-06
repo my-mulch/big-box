@@ -1,4 +1,4 @@
-import { DIVIDE, MULTIPLY, SUBTRACT, ADD, ROUND, MIN, MAX, MEAN, NORM, DEFAULT, ASSIGN } from '../../resources'
+import { AXIS_RESULT_CHARACTER, AXIS_INNER_CHARACTER, DIVIDE, MULTIPLY, SUBTRACT, ADD, ROUND, MIN, MAX, DEFAULT, ASSIGN } from '../../resources'
 
 import axisSuite from '../ops/element/axis'
 import pairSuite from '../ops/element/pair'
@@ -34,7 +34,6 @@ export default class MultiDimArray {
             init: function () {
                 if (args.from.constructor === Array)
                     return new this.type(args.from.flat(Number.POSITIVE_INFINITY))
-
                 if (args.from.constructor === Number)
                     return new this.type(this.header.size).fill(args.from)
             }
@@ -142,30 +141,6 @@ export default class MultiDimArray {
             type: this.type,
             header: this.header,
             init: function () { return old.data.slice() }
-        })
-    }
-
-    mean(args = {}) {
-        return axisSuite.call({
-            of: this,
-            method: MEAN,
-            axes: args.axes || this.header.axes.NONE,
-            result: args.result || new MultiDimArray({
-                type: this.type,
-                header: this.header.axisSlice(args.axes || this.header.axes.NONE)
-            })
-        })
-    }
-
-    norm(args = {}) {
-        return axisSuite.call({
-            of: this,
-            method: NORM,
-            axes: args.axes || this.header.axes.NONE,
-            result: args.result || new MultiDimArray({
-                type: this.type,
-                header: this.header.axisSlice(args.axes || this.header.axes.NONE)
-            })
         })
     }
 

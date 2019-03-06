@@ -61,8 +61,6 @@ export default function () {
     jest.expect(D.add({ with: 1 })).toEqual(new Array(41).fill([7, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]))
 
     jest.expect(C.slice({ with: [':', 0, ':'] }).min()).toEqual(1)
-    jest.expect(B.mean()).toEqual(-15)
-    jest.expect(D.mean()).toEqual(2.0851063829787235)
 
     jest.expect(C.slice({ with: [':', 0, ':'] }).divide({ with: C.slice({ with: [':', 0, ':'] }) }))
         .toEqual([[1, 1, 1], [1, 1, 1], [1, 1, 1]])
