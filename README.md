@@ -1,56 +1,39 @@
-## Multi-Dim
+## big-box
 
-An npm package for scientific computing with JavaScript. It contains primarily:
- - a powerful N-dimensional array object
+That numpy shit in the browser, feel?
 
 ## Installation
 
 ```sh
-npm install multi-dim
+npm install big-box
 ```
 
 ```js
-const ndim = require('multi-dim');
+import bb from 'big-box'
 ```
 ## Basics
 
 ### Array Creation
 
 ```js
-> const a = ndim.array([2,3,4]);
+> const a = bb.array([2,3,4]);
 > a
-array([ 2, 3, 4])
-> const b = ndim.array([[1,2,3], [4,5,6]]);
+[ 2, 3, 4]
+> const b = bb.array([[1,2,3], [4,5,6]]);
 > b
-array([[ 1, 2, 3],
-       [ 4, 5, 6]])
+[[ 1, 2, 3],
+[ 4, 5, 6]])
 ```
 
 Example:
 ```js
-> a = ndim.arange(15).reshape(3, 5);
-array([[  0,  1,  2,  3,  4],
-       [  5,  6,  7,  8,  9],
-       [ 10, 11, 12, 13, 14]])
+> a = bb.arange({ stop: 15 }).reshape(3, 5)
+[[  0,  1,  2,  3,  4],
+[  5,  6,  7,  8,  9],
+[ 10, 11, 12, 13, 14]])
 
 > a.header.shape
 [ 3, 5]
 
 ```
 
-### Indexing, Slicing, and Striding
-
-```js
-> const a = ndim.array([0,1,2]);
-> a.slice(1)
-1
-
-> const b = ndim.arange(3*3).reshape(3,3);
-> b
-array([[  0,  1,  2],
-       [  3,  4,  5],
-       [  6,  7,  8])
-> b.slice('1:',1)
-array([[4,7]])
-
-```
