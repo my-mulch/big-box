@@ -1,5 +1,5 @@
 import { symloops, symindex, split } from '../../utils'
-import { RESULT, INNER } from '../../../../../resources'
+import { RESULT, OF } from '../../../../../resources'
 
 export default function (args) {
     const [raxes, iaxes, aaxes] = split(Array.from(this.axes))
@@ -7,12 +7,12 @@ export default function (args) {
     return `
         ${args.global}
         
-        ${symloops(raxes, RESULT, `
+        ${symloops(raxes, OF, `
             const ri = ${symindex(raxes, RESULT)}
             ${args.init}
             
-            ${symloops(iaxes, INNER, `
-                const ai = ${symindex(aaxes, INNER)}
+            ${symloops(iaxes, OF, `
+                const ai = ${symindex(aaxes, OF)}
                 ${args.reduce}
             `)}
             

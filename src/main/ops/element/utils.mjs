@@ -51,7 +51,7 @@ export const index = function (array, offset) {
 }
 
 export const symindex = function (axes, array, offset = 0) {
-    return `args.${array}.header.offset + ${axes.map(index(array, offset)).join(' + ')}`
+    return `args.${array}.header.offset + ${axes.map(index(array, offset)).join(' + ') || 0}`
 }
 
 export const symloops = function (axes, array, body) {
