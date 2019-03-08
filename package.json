@@ -1,5 +1,5 @@
 {
-    "name": "multi-dim",
+    "name": "big-box",
     "version": "6.4.1",
     "description": "A suite of methods to manipulate MDA",
     "main": "src/main/array",
@@ -8,14 +8,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/trumanpurnell/dimsum.git"
+        "url": "git+https://github.com/trumanpurnell/big-box.git"
     },
     "author": "Truman Purnell",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/trumanpurnell/dimsum/issues"
+        "url": "https://github.com/trumanpurnell/big-box/issues"
     },
-    "homepage": "https://github.com/trumanpurnell/dimsum#readme",
+    "homepage": "https://github.com/trumanpurnell/big-box#readme",
     "dependencies": {
         "radley": "^6.0.0"
     }
