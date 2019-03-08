@@ -25,7 +25,6 @@ import bb from 'big-box'
 [ 4, 5, 6]])
 ```
 
-Example:
 ```js
 > a = bb.arange({ stop: 15 }).reshape(3, 5)
 [[  0,  1,  2,  3,  4],
