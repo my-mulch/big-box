@@ -16,10 +16,10 @@ import bb from 'big-box'
 ### Array Creation
 
 ```js
-> const a = bb.array([2,3,4]);
+> const a = bb.array({ with: [2,3,4] })
 > a
 [ 2, 3, 4]
-> const b = bb.array([[1,2,3], [4,5,6]]);
+> const b = bb.array({ with: [[1,2,3], [4,5,6]] })
 > b
 [[ 1, 2, 3],
 [ 4, 5, 6]])
