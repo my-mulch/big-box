@@ -1,8 +1,8 @@
-## big-box
+# big-box
 
 That numpy shit in the browser, feel?
 
-## Installation
+#### Installation
 
 ```sh
 npm install big-box
@@ -13,7 +13,7 @@ import bb from 'big-box'
 ```
 ## Basics
 
-### Array Creation
+#### Array Creation
 
 ```js
 > const a = bb.array({ with: [2,3,4] })
