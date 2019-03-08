@@ -1,10 +1,10 @@
 
-Math.add = function (a, b) { return a + b }
-Math.subtract = function (a, b) { return a - b }
-Math.divide = function (a, b) { return a / b }
-Math.multiply = function (a, b) { return a * b }
-
-export const __Math__ = Math
+export const __Math__ = Object.assign(Math, {
+    add: function (a, b) { return a + b },
+    subtract: function (a, b) { return a - b },
+    divide: function (a, b) { return a / b },
+    multiply: function (a, b) { return a * b },
+})
 
 export const shape = function getShape(A, shape = []) {
     if (A.constructor === Number) return shape
