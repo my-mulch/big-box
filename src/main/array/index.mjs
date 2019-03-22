@@ -42,10 +42,17 @@ export default class MultiDimArray {
             init: function () {
                 if (args.from.constructor === Array)
                     return new this.type(args.from.flat(Number.POSITIVE_INFINITY))
+
                 if (args.from.constructor === Number)
                     return new this.type(this.header.size).fill(args.from)
-                if(args.from.constructor)
-                return args.from
+
+                if (args.from.constructor === Uint8ClampedArray ||
+                    args.from.constructor === Uint8Array ||
+                    args.from.constructor === Uint16Array ||
+                    args.from.constructor === Uint32Array ||
+                    args.from.constructor === Float32Array ||
+                    args.from.constructor === Float64Array
+                ) return args.from
             }
         })
     }
