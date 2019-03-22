@@ -55,9 +55,9 @@ export default function () {
     jest.expect(B.multiply({ with: B })).toEqual([[-46 * -46, 19 * 19], [-38 * -38, 9 * 9], [9 * 9, -15 * -15], [-25 * -25, -33 * -33]])
     jest.expect(B.subtract({ with: B })).toEqual(nd.zeros({ shape: B.header.shape }))
 
-    jest.expect(D.copy().set({ to: 2 })).toEqual(D.add({ with: D }))
-    jest.expect(D.slice({ with: [0] }).set({ to: 2 })).toEqual([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
-    jest.expect(D.slice({ with: [':'] }).set({ to: [6, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2] })).toEqual(D)
+    jest.expect(D.copy().set({ with: 2 })).toEqual(D.add({ with: D }))
+    jest.expect(D.slice({ with: [0] }).set({ with: 2 })).toEqual([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
+    jest.expect(D.slice({ with: [':'] }).set({ with: [6, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2] })).toEqual(D)
     jest.expect(D.add({ with: 1 })).toEqual(new Array(41).fill([7, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]))
 
     jest.expect(C.slice({ with: [':', 0, ':'] }).min()).toEqual(1)

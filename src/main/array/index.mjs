@@ -24,10 +24,18 @@ export default class MultiDimArray {
         this.data = init.call(this)
     }
 
-    static array(args) {
-        if (args.from.constructor === MultiDimArray)
-            return args.from
+    static sanitize(args) {
+        if (args.of && args.of.constructor !== MultiDimArray)
+            args.of = MultiDimArray.array({ from: args.of })
 
+        if (args.with && args.with.constructor !== MultiDimArray)
+            args.with = MultiDimArray.array({ from: args.with })
+
+        if (args.result && args.result.constructor !== MultiDimArray)
+            args.result = MultiDimArray.array({ from: args.result })
+    }
+
+    static array(args) {
         return new MultiDimArray({
             type: args.type,
             header: new Header({ shape: shape(args.from) }),
@@ -59,7 +67,9 @@ export default class MultiDimArray {
         return new MultiDimArray({
             type: args.type,
             header: new Header({
-                shape: [__Math__.round((args.stop - (args.start || 0)) / (args.step || 1))]
+                shape: [
+                    __Math__.round((args.stop - (args.start || 0)) / (args.step || 1))
+                ]
             }),
             init: function () {
                 const data = new this.type(this.header.size)
@@ -88,21 +98,30 @@ export default class MultiDimArray {
     }
 
     static dot(args) {
+        MultiDimArray.sanitize(args)
+
         return matMultSuite.call({
-            of: MultiDimArray.array({ from: args.of }),
-            with: MultiDimArray.array({ from: args.with }),
+            of: args.of,
+            with: args.with,
             method: DEFAULT,
             result: args.result || new MultiDimArray({
                 type: args.type,
-                header: new Header({ shape: [args.of.header.shape[0], args.with.header.shape[1]] })
+                header: new Header({
+                    shape: [
+                        args.of.header.shape[0],
+                        args.with.header.shape[1]
+                    ]
+                })
             })
         })
     }
 
     static cross(args) {
+        MultiDimArray.sanitize(args)
+
         return crossProdSuite.call({
-            of: MultiDimArray.array({ from: args.of }),
-            with: MultiDimArray.array({ from: args.with }),
+            of: args.of,
+            with: args.with,
             method: DEFAULT,
             result: args.result || new MultiDimArray({
                 type: args.type,
@@ -112,8 +131,10 @@ export default class MultiDimArray {
     }
 
     static inv(args) {
+        MultiDimArray.sanitize(args)
+
         return invSuite.call({
-            of: MultiDimArray.array({ from: args.of }),
+            of: args.of,
             method: DEFAULT,
             result: args.result || this.eye({ shape: args.of.header.shape })
         })
@@ -206,9 +227,11 @@ export default class MultiDimArray {
     }
 
     add(args) {
+        MultiDimArray.sanitize(args)
+
         return pairSuite.call({
             of: this,
-            with: MultiDimArray.array({ from: args.with }),
+            with: args.with,
             method: ADD,
             result: args.result || new MultiDimArray({
                 type: this.type,
@@ -218,9 +241,11 @@ export default class MultiDimArray {
     }
 
     subtract(args) {
+        MultiDimArray.sanitize(args)
+
         return pairSuite.call({
             of: this,
-            with: MultiDimArray.array({ from: args.with }),
+            with: args.with,
             method: SUBTRACT,
             result: args.result || new MultiDimArray({
                 type: this.type,
@@ -230,9 +255,11 @@ export default class MultiDimArray {
     }
 
     multiply(args) {
+        MultiDimArray.sanitize(args)
+
         return pairSuite.call({
             of: this,
-            with: MultiDimArray.array({ from: args.with }),
+            with: args.with,
             method: MULTIPLY,
             result: args.result || new MultiDimArray({
                 type: this.type,
@@ -242,9 +269,11 @@ export default class MultiDimArray {
     }
 
     divide(args) {
+        MultiDimArray.sanitize(args)
+
         return pairSuite.call({
             of: this,
-            with: MultiDimArray.array({ from: args.with }),
+            with: args.with,
             method: DIVIDE,
             result: args.result || new MultiDimArray({
                 type: this.type,
@@ -294,9 +323,11 @@ export default class MultiDimArray {
     }
 
     set(args) {
+        MultiDimArray.sanitize(args)
+
         return pairSuite.call({
             of: this,
-            with: MultiDimArray.array({ from: args.to }),
+            with: args.with,
             method: ASSIGN,
             result: this
         })
