@@ -6,9 +6,12 @@ export const __Math__ = Object.assign(Math, {
     multiply: function (a, b) { return a * b },
 })
 
-export const shape = function getShape(A, shape = []) {
-    if (A.constructor === Number) return shape
-    if (A.constructor !== Array) return shape.concat(A.header.shape)
+export const sizeup = function getShape(A, shape = []) {
+    if (A.constructor === Number)
+        return shape
+
+    if (A.header)
+        return shape.concat(A.header.shape)
 
     return getShape(A[0], shape.concat(A.length))
 }

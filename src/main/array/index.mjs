@@ -9,7 +9,7 @@ import crossProdSuite from '../ops/linalg/cross'
 
 import { randint } from '../ops/probability'
 
-import { shape, stringify, __Math__ } from '../array/utils'
+import { sizeup, stringify, __Math__ } from '../array/utils'
 import util from 'util' // node's
 import Header from './header'
 
@@ -19,8 +19,8 @@ export default class MultiDimArray {
     constructor({ header, type, init = function () {
         return new this.type(this.header.size)
     } }) {
+        this.type = type
         this.header = header
-        this.type = type || Float64Array
         this.data = init.call(this)
     }
 
@@ -37,13 +37,15 @@ export default class MultiDimArray {
 
     static array(args) {
         return new MultiDimArray({
-            type: args.type,
-            header: new Header({ shape: shape(args.from) }),
+            type: args.type || Float64Array,
+            header: new Header({ shape: sizeup(args.from) }),
             init: function () {
                 if (args.from.constructor === Array)
                     return new this.type(args.from.flat(Number.POSITIVE_INFINITY))
                 if (args.from.constructor === Number)
                     return new this.type(this.header.size).fill(args.from)
+                if(args.from.constructor)
+                return args.from
             }
         })
     }
