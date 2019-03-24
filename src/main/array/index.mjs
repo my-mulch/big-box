@@ -19,8 +19,8 @@ export default class MultiDimArray {
     constructor({ header, type, init = function () {
         return new this.type(this.header.size)
     } }) {
-        this.type = type
         this.header = header
+        this.type = type || Float64Array
         this.data = init.call(this)
     }
 
@@ -37,7 +37,7 @@ export default class MultiDimArray {
 
     static array(args) {
         return new MultiDimArray({
-            type: args.type || Float64Array,
+            type: args.type,
             header: new Header({ shape: sizeup(args.from) }),
             init: function () {
                 if (args.from.constructor === Array)
@@ -46,9 +46,12 @@ export default class MultiDimArray {
                 if (args.from.constructor === Number)
                     return new this.type(this.header.size).fill(args.from)
 
-                if (args.from.constructor === Uint8ClampedArray ||
+                if (args.from.constructor === Int8Array ||
                     args.from.constructor === Uint8Array ||
+                    args.from.constructor === Uint8ClampedArray ||
+                    args.from.constructor === Int16Array ||
                     args.from.constructor === Uint16Array ||
+                    args.from.constructor === Int32Array ||
                     args.from.constructor === Uint32Array ||
                     args.from.constructor === Float32Array ||
                     args.from.constructor === Float64Array
