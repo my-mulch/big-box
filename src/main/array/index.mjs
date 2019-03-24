@@ -1,4 +1,4 @@
-import { DIVIDE, MULTIPLY, SUBTRACT, ADD, ROUND, MIN, MAX, DEFAULT, ASSIGN, NORM, MEAN } from '../../resources'
+import { DIVIDE, MULTIPLY, SUBTRACT, ADD, ROUND, MIN, MAX, DEFAULT, ASSIGN, NORM, MEAN, SUM } from '../../resources'
 
 import axisSuite from '../ops/element/axis'
 import pairSuite from '../ops/element/pair'
@@ -180,10 +180,24 @@ export default class MultiDimArray {
         })
     }
 
-    norm(args = {}) {
+    gpair(args, method) {
+        MultiDimArray.sanitize(args)
+
+        return pairSuite.call({
+            of: this,
+            with: args.with,
+            method: method,
+            result: args.result || new MultiDimArray({
+                type: this.type,
+                header: new Header({ shape: this.header.shape })
+            })
+        })
+    }
+
+    gaxis(args, method) {
         return axisSuite.call({
             of: this,
-            method: NORM,
+            method: method,
             axes: args.axes || this.header.axes.NONE,
             result: args.result || new MultiDimArray({
                 type: this.type,
@@ -192,41 +206,20 @@ export default class MultiDimArray {
         })
     }
 
-    mean(args = {}) {
-        return axisSuite.call({
-            of: this,
-            method: MEAN,
-            axes: args.axes || this.header.axes.NONE,
-            result: args.result || new MultiDimArray({
-                type: this.type,
-                header: this.header.axisSlice(args.axes || this.header.axes.NONE)
-            })
-        })
-    }
+    norm(args = {}) { return this.gaxis(args, NORM) }
+    mean(args = {}) { return this.gaxis(args, MEAN) }
+    sum(args = {}) { return this.gaxis(args, SUM) }
+    max(args = {}) { return this.gaxis(args, MAX) }
+    min(args = {}) { return this.gaxis(args, MIN) }
 
-    max(args = {}) {
-        return axisSuite.call({
-            of: this,
-            method: MAX,
-            axes: args.axes || this.header.axes.NONE,
-            result: args.result || new MultiDimArray({
-                type: this.type,
-                header: this.header.axisSlice(args.axes || this.header.axes.NONE)
-            })
-        })
-    }
+    add(args) { return this.gpair(args, ADD) }
+    divide(args) { return this.gpair(args, DIVIDE) }
+    subtract(args) { return this.gpair(args, SUBTRACT) }
+    multiply(args) { return this.gpair(args, MULTIPLY) }
 
-    min(args = {}) {
-        return axisSuite.call({
-            of: this,
-            method: MIN,
-            axes: args.axes || this.header.axes.NONE,
-            result: args.result || new MultiDimArray({
-                type: this.type,
-                header: this.header.axisSlice(args.axes || this.header.axes.NONE)
-            })
-        })
-    }
+    inv(args = {}) { return MultiDimArray.inv({ of: this, result: args.result }) }
+    dot(args) { return MultiDimArray.dot({ of: this, with: args.with, result: args.result }) }
+    cross(args) { return MultiDimArray.cross({ of: this, with: args.with, result: args.result }) }
 
     round(args) {
         return axisSuite.call({
@@ -240,66 +233,6 @@ export default class MultiDimArray {
             })
         })
     }
-
-    add(args) {
-        MultiDimArray.sanitize(args)
-
-        return pairSuite.call({
-            of: this,
-            with: args.with,
-            method: ADD,
-            result: args.result || new MultiDimArray({
-                type: this.type,
-                header: new Header({ shape: this.header.shape })
-            })
-        })
-    }
-
-    subtract(args) {
-        MultiDimArray.sanitize(args)
-
-        return pairSuite.call({
-            of: this,
-            with: args.with,
-            method: SUBTRACT,
-            result: args.result || new MultiDimArray({
-                type: this.type,
-                header: new Header({ shape: this.header.shape })
-            })
-        })
-    }
-
-    multiply(args) {
-        MultiDimArray.sanitize(args)
-
-        return pairSuite.call({
-            of: this,
-            with: args.with,
-            method: MULTIPLY,
-            result: args.result || new MultiDimArray({
-                type: this.type,
-                header: new Header({ shape: this.header.shape })
-            })
-        })
-    }
-
-    divide(args) {
-        MultiDimArray.sanitize(args)
-
-        return pairSuite.call({
-            of: this,
-            with: args.with,
-            method: DIVIDE,
-            result: args.result || new MultiDimArray({
-                type: this.type,
-                header: new Header({ shape: this.header.shape })
-            })
-        })
-    }
-
-    dot(args) { return MultiDimArray.dot({ of: this, with: args.with, result: args.result }) }
-    cross(args) { return MultiDimArray.cross({ of: this, with: args.with, result: args.result }) }
-    inv(args = {}) { return MultiDimArray.inv({ of: this, result: args.result }) }
 
     slice(args, old = this) {
         return new MultiDimArray({
