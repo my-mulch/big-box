@@ -22,9 +22,7 @@ export const stringify = function stringify(index = this.header.offset, dim = 0)
     return ['[', ']'].join(
         new Array(this.header.shape[dim])
             .fill(null)
-            .map(function (_, i) {
-                return stringify.call(this, i * this.header.strides[dim] + index, dim + 1)
-            }, this)
+            .map(function (_, i) { return stringify.call(this, i * this.header.strides[dim] + index, dim + 1) }, this)
             .join(',' + '\n'.repeat(level))
     )
 }

@@ -22,6 +22,9 @@ export default class MultiDimArray {
         this.header = header
         this.type = type || Float64Array
         this.data = init.call(this)
+
+        for (const field in this.header)
+            this[field] = this.header[field]
     }
 
     static sanitize(args) {
