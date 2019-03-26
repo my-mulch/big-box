@@ -19,47 +19,47 @@ export default class MultiDimArray {
     constructor({ header, type, init = function () {
         return new this.type(this.size)
     } }) {
+
+        for (const field in header)
+            this[field] = header[field]
+
         this.header = header
-
-        for (const field in this.header)
-            this[field] = this.header[field]
-
         this.type = type || Float64Array
         this.data = init.call(this)
     }
 
     static sanitize(args) {
         if (args.of !== undefined && args.of.constructor !== MultiDimArray)
-            args.of = MultiDimArray.array({ from: args.of })
+            args.of = MultiDimArray.array({ with: args.of })
 
         if (args.with !== undefined && args.with.constructor !== MultiDimArray)
-            args.with = MultiDimArray.array({ from: args.with })
+            args.with = MultiDimArray.array({ with: args.with })
 
         if (args.result !== undefined && args.result.constructor !== MultiDimArray)
-            args.result = MultiDimArray.array({ from: args.result })
+            args.result = MultiDimArray.array({ with: args.result })
     }
 
     static array(args) {
         return new MultiDimArray({
             type: args.type,
-            header: new Header({ shape: sizeup(args.from) }),
+            header: new Header({ shape: sizeup(args.with) }),
             init: function () {
-                if (args.from.constructor === Array)
-                    return new this.type(args.from.flat(Number.POSITIVE_INFINITY))
+                if (args.with.constructor === Array)
+                    return new this.type(args.with.flat(Number.POSITIVE_INFINITY))
 
-                if (args.from.constructor === Number)
-                    return new this.type(this.size).fill(args.from)
+                if (args.with.constructor === Number)
+                    return new this.type(this.size).fill(args.with)
 
-                if (args.from.constructor === Int8Array ||
-                    args.from.constructor === Uint8Array ||
-                    args.from.constructor === Uint8ClampedArray ||
-                    args.from.constructor === Int16Array ||
-                    args.from.constructor === Uint16Array ||
-                    args.from.constructor === Int32Array ||
-                    args.from.constructor === Uint32Array ||
-                    args.from.constructor === Float32Array ||
-                    args.from.constructor === Float64Array
-                ) return args.from
+                if (args.with.constructor === Int8Array ||
+                    args.with.constructor === Uint8Array ||
+                    args.with.constructor === Uint8ClampedArray ||
+                    args.with.constructor === Int16Array ||
+                    args.with.constructor === Uint16Array ||
+                    args.with.constructor === Int32Array ||
+                    args.with.constructor === Uint32Array ||
+                    args.with.constructor === Float32Array ||
+                    args.with.constructor === Float64Array
+                ) return args.with
             }
         })
     }

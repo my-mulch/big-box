@@ -7,7 +7,7 @@ export default function () {
     console.log('\n\n-------- Linear Algebra Suite --------\n\n')
 
     A = nd.array({
-        from: [
+        with: [
             [10, 72, 91, 13],
             [57, 44, 49, 33],
             [90, 66, 23, 21]
@@ -15,7 +15,7 @@ export default function () {
     })
 
     B = nd.array({
-        from: [
+        with: [
             [17, 11, 19],
             [41, 15, 11],
             [16, 14, 15]
@@ -23,17 +23,17 @@ export default function () {
     })
 
     D = nd.array({
-        from: [
+        with: [
             [2, 2, 1],
             [4, 2, 6],
             [4, 2, 2]
         ]
     })
 
-    C = nd.array({ from: [[1], [2], [3]] })
+    C = nd.array({ with: [[1], [2], [3]] })
 
     E = nd.array({
-        from: [[[10, 5, 2],
+        with: [[[10, 5, 2],
         [72, 6, 3],
         [91, 6, 1],
         [13, 4, 12]],
@@ -55,7 +55,7 @@ export default function () {
     jest.expect(A.T()).toEqual([[10, 57, 90], [72, 44, 66], [91, 49, 23], [13, 33, 21]])
 
     jest.expect(nd.inv({ of: D })).toEqual([[-0.5, -0.125, 0.625], [1., 0., -0.5], [0., 0.25, -0.25]])
-    jest.expect(nd.inv({ of: nd.array({ from: [[6, 4], [5, 2]] }) })).toEqual([[-0.25, 0.5], [0.625, -0.75]])
+    jest.expect(nd.inv({ of: nd.array({ with: [[6, 4], [5, 2]] }) })).toEqual([[-0.25, 0.5], [0.625, -0.75]])
 
     jest.expect(E.slice({ with: ['1:2', 0, ':'] }).cross({ with: C })).toEqual([19, -170, 107])
 

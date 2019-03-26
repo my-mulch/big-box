@@ -7,7 +7,7 @@ export default function () {
     console.log('\n\n-------- Elementwise Suite --------\n\n')
 
     A = nd.array({
-        from:
+        with:
             [[[[17, 36],
             [29, 36],
             [-12, 21]],
@@ -26,10 +26,10 @@ export default function () {
             [7, 11]]]]
     })
 
-    B = nd.array({ from: [[-46, 19], [-38, 9], [9, -15], [-25, -33]] })
+    B = nd.array({ with: [[-46, 19], [-38, 9], [9, -15], [-25, -33]] })
 
     C = nd.array({
-        from: [[[10, 5, 2],
+        with: [[[10, 5, 2],
         [72, 6, 3],
         [91, 6, 1],
         [13, 4, 12]],

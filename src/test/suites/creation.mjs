@@ -7,7 +7,7 @@ export default function () {
     console.log('\n\n-------- Creation Suite --------\n\n')
 
     A = nd.array({
-        from: [
+        with: [
             [10, 72, 91, 13],
             [57, 44, 49, 33],
             [90, 66, 23, 21],
@@ -15,7 +15,7 @@ export default function () {
     })
 
     B = nd.array({
-        from: [
+        with: [
             [1],
             [2],
             [3],

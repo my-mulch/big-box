@@ -7,7 +7,7 @@ export default function () {
     console.log('\n\n-------- Indexing Suite --------\n\n')
 
     A = nd.array({
-        from: [[[10, 5, 2],
+        with: [[[10, 5, 2],
         [72, 6, 3],
         [91, 6, 1],
         [13, 4, 12]],

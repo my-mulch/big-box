@@ -53,7 +53,7 @@ export default function () {
     console.log('\n\n-------- Speed Suite --------\n\n')
 
     A = nd.array({
-        from: [
+        with: [
             [3, 2, 4, 2],
             [2, 3, 1, 2],
             [5, 4, 2, 3],
