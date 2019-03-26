@@ -31,17 +31,17 @@ export const indexify = function (r, c) {
     if (c === undefined)
         [r, c] = flatToRC.call(this, r)
 
-    return this.header.offset
-        + r * this.header.strides[0]
-        + c * this.header.strides[1]
+    return this.offset
+        + r * this.strides[0]
+        + c * this.strides[1]
 }
 
 const flatToRC = function (index) {
-    const s0 = this.header.shape[0], s1 = 1
+    const s0 = this.shape[0], s1 = 1
 
     return [
-        Math.floor(index / s0) % this.header.shape[0],
-        Math.floor(index / s1) % this.header.shape[1],
+        Math.floor(index / s0) % this.shape[0],
+        Math.floor(index / s1) % this.shape[1],
     ]
 }
 

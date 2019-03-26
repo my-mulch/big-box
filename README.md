@@ -32,7 +32,7 @@ import bb from 'big-box'
 [  5,  6,  7,  8,  9],
 [ 10, 11, 12, 13, 14]])
 
-> a.header.shape
+> a.shape
 [ 3, 5]
 
 ```

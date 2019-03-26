@@ -25,12 +25,11 @@ export default function () {
 
     jest.expect(A).toEqual([[10, 72, 91, 13], [57, 44, 49, 33], [90, 66, 23, 21]])
     jest.expect(B).toEqual([[1], [2], [3], [4]])
+    jest.expect(A.shape).toEqual([3, 4])
+    jest.expect(B.shape).toEqual([4, 1])
 
-    jest.expect(A.header.shape).toEqual([3, 4])
-    jest.expect(B.header.shape).toEqual([4, 1])
-
-    jest.expect(A.header.strides).toEqual([4, 1])
-    jest.expect(B.header.strides).toEqual([1, 1])
+    jest.expect(A.strides).toEqual([4, 1])
+    jest.expect(B.strides).toEqual([1, 1])
 
     jest.expect(B.reshape({ shape: [1, 4, 1] })).toEqual([[[1], [2], [3], [4]]])
 

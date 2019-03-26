@@ -1,13 +1,13 @@
 import { litassign, bylines } from '../../utils'
 
 export default function (args) {
-    const aaxes = [...this.of.header.shape.keys()]
-    const baxes = [...this.with.header.shape.keys()]
-    const raxes = [...this.result.header.shape.keys()]
+    const aaxes = [...this.of.shape.keys()]
+    const baxes = [...this.with.shape.keys()]
+    const raxes = [...this.result.shape.keys()]
 
     return `
         ${litassign({
-            count: this.result.header.size,
+            count: this.result.size,
             metaindices: [
                 [aaxes, this.of, 0], /** ai */
                 [baxes, this.with, 0], /** bi */

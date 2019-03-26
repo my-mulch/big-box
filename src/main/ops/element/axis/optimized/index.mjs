@@ -40,7 +40,7 @@ export default {
     },
     mean: function (args) {
         return new Function('args', template.call(args, {
-            global: `let mean; const innerSize = ${args.of.header.size / args.result.header.size}`,
+            global: `let mean; const innerSize = ${args.of.size / args.result.size}`,
             map: function (item) { return item },
             reduce: function (innerItems) { return `mean = (${innerItems.join('+')}) / innerSize` },
             assign: 'mean'

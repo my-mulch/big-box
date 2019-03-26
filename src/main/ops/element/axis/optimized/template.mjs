@@ -8,7 +8,7 @@ export default function (args) {
         ${args.global}
         
         ${litassign({
-            count: this.result.header.size,
+            count: this.result.size,
             metaindices: [
                 [rinds, this.result, 0], /** ri */
                 [raxes, this.of, 0]  /** rg */
@@ -19,7 +19,7 @@ export default function (args) {
                     ${args.init}
                         
                     ${litassign({
-                        count: this.of.header.size / this.result.header.size,
+                        count: this.of.size / this.result.size,
                         metaindices: [[iaxes, this.of, rg]], /** ai */
                         map: function (ai) { return args.map(`args.of.data[${ai}]`) },
                         reduce: args.reduce

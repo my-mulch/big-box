@@ -5,8 +5,8 @@ import optimized from './optimized'
 
 export default radley.suite({
     default: {
-        'args.result.header.size > 25': symbolic,
-        'args.result.header.size <= 25': optimized
+        'args.result.size > 25': symbolic,
+        'args.result.size <= 25': optimized
     },
-    hash: ['args.of.header.id', 'args.result.header.id']
+    hash: ['args.of.id', 'args.result.id']
 })

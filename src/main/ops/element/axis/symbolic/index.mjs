@@ -31,7 +31,7 @@ export default {
     },
     mean: function (args) {
         return new Function('args', template.call(args, {
-            global: `const sizeOfInnerAxes = ${args.of.header.size / args.result.header.size}`,
+            global: `const sizeOfInnerAxes = ${args.of.size / args.result.size}`,
             init: 'let sum = 0',
             reduce: 'sum += args.of.data[ai]',
             assign: 'sum / sizeOfInnerAxes'
