@@ -83,5 +83,7 @@ export default function () {
     jest.expect(D.slice({ with: [':', '2:46'] }).max({ axes: '-*' })).toEqual([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
     jest.expect(D.slice({ with: [':', '2:46'] }).max({ axes: '*-' })).toEqual([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
 
+    jest.expect(B.ravel()).toEqual([-46, 19, -38, 9, 9, -15, -25, -33])
+    jest.expect(B.T().ravel()).toEqual([-46, -38, 9, -25, 19, 9, -15, -33])
     console.log('\n\n-------- End Elementwise Suite --------\n\n')
 }
