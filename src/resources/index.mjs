@@ -26,3 +26,6 @@ export const SHAPE = 'shape'
 export const OFFSET = 'offset'
 export const CONTIG = 'contig'
 export const STRIDES = 'strides'
+
+export const NUMBER_REGEX = /\d+/
+export const PARTIAL_SLICE_REGEX = /\d*:\d*/

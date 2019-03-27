@@ -1,4 +1,9 @@
-import { SLICE_CHARACTER, AXIS_INNER_CHARACTER, AXIS_RESULT_CHARACTER, SHAPE, OFFSET, CONTIG, STRIDES } from '../../../resources'
+import {
+    PARTIAL_SLICE_REGEX, NUMBER_REGEX,
+    SLICE_CHARACTER, AXIS_INNER_CHARACTER, AXIS_RESULT_CHARACTER,
+    SHAPE, OFFSET, CONTIG, STRIDES
+} from '../../../resources'
+
 import { getStrides, isContiguousSlice, resolveReshape } from './utils'
 import { __Math__ } from '../utils'
 
@@ -41,17 +46,10 @@ export default class Header {
                 shape.push(this.shape[i]), strides.push(this.strides[i])
 
             /** 
-             * If the index is a number, the user wants that index. duh. 
-             */
-
-            else if ((+index[i]).constructor === Number)
-                offset += this.strides[i] * index[i]
-
-            /** 
              * If the index is a slice of the form 'a:b', the user wants a slice from a to b 
             */
 
-            else if (index[i].constructor === String) {
+            else if (PARTIAL_SLICE_REGEX.test(index[i])) {
                 let [low, high] = index[i].split(SLICE_CHARACTER).map(Number)
 
                 offset += this.strides[i] * low
@@ -59,6 +57,14 @@ export default class Header {
                 shape.push(high - low)
                 strides.push(this.strides[i])
             }
+
+            /** 
+             * If the index is a number, the user wants that index
+             */
+
+            else if (NUMBER_REGEX.test(index[i]))
+                offset += this.strides[i] * index[i]
+
         }
 
         return new Header({ shape, strides, offset, contig })
