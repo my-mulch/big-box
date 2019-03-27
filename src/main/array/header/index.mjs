@@ -44,7 +44,7 @@ export default class Header {
              * If the index is a number, the user wants that index. duh. 
              */
 
-            else if (index[i].constructor === Number)
+            else if ((+index[i]).constructor === Number)
                 offset += this.strides[i] * index[i]
 
             /** 
