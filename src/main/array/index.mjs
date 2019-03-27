@@ -157,7 +157,7 @@ export default class MultiDimArray {
             method: DEFAULT,
             result: args.result || new MultiDimArray({
                 type: args.type,
-                header: new Header({ shape: [3] })
+                header: new Header({ shape: [3, 1] })
             })
         })
     }
