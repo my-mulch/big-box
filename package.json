@@ -1,6 +1,6 @@
 {
     "name": "big-box",
-    "version": "1.2.4",
+    "version": "1.3.0",
     "description": "A suite of methods to manipulate MDA",
     "main": "src/main/array",
     "scripts": {
