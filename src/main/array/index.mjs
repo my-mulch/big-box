@@ -24,7 +24,7 @@ export default class BigBox {
             this[field] = header[field]
 
         this.header = header
-        this.type = type || Float64Array
+        this.type = type || Float32Array
         this.data = init.call(this)
     }
 
@@ -57,8 +57,7 @@ export default class BigBox {
                     args.with.constructor === Uint16Array ||
                     args.with.constructor === Int32Array ||
                     args.with.constructor === Uint32Array ||
-                    args.with.constructor === Float32Array ||
-                    args.with.constructor === Float64Array
+                    args.with.constructor === Float32Array
                 ) return args.with
             }
         })

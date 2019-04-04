@@ -52,6 +52,9 @@ export default class Header {
             else if (PARTIAL_SLICE_REGEX.test(index[i])) {
                 let [low, high] = index[i].split(SLICE_CHARACTER).map(Number)
 
+                if (high === 0)
+                    high = this.shape[i]
+
                 offset += this.strides[i] * low
 
                 shape.push(high - low)

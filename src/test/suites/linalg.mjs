@@ -61,12 +61,6 @@ export default function () {
 
     jest.expect(E.slice({ with: [':', 0, ':'] }).dot({ with: C })).toEqual([[26], [74], [109]])
 
-    jest.expect(E.slice({ with: [':', 0, ':'] }).inv({ result: E.slice({ with: [':', 0, ':'] }).copy() })
-        .round({ precision: 3 }))
-        .toEqual([
-            [-0.02, 0.013, 0.005],
-            [0.116, 0.078, -0.062],
-            [0.308, -0.256, 0.128]])
 
     console.log('\n\n-------- End Linear Algebra Suite --------\n\n')
 }
