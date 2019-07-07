@@ -58,7 +58,10 @@ export default class BigBox {
                     args.with.constructor === Int32Array ||
                     args.with.constructor === Uint32Array ||
                     args.with.constructor === Float32Array
-                ) return args.with
+                ) {
+                    this.type = args.with.constructor
+                    return args.with
+                }
             }
         })
     }
