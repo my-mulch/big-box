@@ -191,6 +191,12 @@ export default class BigBox {
         })
     }
 
+    astype(args) {
+        this.data = new args.type(this.data)
+
+        return this
+    }
+
     copy(old = this) {
         return new BigBox({
             type: this.type,
