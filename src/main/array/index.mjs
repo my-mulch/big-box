@@ -192,7 +192,8 @@ export default class BigBox {
     }
 
     astype(args) {
-        this.data = new args.type(this.data)
+        this.type = args.type
+        this.data = new this.type(this.data)
 
         return this
     }
