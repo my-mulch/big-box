@@ -2,7 +2,7 @@ import nd from '../../main/array'
 import jest from '../engine'
 
 export default function () {
-    let A, B, C, D
+    let A, B, C, D, E
 
     console.log('\n\n-------- Elementwise Suite --------\n\n')
 
@@ -26,7 +26,14 @@ export default function () {
             [7, 11]]]]
     })
 
-    B = nd.array({ with: [[-46, 19], [-38, 9], [9, -15], [-25, -33]] })
+    B = nd.array({
+        with: [
+            [-46, 19],
+            [-38, 9],
+            [9, -15],
+            [-25, -33]
+        ]
+    })
 
     C = nd.array({
         with: [[[10, 5, 2],
@@ -46,6 +53,15 @@ export default function () {
     })
 
     D = nd.ones({ shape: [41, 47] })
+
+    E = nd.array({
+        with: [
+            ['1 + i', '10 + 10i', '100 + 100i'],
+            ['1 + i', '10 + 10i', '100 + 100i'],
+            ['1 + i', '10 + 10i', '100 + 100i'],
+            ['1 + i', '10 + 10i', '100 + 100i'],
+        ]
+    })
 
     jest.expect(B.multiply({ with: 6 })).toEqual([[-276, 114], [-228, 54], [54, -90], [-150, -198]])
     jest.expect(A.min()).toEqual(-15)
@@ -77,5 +93,13 @@ export default function () {
 
     jest.expect(B.ravel()).toEqual([-46, 19, -38, 9, 9, -15, -25, -33])
     jest.expect(B.T().ravel()).toEqual([-46, -38, 9, -25, 19, 9, -15, -33])
+
+    jest.expect(E.ravel()).toEqual([
+        '1 + i', '10 + 10i', '100 + 100i',
+        '1 + i', '10 + 10i', '100 + 100i',
+        '1 + i', '10 + 10i', '100 + 100i',
+        '1 + i', '10 + 10i', '100 + 100i'
+    ])
+
     console.log('\n\n-------- End Elementwise Suite --------\n\n')
 }

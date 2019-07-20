@@ -28,8 +28,8 @@ export default function () {
     jest.expect(A.shape).toEqual([3, 4])
     jest.expect(B.shape).toEqual([4, 1])
 
-    jest.expect(A.strides).toEqual([4, 1])
-    jest.expect(B.strides).toEqual([1, 1])
+    jest.expect(A.strides).toEqual([8, 2])
+    jest.expect(B.strides).toEqual([2, 2])
 
     jest.expect(B.reshape({ shape: [1, 4, 1] })).toEqual([[[1], [2], [3], [4]]])
 

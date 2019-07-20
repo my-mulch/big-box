@@ -17,6 +17,8 @@
     },
     "homepage": "https://github.com/trumanpurnell/big-box#readme",
     "dependencies": {
+        "columnify": "^1.5.4",
+        "complex.js": "^2.0.11",
         "radley": "^6.0.0"
     }
 }

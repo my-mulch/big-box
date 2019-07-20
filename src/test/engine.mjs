@@ -5,13 +5,23 @@ export default class Jest {
     static expect(stuff) {
         return {
             toEqual: function (otherStuff) {
-                if (stuff.header) stuff = JSON.parse(stuff.toString())
-                if (otherStuff.header) otherStuff = JSON.parse(otherStuff.toString())
+                if (stuff.header) stuff = stuff.toRaw()
+                if (otherStuff.header) otherStuff = otherStuff.toRaw()
 
-                stuff = JSON.stringify(stuff)
-                otherStuff = JSON.stringify(otherStuff)
+                if (otherStuff.constructor === Array && stuff.constructor === Array) {
+                    stuff = stuff.flat(Number.POSITIVE_INFINITY).map(String)
+                    otherStuff = otherStuff.flat(Number.POSITIVE_INFINITY).map(String)
+                }
 
-                if (stuff === otherStuff)
+                stuff = stuff.constructor !== String
+                    ? JSON.stringify(stuff)
+                    : stuff
+
+                otherStuff = otherStuff.constructor !== String
+                    ? JSON.stringify(otherStuff)
+                    : otherStuff
+
+                if (stuff == otherStuff)
                     console.log(PASS, 'Passed!')
                 else
                     console.log(FAIL, `Failed: expected ${stuff} to equal ${otherStuff}`)

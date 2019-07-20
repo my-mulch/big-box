@@ -9,10 +9,12 @@ import crossProdSuite from '../ops/linalg/cross'
 
 import { randint } from '../ops/probability'
 
-import { sizeup, stringify, __Math__ } from '../array/utils'
+import { sizeup, __Math__ } from '../array/utils'
 import util from 'util' // node's
 import Header from './header'
 
+import Complex from 'complex.js'
+import Formatter from 'columnify'
 
 export default class BigBox {
 
@@ -44,13 +46,35 @@ export default class BigBox {
             type: args.type,
             header: new Header({ shape: sizeup(args.with) }),
             init: function () {
-                if (args.with.constructor === Array)
-                    return new this.type(args.with.flat(Number.POSITIVE_INFINITY))
 
-                if (args.with.constructor === Number)
-                    return new this.type(this.size).fill(args.with)
+                if (args.with.constructor === Array) {
+                    const flatRaw = args.with.flat(Number.POSITIVE_INFINITY)
+                    const typeRes = new this.type(this.size)
 
-                if (args.with.constructor === Int8Array ||
+                    for (let i = 0, j = 0; j < typeRes.length; i += 1, j += 2) {
+                        const cn = Complex(flatRaw[i])
+
+                        typeRes[j] = cn.re
+                        typeRes[j + 1] = cn.im
+                    }
+
+                    return typeRes
+                }
+
+                else if (args.with.constructor === String || args.with.constructor === Number) {
+                    const typeRes = new this.type(this.size)
+
+                    for (let j = 0; j < typeRes.length; j += 2) {
+                        const cn = Complex(args.with)
+
+                        typeRes[j] = cn.re
+                        typeRes[j + 1] = cn.im
+                    }
+
+                    return typeRes
+                }
+
+                else if (args.with.constructor === Int8Array ||
                     args.with.constructor === Uint8Array ||
                     args.with.constructor === Uint8ClampedArray ||
                     args.with.constructor === Int16Array ||
@@ -62,6 +86,8 @@ export default class BigBox {
                     this.type = args.with.constructor
                     return args.with
                 }
+
+                else throw 'Usage: bb.array({ with: rawArray | typedArray, type: typedArrayConstructor })'
             }
         })
     }
@@ -77,7 +103,14 @@ export default class BigBox {
         return new BigBox({
             type: args.type,
             header: new Header({ shape: args.shape }),
-            init: function () { return new this.type(this.size).fill(1) }
+            init: function () {
+                const typeRes = new this.type(this.size)
+
+                for (let i = 0; i < typeRes.length; i += 2)
+                    typeRes[i] = 1
+
+                return typeRes
+            }
         })
     }
 
@@ -92,7 +125,7 @@ export default class BigBox {
             init: function () {
                 const data = new this.type(this.size)
 
-                for (let i = args.start || 0, j = 0; i < args.stop; i += args.step || 1, j++)
+                for (let i = args.start || 0, j = 0; i < args.stop; i += args.step || 1, j += 2)
                     data[j] = i
 
                 return data
@@ -306,8 +339,22 @@ export default class BigBox {
         })
     }
 
-    toRaw() { return JSON.parse(this.toString()) }
+    toRaw(index = this.offset, depth = 0) {
+        if (depth === this.shape.length)
+            return Complex(
+                this.data[index],
+                this.data[index + 1]).toString()
+
+        return new Array(this.shape[depth])
+            .fill(null)
+            .map(function (_, i) {
+                return this.toRaw(
+                    i * this.strides[depth] + index, // computed index
+                    depth + 1)
+            }, this)
+    }
+
     valueOf() { return this.data[this.offset] }
-    toString() { return stringify.call(this) }
+    toString() { return Formatter(this.toRaw()).split('\n').slice(1).join('\n') }
     [util.inspect.custom]() { return this.toString() }
 }

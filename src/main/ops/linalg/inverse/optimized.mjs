@@ -1,8 +1,8 @@
 import { cofactorHelper, survivors, indexify } from './utils.mjs'
 
 export default function (args) {
-    const size = Math.round(Math.sqrt(args.of.size)),
-        template = [...new Array(args.of.size).keys()]
+    const size = Math.round(Math.sqrt(args.of.size / 2)),
+        template = [...new Array(args.of.size / 2).keys()]
 
     return new Function('args', `
         ${ /** Here we compute the Adjoint matrix using cofactor expansion */
