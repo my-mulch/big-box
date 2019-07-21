@@ -9,8 +9,8 @@ export default function () {
     A = bb.array({
         with: [
             ['10 + 2i'],
-            ['40'],
-            ['50 + i']
+            ['40 + 0i'],
+            ['50 + 1i']
         ]
     })
 
@@ -61,6 +61,7 @@ export default function () {
         ]
     })
 
+    /** Elementwise operations */
     jest.expect(A.min()).toEqual(['10 + 2i'])
     jest.expect(A.max()).toEqual(['50 + i'])
     jest.expect(A.mean()).toEqual(['33.33333206176758 + i'])
@@ -72,6 +73,9 @@ export default function () {
     jest.expect(B.mean()).toEqual(['4.522675514221191 + 4.493197441101074i'])
     jest.expect(B.sum()).toEqual(['7978 + 7926i'])
     jest.expect(B.norm()).toEqual(["317.10565185546875"])
+
+    /** Pairwise operations */
+    
 
     console.log('\n\n-------- End Complex Suite --------\n\n')
 }

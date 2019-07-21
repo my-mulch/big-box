@@ -4,6 +4,9 @@ import element from './suites/element'
 import indexing from './suites/indexing'
 import complex from './suites/complex'
 
+// import speed from './suites/speed'
+// speed.call()
+
 creation.call()
 linalg.call()
 element.call()
