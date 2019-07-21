@@ -340,10 +340,15 @@ export default class BigBox {
     }
 
     toRaw(index = this.offset, depth = 0) {
-        if (depth === this.shape.length)
-            return Complex(
+        if (!this.shape.length)
+            return [[Complex(
                 this.data[index],
-                this.data[index + 1]).toString()
+                this.data[index + 1]).toString()]]
+
+        if (depth === this.shape.length)
+            return [Complex(
+                this.data[index],
+                this.data[index + 1]).toString()]
 
         return new Array(this.shape[depth])
             .fill(null)

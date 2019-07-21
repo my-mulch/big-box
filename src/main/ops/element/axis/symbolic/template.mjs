@@ -16,7 +16,7 @@ export default function (args) {
                 ${args.reduce}
             `)}
             
-            args.result.data[ri] = ${args.assign}
+            ${args.assign}
         `)}
             
         return args.result

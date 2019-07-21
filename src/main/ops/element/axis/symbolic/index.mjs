@@ -1,80 +1,70 @@
 import template from './template'
 
 export default {
-    argmax: function (args) {
-        return new Function('args', template.call(args, {
-            init: `let valmax = Number.POSITIVE_INFINITY, argmax = 0`,
-            reduce: `if(args.of.data[ai] > valmax) { valmax = args.of.data[ai]; argmax = a0 }`,
-            assign: 'argmax'
-        }))
-    },
-    argmin: function (args) {
-        return new Function('args', template.call(args, {
-            init: `let valmin = Number.POSITIVE_INFINITY, argmin = 0`,
-            reduce: `if(args.of.data[ai] < valmin) { valmin = args.of.data[ai]; argmin = a0 }`,
-            assign: 'argmin'
-        }))
-    },
     min: function (args) {
         return new Function('args', template.call(args, {
-            init: 'let min = Number.POSITIVE_INFINITY',
-            reduce: 'min = Math.min(min, args.of.data[ai])',
-            assign: 'min'
+            init: 'let min = Number.POSITIVE_INFINITY, re = 0, im = 0',
+            reduce: [
+                'if(args.of.data[ai] < min) {',
+                '   min = args.of.data[ai]',
+                '   re = args.of.data[ai]',
+                '   im = args.of.data[ai + 1]',
+                '}'
+            ].join('\n'),
+            assign: [
+                'args.result.data[ri] = re',
+                'args.result.data[ri + 1] = im',
+            ].join('\n')
         }))
     },
     max: function (args) {
         return new Function('args', template.call(args, {
-            init: `let max = Number.NEGATIVE_INFINITY`,
-            reduce: 'max = Math.max(max, args.of.data[ai])',
-            assign: 'max'
+            init: 'let max = Number.NEGATIVE_INFINITY, re = 0, im = 0',
+            reduce: [
+                'if(args.of.data[ai] > max) {',
+                '   max = args.of.data[ai]',
+                '   re = args.of.data[ai]',
+                '   im = args.of.data[ai + 1]',
+                '}'
+            ].join('\n'),
+            assign: [
+                'args.result.data[ri] = re',
+                'args.result.data[ri + 1] = im',
+            ].join('\n')
         }))
     },
     mean: function (args) {
         return new Function('args', template.call(args, {
             global: `const sizeOfInnerAxes = ${args.of.size / args.result.size}`,
-            init: 'let sum = 0',
-            reduce: 'sum += args.of.data[ai]',
-            assign: 'sum / sizeOfInnerAxes'
+            init: 'let resum = 0, imsum = 0',
+            reduce: [
+                'resum += args.of.data[ai]',
+                'imsum += args.of.data[ai + 1]'
+            ].join('\n'),
+            assign: [
+                'args.result.data[ri] = resum / sizeOfInnerAxes',
+                'args.result.data[ri + 1] = imsum / sizeOfInnerAxes',
+            ].join('\n')
         }))
     },
     norm: function (args) {
         return new Function('args', template.call(args, {
             init: 'let sumSquares = 0',
-            reduce: 'sumSquares += args.of.data[ai] * args.of.data[ai]',
-            assign: 'Math.sqrt(sumSquares)'
-        }))
-    },
-    prod: function (args) {
-        return new Function('args', template.call(args, {
-            init: 'let prod = 1',
-            reduce: 'prod *= args.of.data[ai]',
-            assign: 'prod'
-        }))
-    },
-    round: function (args) {
-        return new Function('args', template.call(args, {
-            assign: 'args.of.data[ai].toFixed(args.precision)'
+            reduce: 'sumSquares += args.of.data[ai] * args.of.data[ai] + args.of.data[ai + 1] * args.of.data[ai + 1]',
+            assign: 'args.result.data[ri] = Math.sqrt(sumSquares)'
         }))
     },
     sum: function (args) {
         return new Function('args', template.call(args, {
-            init: 'let sum = 0',
-            reduce: 'sum += args.of.data[ai]',
-            assign: 'sum'
+            init: 'let resum = 0, imsum = 0',
+            reduce: [
+                'resum += args.of.data[ai]',
+                'imsum += args.of.data[ai + 1]'
+            ].join('\n'),
+            assign: [
+                'args.result.data[ri] = resum',
+                'args.result.data[ri + 1] = imsum',
+            ].join('\n')
         }))
     },
-    cumsum: function (args) {
-        return new Function('args', template.call(args, {
-            init: `let cumsum = 0, av = a${axis}`,
-            reduce: `if(a${axis} <= av) cumsum += args.of.data[ai]`,
-            assign: 'cumsum'
-        }))
-    },
-    cumprod: function (args) {
-        return new Function('args', template.call(args, {
-            init: `let cumprod = 1, av = a${axis}`,
-            reduce: `if(a${axis} <= av) cumprod *= args.of.data[ai]`,
-            assign: 'cumprod'
-        }))
-    }
 }

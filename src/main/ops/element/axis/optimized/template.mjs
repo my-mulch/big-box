@@ -8,24 +8,24 @@ export default function (args) {
         ${args.global}
         
         ${litassign({
-            count: this.result.size,
+            count: this.result.size / 2,
             metaindices: [
                 [rinds, this.result, 0], /** ri */
                 [raxes, this.of, 0]  /** rg */
             ],
-            reduce: bylines,
-            map: (function (ri, rg) {
+            reducer: bylines,
+            mapper: (function (ri, rg) {
                 return `
                     ${args.init}
                         
                     ${litassign({
                         count: this.of.size / this.result.size,
                         metaindices: [[iaxes, this.of, rg]], /** ai */
-                        map: function (ai) { return args.map(`args.of.data[${ai}]`) },
-                        reduce: args.reduce
+                        mapper: function (ai) { return args.mapper(ai, ai+1) },
+                        reducer: args.reducer
                     })}
 
-                    args.result.data[${ri}] = ${args.assign}
+                    ${args.assigner(ri, ri + 1)}
                 `
             }).bind(this)
         })}

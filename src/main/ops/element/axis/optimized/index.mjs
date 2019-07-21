@@ -1,105 +1,113 @@
 import template from './template'
-import { bylines } from '../../utils'
 
 export default {
-    argmax: function (args) {
-        return new Function('args', template.call(args, {
-            global: 'let argmax, valmax',
-            init: 'argmax = 0, valmax = Number.NEGATIVE_INFINITY',
-            map: function (item) { return `if(${item} > valmax) valmax = ${item}, argmax = ${i}` },
-            reduce: bylines,
-            assign: 'argmax'
-        }))
-    },
-    argmin: function (args) {
-        return new Function('args', template.call(args, {
-            global: 'let argmin, valmin',
-            init: 'argmin = 0, valmin = Number.POSITIVE_INFINITY',
-            map: function (item) { return `if(${item} > valmin) valmin = ${item}, argmin = ${i}` },
-            reduce: bylines,
-            assign: 'argmin'
-        }))
-    },
     max: function (args) {
         return new Function('args', template.call(args, {
-            global: 'let max',
-            init: 'max = Number.NEGATIVE_INFINITY',
-            map: function (item) { return `if(${item} > max) max = ${item}` },
-            reduce: bylines,
-            assign: 'max'
+            global: 'let max, re, im',
+            init: 'max = Number.NEGATIVE_INFINITY, re = 0, im = 0',
+            mapper: function (reidx, imidx) {
+                return [
+                    `if(args.of.data[${reidx}] > max) {`,
+                    `   max = args.of.data[${reidx}]`,
+                    `   re = args.of.data[${reidx}]`,
+                    `   im = args.of.data[${imidx}]`,
+                    `}`
+                ].join('\n')
+            },
+            reducer: function (items) { return items.join('\n') },
+            assigner: function (reidx, imidx) {
+                return [
+                    `args.result.data[${reidx}] = re`,
+                    `args.result.data[${imidx}] = im`,
+                ].join('\n')
+            }
         }))
     },
     min: function (args) {
         return new Function('args', template.call(args, {
-            global: 'let min',
-            init: 'min = Number.POSITIVE_INFINITY',
-            map: function (item) { return `if(${item} < min) min = ${item}` },
-            reduce: bylines,
-            assign: 'min'
+            global: 'let min, re, im',
+            init: 'min = Number.POSITIVE_INFINITY, re = 0, im = 0',
+            mapper: function (reidx, imidx) {
+                return [
+                    `if(args.of.data[${reidx}] < min) {`,
+                    `   min = args.of.data[${reidx}]`,
+                    `   re = args.of.data[${reidx}]`,
+                    `   im = args.of.data[${imidx}]`,
+                    `}`
+                ].join('\n')
+            },
+            reducer: function (items) { return items.join('\n') },
+            assigner: function (reidx, imidx) {
+                return [
+                    `args.result.data[${reidx}] = re`,
+                    `args.result.data[${imidx}] = im`,
+                ].join('\n')
+            }
         }))
     },
     mean: function (args) {
         return new Function('args', template.call(args, {
-            global: `let mean; const innerSize = ${args.of.size / args.result.size}`,
-            map: function (item) { return item },
-            reduce: function (innerItems) { return `mean = (${innerItems.join('+')}) / innerSize` },
-            assign: 'mean'
+            global: `let remean, immean; const innerSize = ${args.of.size / args.result.size}`,
+            mapper: function (reidx, imidx) {
+                return [
+                    `args.of.data[${reidx}]`,
+                    `args.of.data[${imidx}]`
+                ]
+            },
+            reducer: function (innerItems) {
+                const real = innerItems.map(function ([real, _]) { return real })
+                const imag = innerItems.map(function ([_, imag]) { return imag })
+
+                return [
+                    `remean = (${real.join('+')}) / innerSize`,
+                    `immean = (${imag.join('+')}) / innerSize`,
+                ].join('\n')
+            },
+            assigner: function (reidx, imidx) {
+                return [
+                    `args.result.data[${reidx}] = remean`,
+                    `args.result.data[${imidx}] = immean`,
+                ].join('\n')
+            }
         }))
     },
     norm: function (args) {
         return new Function('args', template.call(args, {
             global: 'let norm',
-            map: function (item) { return `${item} * ${item}` },
-            reduce: function (innerItems) { return `norm = Math.sqrt(${innerItems.join('+')})` },
-            assign: 'norm'
-        }))
-    },
-    prod: function (args) {
-        return new Function('args', template.call(args, {
-            global: 'let prod',
-            map: function (item) { return item },
-            reduce: function (innerItems) { return `prod = ${innerItems.join('*')}` },
-            assign: 'prod'
-        }))
-    },
-    round: function (args) {
-        return new Function('args', template.call(args, {
-            global: 'let rounded',
-            map: function (item) { return `${item}.toFixed(args.precision)` },
-            reduce: function (innerItems) { return `rounded = ${innerItems.toString()}` },
-            assign: 'rounded'
+            mapper: function (reidx, imidx) {
+                return `
+                    args.of.data[${reidx}] * args.of.data[${reidx}] + 
+                    args.of.data[${imidx}] * args.of.data[${imidx}]
+                `
+            },
+            reducer: function (innerItems) { return `norm = Math.sqrt(${innerItems.join('+')})` },
+            assigner: function (reidx, _) { return `args.result.data[${reidx}] = norm` }
         }))
     },
     sum: function (args) {
         return new Function('args', template.call(args, {
-            global: 'let sum',
-            map: function (item) { return item },
-            reduce: function (innerItems) { return `sum = ${innerItems.join('+')}` },
-            assign: 'sum'
-        }))
-    },
-    cumsum: function (args) {
-        let cumIndex = -1
-        return new Function('args', template.call(args, {
-            global: 'cumsum',
-            map: function (item) { return item },
-            reduce: function (innerItems) {
-                cumIndex++
-                return `cumsum = ${innerItems.filter(function (_, i) { return i <= cumIndex }).join('+')}`
+            global: 'let resum, imsum',
+            mapper: function (reidx, imidx) {
+                return [
+                    `args.of.data[${reidx}]`,
+                    `args.of.data[${imidx}]`
+                ]
             },
-            assign: 'cumsum'
-        }))
-    },
-    cumprod: function (args) {
-        let cumIndex = -1
-        return new Function('args', template.call(args, {
-            global: 'cumprod',
-            map: function (item) { return item },
-            reduce: function (innerItems) {
-                cumIndex++
-                return `cumprod = ${innerItems.filter(function (_, i) { return i <= cumIndex }).join('*')}`
+            reducer: function (innerItems) {
+                const real = innerItems.map(function ([real, _]) { return real })
+                const imag = innerItems.map(function ([_, imag]) { return imag })
+
+                return [
+                    `resum = (${real.join('+')})`,
+                    `imsum = (${imag.join('+')})`,
+                ].join('\n')
             },
-            assign: 'cumprod'
+            assigner: function (reidx, imidx) {
+                return [
+                    `args.result.data[${reidx}] = resum`,
+                    `args.result.data[${imidx}] = imsum`,
+                ].join('\n')
+            }
         }))
     }
 }

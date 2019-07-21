@@ -27,15 +27,15 @@ export const flatindex = function (axes, array, initial, index) {
     return resultindex
 }
 
-export const litassign = function ({ count, map, reduce, metaindices }) {
+export const litassign = function ({ count, mapper, reducer, metaindices }) {
     const assignments = new Array(count)
 
     for (let i = 0; i < assignments.length; i++)
-        assignments[i] = map(...metaindices.map(function (metaindex) {
+        assignments[i] = mapper(...metaindices.map(function (metaindex) {
             return flatindex(...metaindex, i)
         }))
 
-    return reduce(assignments)
+    return reducer(assignments)
 }
 
 export const loop = function (array) {
