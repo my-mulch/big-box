@@ -13,9 +13,19 @@ export default function (args) {
             const bi = ${symindex(baxes, WITH, broadcast)}
             const ri = ${symindex(raxes, RESULT)}
 
-            args.result.data[ri] = ${args.reduce(`args.of.data[ai]`, `args.with.data[bi]`)}
+            ${args.operation({
+                a:  `args.of.data[ai]`,
+                b:  `args.of.data[ai + 1]`,
+
+                c:  `args.with.data[bi]`,
+                d:  `args.with.data[bi + 1]`,
+
+                r: `args.result.data[ri]`,
+                i: `args.result.data[ri + 1]`,
+            })}
         `)}
         
         return args.result
     `
 }
+

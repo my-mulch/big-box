@@ -7,7 +7,7 @@ export default function (args) {
 
     return `
         ${litassign({
-            count: this.result.size,
+            count: this.result.size / 2,
             metaindices: [
                 [aaxes, this.of, 0], /** ai */
                 [baxes, this.with, 0], /** bi */
@@ -15,7 +15,16 @@ export default function (args) {
             ],
             reducer: bylines,
             mapper: function (ai, bi, ri) {
-                return `args.result.data[${ri}] = ${args.reduce(`args.of.data[${ai}]`, `args.with.data[${bi}]`)}`
+                return args.operation({
+                    a:  `args.of.data[${ai}]`,
+                    b:  `args.of.data[${ai + 1}]`,
+    
+                    c:  `args.with.data[${bi}]`,
+                    d:  `args.with.data[${bi + 1}]`,
+    
+                    r: `args.result.data[${ri}]`,
+                    i: `args.result.data[${ri + 1}]`,
+                })
             }
         })}
         
