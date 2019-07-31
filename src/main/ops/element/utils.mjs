@@ -3,21 +3,21 @@ import { AXIS_INNER_CHARACTER } from '../../../resources'
 export const bylines = function (items) { return items.join('\n') }
 
 export const split = function (axes) {
-    const raxes = [], iaxes = [], aaxes = [...axes.keys()]
+    const outerLoops = [], innerLoops = [], allLoops = [...Array.from(axes).keys()]
 
     for (let i = 0; i < axes.length; i++)
-        axes[i] === AXIS_INNER_CHARACTER ? iaxes.push(i) : raxes.push(i)
+        axes[i] === AXIS_INNER_CHARACTER ? innerLoops.push(i) : outerLoops.push(i)
 
-    return [raxes, iaxes, aaxes]
+    return [outerLoops, innerLoops, allLoops]
 }
 
 export const flatindex = function (axes, array, initial, index) {
     let resultindex = initial + array.offset
     let dimensionality = 1
 
-    for (const axis of axes.slice().reverse()) {
-        const base = array.shape[axis]
-        const place = array.strides[axis]
+    for (const axis of axes) {
+        const base = array.shape[axis] || 1
+        const place = array.strides[axis] || 0
         const digit = Math.floor(index / dimensionality) % base
 
         dimensionality *= base
@@ -31,31 +31,35 @@ export const litassign = function ({ count, mapper, reducer, metaindices }) {
     const assignments = new Array(count)
 
     for (let i = 0; i < assignments.length; i++)
-        assignments[i] = mapper(...metaindices.map(function (metaindex) {
-            return flatindex(...metaindex, i)
+        assignments[i] = mapper(...metaindices.map(function ([axes, array, initial]) {
+            return flatindex(axes, array, initial, i)
         }))
 
     return reducer(assignments)
 }
 
-export const loop = function (array) {
+export const loop = function (arrayName) {
     return function (i, j) {
-        return `for(let a${i} = 0; a${i} < args.${array}.shape[${i}]; a${i}++){`
+        return `for(let a${i} = 0; a${i} < args.${arrayName}.shape[${i}]; a${i}++){`
     }
 }
 
-export const index = function (array, offset) {
-    return function (i, j) {
-        return `a${i + offset} * args.${array}.strides[${j}]`
+export const index = function (arrayName, array) {
+    return function (_, j) {
+        return array.shape[j] > 1
+            ? `a${j} * args.${arrayName}.strides[${j}]`
+            : 0
     }
 }
 
-export const symindex = function (axes, array, offset = 0) {
-    return `args.${array}.offset + ${axes.map(index(array, offset)).join(' + ') || 0}`
+export const symindex = function (axes, arrayName, array) {
+    return `args.${arrayName}.offset + ${axes.map(index(arrayName, array)).join(' + ') || 0}`
 }
 
-export const symloops = function (axes, array, body) {
-    return `${axes.map(loop(array)).join('\n')} 
-                ${body} 
-            ${'}'.repeat(axes.length)}`
+export const symloops = function (axes, arrayName, body) {
+    return [
+        axes.map(loop(arrayName)).join('\n'),
+        body,
+        '}'.repeat(axes.length)
+    ].join('\n')
 }

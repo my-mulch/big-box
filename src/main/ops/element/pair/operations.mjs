@@ -1,8 +1,7 @@
 
 export const factory = function (template, operation) {
     return function (args) {
-        return new Function('args',
-            template.call(args, { operation }))
+        return new Function('args', template.call(args, { operation }))
     }
 }
 

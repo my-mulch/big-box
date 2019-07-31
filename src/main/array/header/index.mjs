@@ -73,14 +73,6 @@ export default class Header {
         return new Header({ shape, strides, offset, contig })
     }
 
-    axisSlice(axes) {
-        return new Header({
-            shape: this.shape.filter(function (_, i) {
-                return axes[i] !== AXIS_INNER_CHARACTER
-            })
-        })
-    }
-
     transpose() {
         return new Header({
             shape: this.shape.slice().reverse(),

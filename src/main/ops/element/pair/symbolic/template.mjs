@@ -1,17 +1,15 @@
-import { symloops, symindex } from '../../utils'
+import { symloops, symindex, split } from '../../utils'
 import { OF, WITH, RESULT } from '../../../../../resources'
 
 export default function (args) {
-    const aaxes = [...this.of.shape.keys()]
-    const baxes = [...this.with.shape.keys()]
-    const raxes = [...this.result.shape.keys()]
-    const broadcast = this.of.shape.length - this.with.shape.length
+    const [outerLoops, innerLoops, _] = split(this.axes)
+    const allLoops = outerLoops.concat(innerLoops)
 
     return `
-        ${symloops(aaxes, OF, `
-            const ai = ${symindex(aaxes, OF)}
-            const bi = ${symindex(baxes, WITH, broadcast)}
-            const ri = ${symindex(raxes, RESULT)}
+        ${symloops(allLoops, RESULT, `
+            const ai = ${symindex(allLoops, OF, this.of)}
+            const bi = ${symindex(allLoops, WITH, this.with)}
+            const ri = ${symindex(allLoops, RESULT, this.result)}
 
             ${args.operation({
                 a:  `args.of.data[ai]`,

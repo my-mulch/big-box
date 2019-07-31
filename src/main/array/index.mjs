@@ -1,4 +1,4 @@
-import { DIVIDE, MULTIPLY, SUBTRACT, ADD, ROUND, MIN, MAX, DEFAULT, ASSIGN, NORM, MEAN, SUM } from '../../resources'
+import { DIVIDE, MULTIPLY, SUBTRACT, ADD, ROUND, MIN, MAX, DEFAULT, ASSIGN, NORM, MEAN, SUM, AXIS_INNER_CHARACTER } from '../../resources'
 
 import axisSuite from '../ops/element/axis'
 import pairSuite from '../ops/element/pair'
@@ -9,12 +9,11 @@ import crossProdSuite from '../ops/linalg/cross'
 
 import { randint } from '../ops/probability'
 
-import { sizeup, __Math__ } from '../array/utils'
+import { sizeup, __Math__, broadcast } from '../array/utils'
 import util from 'util' // node's
 import Header from './header'
 
 import Complex from 'complex.js'
-import Formatter from 'columnify'
 
 export default class BigBox {
 
@@ -248,25 +247,34 @@ export default class BigBox {
     gpair(args, method) {
         BigBox.sanitize(args)
 
+        const { newShape, newOrder } = broadcast(this.shape, args.with.shape)
+
         return pairSuite.call({
             of: this,
             with: args.with,
+            axes: newOrder,
             method: method,
             result: args.result || new BigBox({
                 type: this.type,
-                header: new Header({ shape: this.shape })
+                header: new Header({ shape: newShape })
             })
         })
     }
 
     gaxis(args, method) {
+        const axes = args.axes || this.axes.NONE
+
         return axisSuite.call({
             of: this,
             method: method,
-            axes: args.axes || this.axes.NONE,
+            axes: axes,
             result: args.result || new BigBox({
                 type: this.type,
-                header: this.header.axisSlice(args.axes || this.axes.NONE)
+                header: new Header({
+                    shape: this.shape.filter(function (_, i) {
+                        return axes[i] !== AXIS_INNER_CHARACTER
+                    })
+                })
             })
         })
     }
@@ -334,6 +342,7 @@ export default class BigBox {
         return pairSuite.call({
             of: this,
             with: args.with,
+            axes: this.axes.ALL,
             method: ASSIGN,
             result: this
         })
@@ -341,14 +350,14 @@ export default class BigBox {
 
     toRaw(index = this.offset, depth = 0) {
         if (!this.shape.length)
-            return [[Complex(
+            return Complex(
                 this.data[index],
-                this.data[index + 1]).toString()]]
+                this.data[index + 1]).toString()
 
         if (depth === this.shape.length)
-            return [Complex(
+            return Complex(
                 this.data[index],
-                this.data[index + 1]).toString()]
+                this.data[index + 1]).toString()
 
         return new Array(this.shape[depth])
             .fill(null)
@@ -360,6 +369,6 @@ export default class BigBox {
     }
 
     valueOf() { return this.data[this.offset] }
-    toString() { return Formatter(this.toRaw()).split('\n').slice(1).join('\n') }
+    toString() { return this.toRaw() }
     [util.inspect.custom]() { return this.toString() }
 }

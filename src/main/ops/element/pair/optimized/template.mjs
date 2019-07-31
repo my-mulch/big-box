@@ -1,17 +1,16 @@
-import { litassign, bylines } from '../../utils'
+import { litassign, bylines, split } from '../../utils'
 
 export default function (args) {
-    const aaxes = [...this.of.shape.keys()]
-    const baxes = [...this.with.shape.keys()]
-    const raxes = [...this.result.shape.keys()]
+    const [outerLoops, innerLoops, _] = split(this.axes)
+    const allLoops = outerLoops.concat(innerLoops)
 
     return `
         ${litassign({
             count: this.result.size / 2,
             metaindices: [
-                [aaxes, this.of, 0], /** ai */
-                [baxes, this.with, 0], /** bi */
-                [raxes, this.result, 0] /** ci */
+                [allLoops, this.of, 0], /** ai */
+                [allLoops, this.with, 0], /** bi */
+                [allLoops, this.result, 0] /** ri */
             ],
             reducer: bylines,
             mapper: function (ai, bi, ri) {

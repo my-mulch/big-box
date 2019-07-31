@@ -8,11 +8,11 @@ export default function (args) {
         ${args.global}
         
         ${symloops(raxes, OF, `
-            const ri = ${symindex(raxes, RESULT)}
+            const ri = ${symindex(raxes, RESULT, this.result)}
             ${args.init}
             
             ${symloops(iaxes, OF, `
-                const ai = ${symindex(aaxes, OF)}
+                const ai = ${symindex(aaxes, OF, this.of)}
                 ${args.reduce}
             `)}
             
