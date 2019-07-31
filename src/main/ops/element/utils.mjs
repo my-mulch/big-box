@@ -63,3 +63,20 @@ export const symloops = function (axes, arrayName, body) {
         '}'.repeat(axes.length)
     ].join('\n')
 }
+
+export const symloop = function (axis) {
+    return `for(let a${axis} = 0; 
+                a${axis} < args.result.shape[${axis}]; 
+                a${axis}++){`
+}
+
+export const symindx = function ({ array, axes }) {
+    const offset = `args.${array.name}.offset`
+    const dimens = axes.map(function (axis) {
+        return array.shape[axis] > 1
+            ? `a${axis} * args.${array.name}.strides[${axis}]`
+            : 0
+    })
+
+    return offset + dimens.join('+') || 0
+}
