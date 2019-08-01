@@ -1,22 +1,17 @@
-import { DIVIDE, MULTIPLY, SUBTRACT, ADD, ROUND, MIN, MAX, DEFAULT, ASSIGN, NORM, MEAN, SUM, AXIS_INNER_CHARACTER } from '../../resources'
+import {
+    shapeRaw, shapeAlign, arrayAlign,
+    selfAxesAndShape, pairAxesAndShape
+} from './utils'
 
-import axisSuite from '../ops/element/axis'
-import pairSuite from '../ops/element/pair'
+import { __Math__ } from '../../resources'
 
-import invSuite from '../ops/linalg/inverse'
-import matMultSuite from '../ops/linalg/matmult'
-import crossProdSuite from '../ops/linalg/cross'
-
-import { randint } from '../ops/probability'
-
-import { sizeup, __Math__, broadcast } from '../array/utils'
 import util from 'util' // node's
-import Header from './header'
-
 import Complex from 'complex.js'
 
-export default class BigBox {
+import Header from '../header'
+import opsSuite from '../ops'
 
+export default class BigBox {
     constructor({ header, type, init = function () {
         return new this.type(this.size)
     } }) {
@@ -30,20 +25,25 @@ export default class BigBox {
     }
 
     static sanitize(args) {
-        if (args.of !== undefined && args.of.constructor !== BigBox)
+        if (args.of && args.of.constructor !== BigBox)
             args.of = BigBox.array({ with: args.of })
 
-        if (args.with !== undefined && args.with.constructor !== BigBox)
+        if (args.with && args.with.constructor !== BigBox)
             args.with = BigBox.array({ with: args.with })
 
-        if (args.result !== undefined && args.result.constructor !== BigBox)
-            args.result = BigBox.array({ with: args.result })
+        const shapeInfo = shapeAlign(args)
+
+        if (shapeInfo && shapeInfo.short === args.of)
+            args.of = arrayAlign(shapeInfo)
+
+        else if (shapeInfo && shapeInfo.short === args.with)
+            args.with = arrayAlign(shapeInfo)
     }
 
     static array(args) {
         return new BigBox({
             type: args.type,
-            header: new Header({ shape: sizeup(args.with) }),
+            header: new Header({ shape: shapeRaw(args.with) }),
             init: function () {
 
                 if (args.with.constructor === Array) {
@@ -117,9 +117,7 @@ export default class BigBox {
         return new BigBox({
             type: args.type,
             header: new Header({
-                shape: [
-                    __Math__.round((args.stop - (args.start || 0)) / (args.step || 1))
-                ]
+                shape: [__Math__.round((args.stop - (args.start || 0)) / (args.step || 1))]
             }),
             init: function () {
                 const data = new this.type(this.size)
@@ -135,7 +133,7 @@ export default class BigBox {
 
     static rand(args) {
         return new BigBox({
-            type: args.type,
+            type: Float32Array,
             header: new Header({ shape: args.shape }),
             init: function () {
                 const data = new this.type(this.size)
@@ -156,27 +154,27 @@ export default class BigBox {
                 const data = new this.type(this.size)
 
                 for (let i = 0; i < data.length; i++)
-                    data[i] = randint(args.low, args.high)
+                    data[i] = opsSuite.utils.randint({
+                        low: args.low,
+                        high: args.high
+                    })
 
                 return data
             }
         })
     }
 
-    static dot(args) {
+    static matMult(args) {
         BigBox.sanitize(args)
 
-        return matMultSuite.call({
+        return opsSuite.call({
             of: args.of,
             with: args.with,
-            method: DEFAULT,
+            method: this.matMult.name,
             result: args.result || new BigBox({
                 type: args.type,
                 header: new Header({
-                    shape: [
-                        args.of.shape[0],
-                        args.with.shape[1]
-                    ]
+                    shape: [args.of.shape[0], args.with.shape[1]]
                 })
             })
         })
@@ -185,10 +183,10 @@ export default class BigBox {
     static cross(args) {
         BigBox.sanitize(args)
 
-        return crossProdSuite.call({
+        return opsSuite.call({
             of: args.of,
             with: args.with,
-            method: DEFAULT,
+            method: this.cross.name,
             result: args.result || new BigBox({
                 type: args.type,
                 header: new Header({ shape: [3, 1] })
@@ -199,9 +197,9 @@ export default class BigBox {
     static inv(args) {
         BigBox.sanitize(args)
 
-        return invSuite.call({
+        return opsSuite.call({
             of: args.of,
-            method: DEFAULT,
+            method: this.inv.name,
             result: args.result || this.eye({ shape: args.of.shape })
         })
     }
@@ -247,65 +245,53 @@ export default class BigBox {
     gpair(args, method) {
         BigBox.sanitize(args)
 
-        const { newShape, newOrder } = broadcast(this.shape, args.with.shape)
+        const { resultAxes, resultShape } = pairAxesAndShape(args)
 
-        return pairSuite.call({
+        return opsSuite.call({
             of: this,
             with: args.with,
-            axes: newOrder,
+            axes: resultAxes,
             method: method,
+            shape: resultShape,
             result: args.result || new BigBox({
                 type: this.type,
-                header: new Header({ shape: newShape })
+                header: new Header({ resultShape })
             })
         })
     }
 
-    gaxis(args, method) {
-        const axes = args.axes || this.axes.NONE
+    gself(args, method) {
+        BigBox.sanitize(args)
 
-        return axisSuite.call({
+        const { resultAxes, resultShape } = selfAxesAndShape(args)
+
+        return opsSuite.call({
             of: this,
+            with: args.with,
+            axes: resultAxes,
+            shape: this.shape,
             method: method,
-            axes: axes,
             result: args.result || new BigBox({
                 type: this.type,
-                header: new Header({
-                    shape: this.shape.filter(function (_, i) {
-                        return axes[i] !== AXIS_INNER_CHARACTER
-                    })
-                })
+                header: new Header({ shape: resultShape })
             })
         })
     }
 
-    norm(args = {}) { return this.gaxis(args, NORM) }
-    mean(args = {}) { return this.gaxis(args, MEAN) }
-    sum(args = {}) { return this.gaxis(args, SUM) }
-    max(args = {}) { return this.gaxis(args, MAX) }
-    min(args = {}) { return this.gaxis(args, MIN) }
+    add(args) { return this.gpair(args, this.add.name) }
+    divide(args) { return this.gpair(args, this.divide.name) }
+    subtract(args) { return this.gpair(args, this.subtract.name) }
+    multiply(args) { return this.gpair(args, this.multiply.name) }
 
-    add(args) { return this.gpair(args, ADD) }
-    divide(args) { return this.gpair(args, DIVIDE) }
-    subtract(args) { return this.gpair(args, SUBTRACT) }
-    multiply(args) { return this.gpair(args, MULTIPLY) }
+    sum(args = {}) { return this.gself(args, this.sum.name) }
+    min(args = {}) { return this.gself(args, this.min.name) }
+    max(args = {}) { return this.gself(args, this.max.name) }
+    norm(args = {}) { return this.gself(args, this.norm.name) }
+    mean(args = {}) { return this.gself(args, this.mean.name) }
 
     inv(args = {}) { return BigBox.inv({ of: this, result: args.result }) }
-    dot(args) { return BigBox.dot({ of: this, with: args.with, result: args.result }) }
+    matMult(args) { return BigBox.matMult({ of: this, with: args.with, result: args.result }) }
     cross(args) { return BigBox.cross({ of: this, with: args.with, result: args.result }) }
-
-    round(args) {
-        return axisSuite.call({
-            of: this,
-            method: ROUND,
-            axes: this.axes.ALL,
-            precision: args.precision,
-            result: args.result || new BigBox({
-                type: this.type,
-                header: new Header({ shape: this.shape })
-            })
-        })
-    }
 
     slice(args, old = this) {
         return new BigBox({
@@ -336,36 +322,28 @@ export default class BigBox {
         })
     }
 
-    set(args) {
+    assign(args) {
         BigBox.sanitize(args)
 
-        return pairSuite.call({
+        return opsSuite.call({
             of: this,
             with: args.with,
             axes: this.axes.ALL,
-            method: ASSIGN,
+            shape: this.shape,
+            method: this.assign.name,
             result: this
         })
     }
 
     toRaw(index = this.offset, depth = 0) {
-        if (!this.shape.length)
+        if (!this.shape.length || depth === this.shape.length)
             return Complex(
                 this.data[index],
                 this.data[index + 1]).toString()
 
-        if (depth === this.shape.length)
-            return Complex(
-                this.data[index],
-                this.data[index + 1]).toString()
-
-        return new Array(this.shape[depth])
-            .fill(null)
-            .map(function (_, i) {
-                return this.toRaw(
-                    i * this.strides[depth] + index, // computed index
-                    depth + 1)
-            }, this)
+        return [...new Array(this.shape[depth]).keys()].map(function (i) {
+            return this.toRaw(i * this.strides[depth] + index, depth + 1)
+        }, this)
     }
 
     valueOf() { return this.data[this.offset] }

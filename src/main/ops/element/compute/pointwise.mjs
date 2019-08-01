@@ -1,13 +1,14 @@
 
-import { flatcomp } from './utils'
+import { litComp } from './utils'
 
 export default function ({ operation }) {
     return function (args) {
         const axes = args.axes
+        const shape = args.shape
         const arrays = { result: args.result, of: args.of, with: args.with }
         const indices = { result: new Array(), of: new Array(), with: new Array() }
 
-        flatcomp({ arrays, axes, indices })
+        litComp({ arrays, axes, shape, indices })
 
         const pointWiseFunction = new Function('args', [...new Array(args.result.size).keys()]
             .map(function (i) {

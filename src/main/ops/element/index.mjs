@@ -1,59 +1,62 @@
-import radley from 'radley'
+import symbolic from './compute/symbolic'
+import flattened from './compute/flattened'
+import pointwise from './compute/pointwise'
 
-import symbolic from './symbolic'
-import flattened from './flattened'
-import pointwise from './pointwise'
+import { addition, subtraction, multiplication, division, assignment } from './compute/operations'
 
-export default radley.suite({
-    add: {
-        'args.result.size <= 15': true,
-        'args.result.size <= 30': true,
-        'args.result.size > 30': true
-    },
-    subtract: {
-        'args.result.size <= 15': true,
-        'args.result.size <= 30': true,
-        'args.result.size > 30': true
-    },
-    multiply: {
-        'args.result.size <= 15': true,
-        'args.result.size <= 30': true,
-        'args.result.size > 30': true
-    },
-    divide: {
-        'args.result.size <= 15': true,
-        'args.result.size <= 30': true,
-        'args.result.size > 30': true
-    },
-    assign: {
-        'args.result.size <= 15': true,
-        'args.result.size <= 30': true,
-        'args.result.size > 30': true
-    },
-    min: {
-        'args.result.size <= 15': true,
-        'args.result.size <= 30': true,
-        'args.result.size > 30': true
-    },
-    max: {
-        'args.result.size <= 15': true,
-        'args.result.size <= 30': true,
-        'args.result.size > 30': true
-    },
-    mean: {
-        'args.result.size <= 15': true,
-        'args.result.size <= 30': true,
-        'args.result.size > 30': true
-    },
-    norm: {
-        'args.result.size <= 15': true,
-        'args.result.size <= 30': true,
-        'args.result.size > 30': true
-    },
-    sum: {
-        'args.result.size <= 15': true,
-        'args.result.size <= 30': true,
-        'args.result.size > 30': true
-    },
-    hash: ['args.of.id', 'args.with.id', 'args.result.id']
-})
+export default {
+    utils: {},
+    operations: {
+        add: {
+            'args.result.size <= 15': pointwise(addition),
+            'args.result.size <= 30': flattened(addition),
+            'args.result.size > 30': symbolic(addition)
+        },
+        subtract: {
+            'args.result.size <= 15': pointwise(subtraction),
+            'args.result.size <= 30': flattened(subtraction),
+            'args.result.size > 30': symbolic(subtraction)
+        },
+        multiply: {
+            'args.result.size <= 15': pointwise(multiplication),
+            'args.result.size <= 30': flattened(multiplication),
+            'args.result.size > 30': symbolic(multiplication)
+        },
+        divide: {
+            'args.result.size <= 15': pointwise(division),
+            'args.result.size <= 30': flattened(division),
+            'args.result.size > 30': symbolic(division)
+        },
+        assign: {
+            'args.result.size <= 15': pointwise(assignment),
+            'args.result.size <= 30': flattened(assignment),
+            'args.result.size > 30': symbolic(assignment)
+        },
+        min: {
+            'args.result.size <= 15': function () { return function () { } },
+            'args.result.size <= 30': function () { return function () { } },
+            'args.result.size > 30': function () { return function () { } }
+        },
+        max: {
+            'args.result.size <= 15': function () { return function () { } },
+            'args.result.size <= 30': function () { return function () { } },
+            'args.result.size > 30': function () { return function () { } }
+        },
+        mean: {
+            'args.result.size <= 15': function () { return function () { } },
+            'args.result.size <= 30': function () { return function () { } },
+            'args.result.size > 30': function () { return function () { } }
+        },
+        norm: {
+            'args.result.size <= 15': function () { return function () { } },
+            'args.result.size <= 30': function () { return function () { } },
+            'args.result.size > 30': function () { return function () { } }
+        },
+        sum: {
+            'args.result.size <= 15': function () { return function () { } },
+            'args.result.size <= 30': function () { return function () { } },
+            'args.result.size > 30': function () { return function () { } }
+        }
+    }
+
+}

@@ -1,4 +1,6 @@
+import { randint } from './utils'
 
-export const randint = function (low, high) {
-    return low + Math.floor(Math.random() * (high - low))
+export default {
+    utils: { randint },
+    operations: {}
 }

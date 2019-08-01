@@ -1,13 +1,13 @@
-import { symloop, symindx } from './utils'
+import { symLoop, symIndx } from './utils'
 
 export default function ({ operation }) {
     return function (args) {
         return new Function('args', [
-            args.axes.map(symloop).join('\n'),
+            args.axes.map(symLoop).join('\n'),
             [
-                `const ai = ${symindx({ axes: args.axes, array: args.of })}`,
-                `const bi = ${symindx({ axes: args.axes, array: args.with })}`,
-                `const ri = ${symindx({ axes: args.axes, array: args.result })}`,
+                `const ai = ${symIndx({ axes: args.axes, array: args.of })}`,
+                `const bi = ${symIndx({ axes: args.axes, array: args.with })}`,
+                `const ri = ${symIndx({ axes: args.axes, array: args.result })}`,
 
                 operation({
                     a: `args.of.data[ai]`,

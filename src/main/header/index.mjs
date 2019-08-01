@@ -1,11 +1,10 @@
 import {
     PARTIAL_SLICE_REGEX, NUMBER_REGEX,
     SLICE_CHARACTER, AXIS_INNER_CHARACTER, AXIS_RESULT_CHARACTER,
-    SHAPE, OFFSET, CONTIG, STRIDES
-} from '../../../resources'
+    SHAPE, OFFSET, CONTIG, STRIDES, __Math__
+} from '../../resources'
 
 import { getStrides, isContiguousSlice, resolveReshape } from './utils'
-import { __Math__ } from '../utils'
 
 export default class Header {
 

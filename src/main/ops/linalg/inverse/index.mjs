@@ -1,12 +1,9 @@
-import radley from 'radley'
-
 import symbolic from './symbolic'
 import optimized from './optimized'
 
-export default radley.suite({
-    default: {
+export default {
+    inverse: {
         'args.result.size > 25': symbolic,
         'args.result.size <= 25': optimized
-    },
-    hash: ['args.of.id', 'args.result.id']
-})
+    }
+}

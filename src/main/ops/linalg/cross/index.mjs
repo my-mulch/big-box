@@ -1,7 +1,6 @@
-import radley from 'radley'
 
-export default radley.suite({
-    default: {
+export default {
+    cross: {
         'true': function (args) {
             const ofStrides = args.of.shape[0] === 3 ? args.of.strides[0] : args.of.strides[1]
             const withStrides = args.with.shape[0] === 3 ? args.with.strides[0] : args.with.strides[1]
@@ -23,6 +22,5 @@ export default radley.suite({
                 return args.result
             `)
         }
-    },
-    hash: ['args.of.id', 'args.with.id', 'args.result.id']
-})
+    }
+}
