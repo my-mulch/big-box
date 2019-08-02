@@ -12,54 +12,54 @@ export default {
     utils: {},
     operations: {
         add: {
-            'args.result.size <= 15': pointwise({ operation: addition, cache }),
-            'args.result.size <= 30': flattened({ operation: addition, cache }),
-            'args.result.size > 30': symbolic({ operation: addition, cache })
+            'args.size <= 20': pointwise({ operation: addition, cache }),
+            'args.size <= 100': flattened({ operation: addition, cache }),
+            'args.size > 100': symbolic({ operation: addition, cache })
         },
         subtract: {
-            'args.result.size <= 15': pointwise({ operation: subtraction, cache }),
-            'args.result.size <= 30': flattened({ operation: subtraction, cache }),
-            'args.result.size > 30': symbolic({ operation: subtraction, cache })
+            'args.size <= 20': pointwise({ operation: subtraction, cache }),
+            'args.size <= 100': flattened({ operation: subtraction, cache }),
+            'args.size > 100': symbolic({ operation: subtraction, cache })
         },
         multiply: {
-            'args.result.size <= 15': pointwise({ operation: multiplication, cache }),
-            'args.result.size <= 30': flattened({ operation: multiplication, cache }),
-            'args.result.size > 30': symbolic({ operation: multiplication, cache })
+            'args.size <= 20': pointwise({ operation: multiplication, cache }),
+            'args.size <= 100': flattened({ operation: multiplication, cache }),
+            'args.size > 100': symbolic({ operation: multiplication, cache })
         },
         divide: {
-            'args.result.size <= 15': pointwise({ operation: division, cache }),
-            'args.result.size <= 30': flattened({ operation: division, cache }),
-            'args.result.size > 30': symbolic({ operation: division, cache })
+            'args.size <= 20': pointwise({ operation: division, cache }),
+            'args.size <= 100': flattened({ operation: division, cache }),
+            'args.size > 100': symbolic({ operation: division, cache })
         },
         assign: {
-            'args.result.size <= 15': pointwise({ operation: assignment, cache }),
-            'args.result.size <= 30': flattened({ operation: assignment, cache }),
-            'args.result.size > 30': symbolic({ operation: assignment, cache })
+            'args.size <= 20': pointwise({ operation: assignment, cache }),
+            'args.size <= 100': flattened({ operation: assignment, cache }),
+            'args.size > 100': symbolic({ operation: assignment, cache })
         },
         min: {
-            'args.result.size <= 15': pointwise({ operation: min, cache }),
-            'args.result.size <= 30': flattened({ operation: min, cache }),
-            'args.result.size > 30': symbolic({ operation: min, cache }),
+            'args.size <= 20': pointwise({ operation: min, cache }),
+            'args.size <= 100': flattened({ operation: min, cache }),
+            'args.size > 100': symbolic({ operation: min, cache }),
         },
         max: {
-            'args.result.size <= 15': pointwise({ operation: max, cache }),
-            'args.result.size <= 30': flattened({ operation: max, cache }),
-            'args.result.size > 30': symbolic({ operation: max, cache }),
+            'args.size <= 20': pointwise({ operation: max, cache }),
+            'args.size <= 100': flattened({ operation: max, cache }),
+            'args.size > 100': symbolic({ operation: max, cache }),
         },
         mean: {
-            'args.result.size <= 15': pointwise({ operation: mean, cache }),
-            'args.result.size <= 30': flattened({ operation: mean, cache }),
-            'args.result.size > 30': symbolic({ operation: mean, cache }),
+            'args.size <= 20': pointwise({ operation: mean, cache }),
+            'args.size <= 100': flattened({ operation: mean, cache }),
+            'args.size > 100': symbolic({ operation: mean, cache }),
         },
         norm: {
-            'args.result.size <= 15': pointwise({ operation: norm, cache }),
-            'args.result.size <= 30': flattened({ operation: norm, cache }),
-            'args.result.size > 30': symbolic({ operation: norm, cache }),
+            'args.size <= 20': pointwise({ operation: norm, cache }),
+            'args.size <= 100': flattened({ operation: norm, cache }),
+            'args.size > 100': symbolic({ operation: norm, cache }),
         },
         sum: {
-            'args.result.size <= 15': pointwise({ operation: sum, cache }),
-            'args.result.size <= 30': flattened({ operation: sum, cache }),
-            'args.result.size > 30': symbolic({ operation: sum, cache }),
+            'args.size <= 20': pointwise({ operation: sum, cache }),
+            'args.size <= 100': flattened({ operation: sum, cache }),
+            'args.size > 100': symbolic({ operation: sum, cache }),
         }
     }
 

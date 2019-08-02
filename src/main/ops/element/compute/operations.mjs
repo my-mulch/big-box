@@ -9,75 +9,92 @@ export const cache = {
     }
 }
 
-export const addition = function ({ a, b, c, d, r, i }) {
+export const addition = function ({
+    ofRealIndex, ofImagIndex,
+    withRealIndex, withImagIndex,
+    resultRealIndex, resultImagIndex }) {
     return [
-        `${r} = ${a} + ${c}`,
-        `${i} = ${b} + ${d}`,
+        `${resultRealIndex} = ${ofRealIndex} + ${withRealIndex}`,
+        `${resultImagIndex} = ${ofImagIndex} + ${withImagIndex}`,
     ].join('\n')
 }
 
-export const subtraction = function ({ a, b, c, d, r, i }) {
+export const subtraction = function ({
+    ofRealIndex, ofImagIndex,
+    withRealIndex, withImagIndex,
+    resultRealIndex, resultImagIndex }) {
     return [
-        `${r} = ${a} - ${c}`,
-        `${i} = ${b} - ${d}`,
+        `${resultRealIndex} = ${ofRealIndex} - ${withRealIndex}`,
+        `${resultImagIndex} = ${ofImagIndex} - ${withImagIndex}`,
     ].join('\n')
 }
 
-export const multiplication = function ({ a, b, c, d, r, i }) {
+export const multiplication = function ({
+    ofRealIndex, ofImagIndex,
+    withRealIndex, withImagIndex,
+    resultRealIndex, resultImagIndex }) {
     return [
-        `var ac = ${a} * ${c}`,
-        `var bd = ${b} * ${d}`,
-        `var apb = (${a} + ${b})`,
-        `var cpd = (${c} + ${d})`,
+        `var ac = ${ofRealIndex} * ${withRealIndex}`,
+        `var bd = ${ofImagIndex} * ${withImagIndex}`,
+        `var apb = (${ofRealIndex} + ${ofImagIndex})`,
+        `var cpd = (${withRealIndex} + ${withImagIndex})`,
 
-        `${r} = ac - bd`,
-        `${i} = apb * cpd - ac - bd`,
+        `${resultRealIndex} = ac - bd`,
+        `${resultImagIndex} = apb * cpd - ac - bd`,
     ].join('\n')
 }
 
-export const division = function ({ a, b, c, d, r, i }) {
+export const division = function ({
+    ofRealIndex, ofImagIndex,
+    withRealIndex, withImagIndex,
+    resultRealIndex, resultImagIndex }) {
     return [
-        `var mod = ${c} === 0 && ${d} === 0 
+        `var mod = ${withRealIndex} === 0 && ${withImagIndex} === 0 
             ? 1 
-            : ${c} * ${c} + ${d} * ${d}`,
+            : ${withRealIndex} * ${withRealIndex} + ${withImagIndex} * ${withImagIndex}`,
 
-        `${r} = (${a} * ${c} + ${b} * ${d}) / mod`,
-        `${i} = (${b} * ${c} - ${a} * ${d}) / mod`,
+        `${resultRealIndex} = (${ofRealIndex} * ${withRealIndex} + ${ofImagIndex} * ${withImagIndex}) / mod`,
+        `${resultImagIndex} = (${ofImagIndex} * ${withRealIndex} - ${ofRealIndex} * ${withImagIndex}) / mod`,
     ].join('\n')
 }
 
-export const assignment = function ({ c, d, r, i }) {
+export const assignment = function ({
+    withRealIndex, withImagIndex,
+    resultRealIndex, resultImagIndex }) {
     return [
-        `${r} = ${c}`,
-        `${i} = ${d}`,
+        `${resultRealIndex} = ${withRealIndex}`,
+        `${resultImagIndex} = ${withImagIndex}`,
     ].join('\n')
 }
 
-export const min = function min({ a, b, r, i }) {
+export const min = function min({
+    ofRealIndex, ofImagIndex,
+    resultRealIndex, resultImagIndex }) {
 
 }
 
-export const max = function max({ a, b, r, i }) {
+export const max = function max({
+    ofRealIndex, ofImagIndex,
+    resultRealIndex, resultImagIndex }) {
 
 }
 
 
-export const norm = function ({ a, b, r, i }) {
+export const norm = function ({
+    ofRealIndex, ofImagIndex,
+    resultRealIndex, resultImagIndex }) {
 
 }
 
-export const mean = function ({ a, b, r, i }) {
+export const mean = function ({
+    ofRealIndex, ofImagIndex,
+    resultRealIndex, resultImagIndex }) {
     return [
-        `this.cache[this.indices.result[i]] += ${a}`,
-        `this.cache[this.indices.result[i + 1]] += ${b}`,
-
-
-        `if(i === this.indices.result.length - 1){
-            
-        }`
-    ]
+        `this.cache[${resultRealIndex}] += args.of.data[${ofRealIndex}]`,
+        `this.cache[${resultImagIndex}] += args.of.data[${ofImagIndex}]`,
+    ].join('\n')
 }
 
-export const sum = function ({ a, b, r, i }) {
+export const sum = function ({ ofRealIndex, ofImagIndex, resultRealIndex, resultImagIndex }) {
 
 }

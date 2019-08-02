@@ -1,31 +1,30 @@
 
-import { symLoop, symIndx } from './utils'
+import { symLoops, symIndices } from './utils'
 
 export default function ({ operation }) {
     return function (args) {
         return new Function('args', [
             'this.cache.fill(0)',
 
-            ...args.axes.map(symLoop), // loop heads
+            ...args.axes.map(symLoops), // loop heads
 
-            `const ai = ${symIndx({ axes: args.axes, array: args.of })}`,
-            `const bi = ${symIndx({ axes: args.axes, array: args.with })}`,
-            `const ri = ${symIndx({ axes: args.axes, array: args.result })}`,
+            ...symIndices(args),
 
-            operation({
-                a: `args.of.data[ai]`,
-                b: `args.of.data[ai + 1]`,
+            operation.call(args, {
+                ofRealIndex: `ofIndex`,
+                ofImagIndex: `ofIndex + 1`,
 
-                c: `args.with.data[bi]`,
-                d: `args.with.data[bi + 1]`,
+                withRealIndex: `withIndex`,
+                withImagIndex: `withIndex + 1`,
 
-                r: `args.result.data[ri]`,
-                i: `args.result.data[ri + 1]`,
+                resultRealIndex: `resultIndex`,
+                resultImagIndex: `resultIndex + 1`,
             }),
 
+            '}'.repeat(args.shape.length),
+
             'return args.result'
-        ].join('\n')).bind({
-            cache: new Uint32Array(args.result.size)
-        })
+
+        ].join('\n')).bind({ cache: new Int32Array(args.result.size) })
     }
 }

@@ -207,6 +207,7 @@ export default class BigBox {
             axes: resultAxes,
             method: method,
             shape: resultShape,
+            size: this.shape.reduce(__Math__.multiply),
             result: args.result || new BigBox({
                 type: this.type,
                 header: new Header({ shape: resultShape })
@@ -222,6 +223,7 @@ export default class BigBox {
             with: { id: '' },
             axes: resultAxes,
             shape: this.shape,
+            size: this.shape.reduce(__Math__.multiply),
             method: method,
             result: args.result || new BigBox({
                 type: this.type,

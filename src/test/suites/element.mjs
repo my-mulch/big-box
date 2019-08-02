@@ -309,6 +309,10 @@ export default function () {
         [7, 6]]]]
     })
 
+    jest.expect(B.mean()).toEqual(-15)
+    jest.expect(C.mean()).toEqual(16.66666666666)
+    jest.expect(K.mean()).toEqual(4.525)
+
     jest.expect(B.multiply({ with: 6 })).toEqual([[-276, 114], [-228, 54], [54, -90], [-150, -198]])
 
     jest.expect(A.min()).toEqual(-15)
@@ -331,7 +335,6 @@ export default function () {
     jest.expect(C.slice({ with: [':', 0, ':'] }).min()).toEqual(1)
     jest.expect(C.slice({ with: [':', 0, ':'] }).divide({ with: C.slice({ with: [':', 0, ':'] }) })).toEqual([[1, 1, 1], [1, 1, 1], [1, 1, 1]])
 
-    jest.expect(B.mean()).toEqual(-15)
     jest.expect(B.mean({ axes: '*-' })).toEqual([-13.5, -14.5, -3., -29.])
     jest.expect(B.mean({ axes: '-*' })).toEqual([-25, -5])
 
