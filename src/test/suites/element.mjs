@@ -312,13 +312,13 @@ export default function () {
     jest.expect(B.multiply({ with: 6 })).toEqual([[-276, 114], [-228, 54], [54, -90], [-150, -198]])
 
     jest.expect(A.min()).toEqual(-15)
-    jest.expect(A.min({ axes: '-**-' })).toEqual([
+    jest.expect(A.min({ axes: [0, 3] })).toEqual([
         [17, 21, -15],
         [-2, -13, -5]
     ])
 
     jest.expect(A.max()).toEqual(44)
-    jest.expect(A.max({ axes: '-**-' })).toEqual([
+    jest.expect(A.max({ axes: [0, 3] })).toEqual([
         [44, 36, 21],
         [21, 24, 11]
     ])

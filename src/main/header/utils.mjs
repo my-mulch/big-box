@@ -28,7 +28,7 @@ export const getStrides = function (shape, startStride) {
 
 export const resolveReshape = function (shape, size) {
     const reshape = new Array(shape.length)
-    const product = shape.reduce(__Math__.multiply)
+    const product = shape.reduce(__Math__.multiply, 1)
 
     for (let i = 0; i < shape.length; i++)
         reshape[i] = shape[i] < 0 ? -size / 2 / product : shape[i]

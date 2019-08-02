@@ -1,5 +1,5 @@
 import {
-    shapeRaw, shapeAlign, arrayAlign,
+    shapeRaw, shapeAlign,
     selfAxesAndShape, pairAxesAndShape
 } from './utils'
 
@@ -22,22 +22,6 @@ export default class BigBox {
         this.header = header
         this.type = type || Float32Array
         this.data = init.call(this)
-    }
-
-    static sanitize(args) {
-        if (args.of && args.of.constructor !== BigBox)
-            args.of = BigBox.array({ with: args.of })
-
-        if (args.with && args.with.constructor !== BigBox)
-            args.with = BigBox.array({ with: args.with })
-
-        const shapeInfo = shapeAlign(args)
-
-        if (shapeInfo && shapeInfo.short === args.of)
-            args.of = arrayAlign(shapeInfo)
-
-        else if (shapeInfo && shapeInfo.short === args.with)
-            args.with = arrayAlign(shapeInfo)
     }
 
     static array(args) {
@@ -164,46 +148,6 @@ export default class BigBox {
         })
     }
 
-    static matMult(args) {
-        BigBox.sanitize(args)
-
-        return opsSuite.call({
-            of: args.of,
-            with: args.with,
-            method: this.matMult.name,
-            result: args.result || new BigBox({
-                type: args.type,
-                header: new Header({
-                    shape: [args.of.shape[0], args.with.shape[1]]
-                })
-            })
-        })
-    }
-
-    static cross(args) {
-        BigBox.sanitize(args)
-
-        return opsSuite.call({
-            of: args.of,
-            with: args.with,
-            method: this.cross.name,
-            result: args.result || new BigBox({
-                type: args.type,
-                header: new Header({ shape: [3, 1] })
-            })
-        })
-    }
-
-    static inv(args) {
-        BigBox.sanitize(args)
-
-        return opsSuite.call({
-            of: args.of,
-            method: this.inv.name,
-            result: args.result || this.eye({ shape: args.of.shape })
-        })
-    }
-
     static eye(args) {
         return new BigBox({
             type: args.type,
@@ -219,6 +163,11 @@ export default class BigBox {
                 return data
             }
         })
+    }
+
+    sanitize(args) {
+        if (args.with && args.with.constructor !== BigBox)
+            args.with = BigBox.array({ with: args.with })
     }
 
     astype(args) {
@@ -243,9 +192,14 @@ export default class BigBox {
     }
 
     gpair(args, method) {
-        BigBox.sanitize(args)
+        this.sanitize(args)
 
-        const { resultAxes, resultShape } = pairAxesAndShape(args)
+        args.with = shapeAlign({
+            short: args.with,
+            delta: this.shape.length - args.with.shape.length
+        })
+
+        const { resultAxes, resultShape } = pairAxesAndShape.call(this, args)
 
         return opsSuite.call({
             of: this,
@@ -255,27 +209,25 @@ export default class BigBox {
             shape: resultShape,
             result: args.result || new BigBox({
                 type: this.type,
-                header: new Header({ resultShape })
+                header: new Header({ shape: resultShape })
             })
         })
     }
 
     gself(args, method) {
-        BigBox.sanitize(args)
-
-        const { resultAxes, resultShape } = selfAxesAndShape(args)
+        const { resultAxes, resultShape, adjustedShape } = selfAxesAndShape.call(this, args)
 
         return opsSuite.call({
             of: this,
-            with: args.with,
+            with: { id: '' },
             axes: resultAxes,
             shape: this.shape,
             method: method,
             result: args.result || new BigBox({
                 type: this.type,
-                header: new Header({ shape: resultShape })
+                header: new Header({ shape: adjustedShape })
             })
-        })
+        }).reshape({ shape: resultShape })
     }
 
     add(args) { return this.gpair(args, this.add.name) }
@@ -289,9 +241,42 @@ export default class BigBox {
     norm(args = {}) { return this.gself(args, this.norm.name) }
     mean(args = {}) { return this.gself(args, this.mean.name) }
 
-    inv(args = {}) { return BigBox.inv({ of: this, result: args.result }) }
-    matMult(args) { return BigBox.matMult({ of: this, with: args.with, result: args.result }) }
-    cross(args) { return BigBox.cross({ of: this, with: args.with, result: args.result }) }
+    matMult(args) {
+        this.sanitize(args)
+
+        return opsSuite.call({
+            of: this,
+            with: args.with,
+            method: this.matMult.name,
+            result: args.result || new BigBox({
+                type: args.type,
+                header: new Header({ shape: [this.shape[0], args.with.shape[1]] })
+            })
+        })
+    }
+
+    cross(args) {
+        this.sanitize(args)
+
+        return opsSuite.call({
+            of: this,
+            with: args.with,
+            method: this.cross.name,
+            result: args.result || new BigBox({
+                type: args.type,
+                header: new Header({ shape: [3, 1] })
+            })
+        })
+    }
+
+    inverse(args = {}) {
+        return opsSuite.call({
+            of: this,
+            with: { id: '' },
+            method: this.inverse.name,
+            result: args.result || BigBox.eye({ shape: this.shape })
+        })
+    }
 
     slice(args, old = this) {
         return new BigBox({
@@ -323,7 +308,7 @@ export default class BigBox {
     }
 
     assign(args) {
-        BigBox.sanitize(args)
+        this.sanitize(args)
 
         return opsSuite.call({
             of: this,

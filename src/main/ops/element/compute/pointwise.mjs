@@ -3,15 +3,12 @@ import { litComp } from './utils'
 
 export default function ({ operation }) {
     return function (args) {
-        const axes = args.axes
-        const shape = args.shape
-        const arrays = { result: args.result, of: args.of, with: args.with }
-        const indices = { result: new Array(), of: new Array(), with: new Array() }
+        const indices = litComp(args)
 
-        litComp({ arrays, axes, shape, indices })
+        const pointWiseFunction = new Function('args', [
+            'this.cache.fill(0)',
 
-        const pointWiseFunction = new Function('args', [...new Array(args.result.size).keys()]
-            .map(function (i) {
+            ...[...new Array(args.size).keys()].map(function (i) {
                 return operation({
                     a: `args.of.data[${indices.of[i]}]`,
                     b: `args.of.data[${indices.of[i] + 1}]`,
@@ -20,14 +17,16 @@ export default function ({ operation }) {
                     d: `args.with.data[${indices.with[i] + 1}]`,
 
                     r: `args.result.data[${indices.result[i]}]`,
-                    i: `args.result.data[${indices.result[i] + 1}]`,
+                    i: `args.result.data[${indices.result[i] + 1}]`
                 })
-            }).join('\n')
-        )
+            }),
 
-        delete indices.of
-        delete indices.with
-        delete indices.result
+            'return args.result'
+        ].join('\n')).bind({
+            cache: new Uint32Array(args.result.size)
+        })
+
+        indices = null
 
         return pointWiseFunction
     }

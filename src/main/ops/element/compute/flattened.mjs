@@ -3,30 +3,26 @@ import { litComp } from './utils'
 
 export default function ({ operation }) {
     return function (args) {
-        const axes = args.axes
-        const shape = args.shape
-        const arrays = { result: args.result, of: args.of, with: args.with }
-        const indices = { result: new Array(), of: new Array(), with: new Array() }
+        return new Function('args', [
+            'this.cache.fill(0)',
 
-        litComp({ arrays, axes, shape, indices })
+            'for(let i = 0; i < this.indices.result.length; i++){',
 
-        indices.of = new Uint32Array(indices.of)
-        indices.with = new Uint32Array(indices.with)
-        indices.result = new Uint32Array(indices.result)
+            operation({
+                a: `args.of.data[this.indices.of[i]]`,
+                b: `args.of.data[this.indices.of[i] + 1]`,
 
-        return new Function('args', `
-            for(let i = 0; i < this.result.length; i++){
-                ${operation({
-                    a:  `args.of.data[this.indices.of[i]]`,
-                    b:  `args.of.data[this.indices.of[i] + 1]`,
-    
-                    c:  `args.with.data[this.indices.with[i]]`,
-                    d:  `args.with.data[this.indices.with[i] + 1]`,
-    
-                    r: `args.result.data[this.indices.result[i]]`,
-                    i: `args.result.data[this.indices.result[i] + 1]`,
-                })}
-            }
-        `).bind({ indices })
+                c: `args.with.data[this.indices.with[i]]`,
+                d: `args.with.data[this.indices.with[i] + 1]`,
+
+                r: `args.result.data[this.indices.result[i]]`,
+                i: `args.result.data[this.indices.result[i] + 1]`,
+            }),
+
+            'return args.result'
+        ].join('\n')).bind({
+            indices: litComp(args),
+            cache: new Uint32Array(args.result.size)
+        })
     }
 }

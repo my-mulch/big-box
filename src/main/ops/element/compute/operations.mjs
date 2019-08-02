@@ -1,4 +1,14 @@
 
+export const cache = {
+    clear: function () {
+        this.min = []
+        this.max = []
+        this.sum = []
+        this.norm = []
+        this.mean = []
+    }
+}
+
 export const addition = function ({ a, b, c, d, r, i }) {
     return [
         `${r} = ${a} + ${c}`,
@@ -43,3 +53,31 @@ export const assignment = function ({ c, d, r, i }) {
     ].join('\n')
 }
 
+export const min = function min({ a, b, r, i }) {
+
+}
+
+export const max = function max({ a, b, r, i }) {
+
+}
+
+
+export const norm = function ({ a, b, r, i }) {
+
+}
+
+export const mean = function ({ a, b, r, i }) {
+    return [
+        `this.cache[this.indices.result[i]] += ${a}`,
+        `this.cache[this.indices.result[i + 1]] += ${b}`,
+
+
+        `if(i === this.indices.result.length - 1){
+            
+        }`
+    ]
+}
+
+export const sum = function ({ a, b, r, i }) {
+
+}

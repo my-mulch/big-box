@@ -1,7 +1,7 @@
 
-function updateOffsets({ array, axis, increment }) {
-    if (array && array.shape[axis] > 1) {
-        const update = i * array.strides[axis]
+function updateOffsets({ array, axis, index, increment }) {
+    if (array && array.shape && array.shape[axis] > 1) {
+        const update = index * array.strides[axis]
         array.offset += increment ? update : -update
     }
 }
@@ -10,9 +10,9 @@ function updateIndices({ index, array }) {
     if (index && array) index.push(array.offset)
 }
 
-export const litComp = function litComp({ arrays, axes, indices, depth = 0 }) {
+export const litComp = function litComp({ arrays, axes, shape, indices, depth = 0 }) {
 
-    if (depth === arrays.result.shape.length) {
+    if (depth === shape.length) {
         updateIndices({ index: indices.of, array: arrays.of })
         updateIndices({ index: indices.with, array: arrays.with })
         updateIndices({ index: indices.result, array: arrays.result })
@@ -23,15 +23,15 @@ export const litComp = function litComp({ arrays, axes, indices, depth = 0 }) {
     const axis = axes[depth]
 
     for (let i = 0; i < shape[axis]; i++) {
-        updateOffsets({ array: arrays.of, axis, increment: true })
-        updateOffsets({ array: arrays.with, axis, increment: true })
-        updateOffsets({ array: arrays.result, axis, increment: true })
+        updateOffsets({ array: arrays.of, axis, index: i, increment: true })
+        updateOffsets({ array: arrays.with, axis, index: i, increment: true })
+        updateOffsets({ array: arrays.result, axis, index: i, increment: true })
 
         litComp({ arrays, axes, shape, indices, depth: depth + 1 })
 
-        updateOffsets({ array: arrays.of, axis, increment: false })
-        updateOffsets({ array: arrays.with, axis, increment: false })
-        updateOffsets({ array: arrays.result, axis, increment: false })
+        updateOffsets({ array: arrays.of, axis, index: i, increment: false })
+        updateOffsets({ array: arrays.with, axis, index: i, increment: false })
+        updateOffsets({ array: arrays.result, axis, index: i, increment: false })
     }
 
 }
@@ -39,7 +39,7 @@ export const litComp = function litComp({ arrays, axes, indices, depth = 0 }) {
 
 export const symLoop = function (axis) {
     return `for(let a${axis} = 0; 
-                a${axis} < args.result.shape[${axis}]; 
+                a${axis} < args.shape[${axis}]; 
                 a${axis}++){`
 }
 
