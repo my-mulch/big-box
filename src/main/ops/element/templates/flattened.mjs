@@ -1,14 +1,14 @@
 
 import { litComp } from './utils'
 
-export default function ({ operation }) {
+export default function (operation) {
     return function (args) {
         return new Function('args', [
-            'this.cache.fill(0)',
+            'args.result.data.fill(0)',
 
             'for(let i = 0; i < this.indices.result.length; i++){',
 
-            operation.call(args, {
+            operation.inner({
                 ofRealIndex: `this.indices.of[i]`,
                 ofImagIndex: `this.indices.of[i] + 1`,
 
@@ -21,11 +21,10 @@ export default function ({ operation }) {
 
             '}',
 
+            operation.outer(),
+
             'return args.result'
 
-        ].join('\n')).bind({
-            indices: litComp(args),
-            cache: new Int32Array(args.result.size)
-        })
+        ].join('\n')).bind({ indices: litComp(args) })
     }
 }

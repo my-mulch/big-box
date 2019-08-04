@@ -1,15 +1,15 @@
 
 import { litComp } from './utils'
 
-export default function ({ operation }) {
+export default function (operation) {
     return function (args) {
         let indices = litComp(args)
 
         const pointWiseFunction = new Function('args', [
-            'this.cache.fill(0)',
+            'args.result.data.fill(0)',
 
             ...[...new Array(args.size).keys()].map(function (i) {
-                return operation.call(args, {
+                return operation.inner({
                     ofRealIndex: `${indices.of[i]}`,
                     ofImagIndex: `${indices.of[i] + 1}`,
 
@@ -21,9 +21,11 @@ export default function ({ operation }) {
                 })
             }),
 
+            operation.outer(),
+
             'return args.result'
 
-        ].join('\n')).bind({ cache: new Int32Array(args.result.size) })
+        ].join('\n'))
 
         indices = null
 

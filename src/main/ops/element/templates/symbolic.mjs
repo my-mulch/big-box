@@ -1,16 +1,16 @@
 
 import { symLoops, symIndices } from './utils'
 
-export default function ({ operation }) {
+export default function (operation) {
     return function (args) {
         return new Function('args', [
-            'this.cache.fill(0)',
+            'args.result.data.fill(0)',
 
             ...args.axes.map(symLoops), // loop heads
 
             ...symIndices(args),
 
-            operation.call(args, {
+            operation.inner({
                 ofRealIndex: `ofIndex`,
                 ofImagIndex: `ofIndex + 1`,
 
@@ -23,8 +23,10 @@ export default function ({ operation }) {
 
             '}'.repeat(args.shape.length),
 
+            operation.outer(),
+
             'return args.result'
 
-        ].join('\n')).bind({ cache: new Int32Array(args.result.size) })
+        ].join('\n'))
     }
 }

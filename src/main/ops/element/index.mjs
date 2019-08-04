@@ -1,65 +1,64 @@
-import symbolic from './compute/symbolic'
-import flattened from './compute/flattened'
-import pointwise from './compute/pointwise'
+import symbolic from './templates/symbolic'
+import flattened from './templates/flattened'
+import pointwise from './templates/pointwise'
 
 import {
-    cache, // axis cache
     min, max, mean, norm, sum, // axis ops
     addition, subtraction, multiplication, division, assignment, // pair ops
-} from './compute/operations'
+} from './templates/operations'
 
 export default {
     utils: {},
     operations: {
         add: {
-            'args.size <= 20': pointwise({ operation: addition, cache }),
-            'args.size <= 100': flattened({ operation: addition, cache }),
-            'args.size > 100': symbolic({ operation: addition, cache })
+            'args.size <= 20': pointwise(addition),
+            'args.size <= 100': flattened(addition),
+            'args.size > 100': symbolic(addition)
         },
         subtract: {
-            'args.size <= 20': pointwise({ operation: subtraction, cache }),
-            'args.size <= 100': flattened({ operation: subtraction, cache }),
-            'args.size > 100': symbolic({ operation: subtraction, cache })
+            'args.size <= 20': pointwise(subtraction),
+            'args.size <= 100': flattened(subtraction),
+            'args.size > 100': symbolic(subtraction)
         },
         multiply: {
-            'args.size <= 20': pointwise({ operation: multiplication, cache }),
-            'args.size <= 100': flattened({ operation: multiplication, cache }),
-            'args.size > 100': symbolic({ operation: multiplication, cache })
+            'args.size <= 20': pointwise(multiplication),
+            'args.size <= 100': flattened(multiplication),
+            'args.size > 100': symbolic(multiplication)
         },
         divide: {
-            'args.size <= 20': pointwise({ operation: division, cache }),
-            'args.size <= 100': flattened({ operation: division, cache }),
-            'args.size > 100': symbolic({ operation: division, cache })
+            'args.size <= 20': pointwise(division),
+            'args.size <= 100': flattened(division),
+            'args.size > 100': symbolic(division)
         },
         assign: {
-            'args.size <= 20': pointwise({ operation: assignment, cache }),
-            'args.size <= 100': flattened({ operation: assignment, cache }),
-            'args.size > 100': symbolic({ operation: assignment, cache })
+            'args.size <= 20': pointwise(assignment),
+            'args.size <= 100': flattened(assignment),
+            'args.size > 100': symbolic(assignment)
         },
         min: {
-            'args.size <= 20': pointwise({ operation: min, cache }),
-            'args.size <= 100': flattened({ operation: min, cache }),
-            'args.size > 100': symbolic({ operation: min, cache }),
+            'args.size <= 20': pointwise(min),
+            'args.size <= 100': flattened(min),
+            'args.size > 100': symbolic(min),
         },
         max: {
-            'args.size <= 20': pointwise({ operation: max, cache }),
-            'args.size <= 100': flattened({ operation: max, cache }),
-            'args.size > 100': symbolic({ operation: max, cache }),
+            'args.size <= 20': pointwise(max),
+            'args.size <= 100': flattened(max),
+            'args.size > 100': symbolic(max),
         },
         mean: {
-            'args.size <= 20': pointwise({ operation: mean, cache }),
-            'args.size <= 100': flattened({ operation: mean, cache }),
-            'args.size > 100': symbolic({ operation: mean, cache }),
+            'args.size <= 20': pointwise(mean),
+            'args.size <= 100': flattened(mean),
+            'args.size > 100': symbolic(mean),
         },
         norm: {
-            'args.size <= 20': pointwise({ operation: norm, cache }),
-            'args.size <= 100': flattened({ operation: norm, cache }),
-            'args.size > 100': symbolic({ operation: norm, cache }),
+            'args.size <= 20': pointwise(norm),
+            'args.size <= 100': flattened(norm),
+            'args.size > 100': symbolic(norm),
         },
         sum: {
-            'args.size <= 20': pointwise({ operation: sum, cache }),
-            'args.size <= 100': flattened({ operation: sum, cache }),
-            'args.size > 100': symbolic({ operation: sum, cache }),
+            'args.size <= 20': pointwise(sum),
+            'args.size <= 100': flattened(sum),
+            'args.size > 100': symbolic(sum),
         }
     }
 

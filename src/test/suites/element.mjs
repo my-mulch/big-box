@@ -335,8 +335,8 @@ export default function () {
     jest.expect(C.slice({ with: [':', 0, ':'] }).min()).toEqual(1)
     jest.expect(C.slice({ with: [':', 0, ':'] }).divide({ with: C.slice({ with: [':', 0, ':'] }) })).toEqual([[1, 1, 1], [1, 1, 1], [1, 1, 1]])
 
-    jest.expect(B.mean({ axes: '*-' })).toEqual([-13.5, -14.5, -3., -29.])
-    jest.expect(B.mean({ axes: '-*' })).toEqual([-25, -5])
+    jest.expect(B.mean({ axes: [1] })).toEqual([-13.5, -14.5, -3., -29.])
+    jest.expect(B.mean({ axes: [0] })).toEqual([-25, -5])
 
     jest.expect(B.ravel()).toEqual([-46, 19, -38, 9, 9, -15, -25, -33])
     jest.expect(B.T().ravel()).toEqual([-46, -38, 9, -25, 19, 9, -15, -33])
