@@ -56,6 +56,7 @@ export default function () {
 
     jest.expect(D.inverse()).toEqual([[-0.5, -0.125, 0.625], [1., 0., -0.5], [0., 0.25, -0.25]])
     jest.expect(nd.array({ with: [[6, 4], [5, 2]] }).inverse()).toEqual([[-0.25, 0.5], [0.625, -0.75]])
+    jest.expect(nd.array({ with: [[4, 1, 3, 3], [4, 0, 0, 1], [2, 3, 4, 2], [0, 0, 4, 4]] }).inverse()).toEqual([[1.5, -1., -0.5, -0.625], [-5., 4., 2., 1.75], [6., -5., -2., -2.25], [-6., 5., 2., 2.5]])
 
     jest.expect(E.slice({ with: ['1:2', 0, ':'] }).cross({ with: C })).toEqual([[19], [-170], [107]])
 
