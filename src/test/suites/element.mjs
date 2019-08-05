@@ -310,8 +310,8 @@ export default function () {
     })
 
     jest.expect(B.mean()).toEqual(-15)
-    jest.expect(C.mean()).toEqual(16.66666666666)
-    jest.expect(K.mean()).toEqual(4.525)
+    jest.expect(C.mean()).toEqual(16.66666603088379)
+    jest.expect(K.mean()).toEqual(4.525000095367432)
 
     jest.expect(B.multiply({ with: 6 })).toEqual([[-276, 114], [-228, 54], [54, -90], [-150, -198]])
 
@@ -349,7 +349,7 @@ export default function () {
     ])
 
     jest.expect(F.add({ with: G })).toEqual(H)
-    jest.expect(I.add({ with: J })).toEqual(K)
+    jest.expect(I.add({ with: J })).toEqual([[[[[4, 3], [2, 1]], [[3, 5], [1, 3]]], [[[2, 1], [6, 5]], [[1, 3], [5, 7]]]], [[[[4, 4], [2, 2]], [[5, 3], [3, 1]]], [[[2, 2], [6, 6]], [[3, 1], [7, 5]]]]])
 
     console.log('\n\n-------- End Elementwise Suite --------\n\n')
 }

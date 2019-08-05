@@ -1,3 +1,4 @@
+import { __Math__ } from '../../resources'
 
 export const shapeRaw = function (A, shape = []) {
     if (A.constructor === Number || A.constructor === String)
@@ -14,27 +15,37 @@ export const shapeAlign = function ({ short, delta }) {
     })
 }
 
+function axesToShape(axis) { return this.shape[axis] }
+
 export const selfAxesAndShape = function ({ axes = [...this.shape.keys()] }) {
     const axesSet = new Set(axes)
-    const resultAxes = axes
+    const axesShape = axes
+    const axesSize = axes.map(axesToShape, this).reduce(__Math__.multiply)
     const resultShape = []
-    const adjustedShape = []
+    const alignedShape = []
 
     for (let i = 0; i < this.shape.length; i++)
         if (!axesSet.has(i)) {
-            resultAxes.push(i)
+            axesShape.push(i)
             resultShape.push(this.shape[i])
-            adjustedShape.push(this.shape[i])
+            alignedShape.push(this.shape[i])
         } else
-            adjustedShape.push(1)
+            alignedShape.push(1)
 
-    return { resultAxes, resultShape, adjustedShape }
+    return {
+        resultShape,
+        alignedShape,
+        axesShape,
+        axesSize,
+        fullShape: this.shape,
+        fullSize: this.size
+    }
 }
 
 export const pairAxesAndShape = function (args) {
     const axesMatch = []
     const axesMismatch = []
-    const resultShape = []
+    const fullShape = []
 
     const ofShape = this.shape
     const withShape = args.with.shape
@@ -42,21 +53,25 @@ export const pairAxesAndShape = function (args) {
     for (let i = 0; i < ofShape.length; i++)
         if (ofShape[i] === 1) {
             axesMismatch.push(i)
-            resultShape.push(withShape[i])
+            fullShape.push(withShape[i])
         }
 
         else if (withShape[i] === 1) {
             axesMismatch.push(i)
-            resultShape.push(ofShape[i])
+            fullShape.push(ofShape[i])
         }
 
         else if (ofShape[i] === withShape[i]) {
             axesMatch.push(i)
-            resultShape.push(ofShape[i])
+            fullShape.push(ofShape[i])
         }
 
+    const axesShape = axesMismatch.concat(axesMatch)
+
     return {
-        resultShape,
-        resultAxes: axesMismatch.concat(axesMatch)
+        fullShape,
+        axesShape,
+        axesSize: axesShape.map(axesToShape, this).reduce(__Math__.multiply),
+        fullSize: fullShape.reduce(__Math__.multiply),
     }
 }

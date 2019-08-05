@@ -1,6 +1,9 @@
 
+const noop = function () { return '' }
+
 export const addition = {
-    inner: function ({
+    begin: noop,
+    middle: function ({
         ofRealIndex, ofImagIndex,
         withRealIndex, withImagIndex,
         resultRealIndex, resultImagIndex }) {
@@ -9,11 +12,12 @@ export const addition = {
             `args.result.data[${resultImagIndex}] = args.of.data[${ofImagIndex}] + args.with.data[${withImagIndex}]`,
         ].join('\n')
     },
-    outer: function () { return '' }
+    end: noop
 }
 
 export const subtraction = {
-    inner: function ({
+    begin: noop,
+    middle: function ({
         ofRealIndex, ofImagIndex,
         withRealIndex, withImagIndex,
         resultRealIndex, resultImagIndex }) {
@@ -22,11 +26,12 @@ export const subtraction = {
             `args.result.data[${resultImagIndex}] = args.of.data[${ofImagIndex}] - args.with.data[${withImagIndex}]`,
         ].join('\n')
     },
-    outer: function () { return '' }
+    end: noop
 }
 
 export const multiplication = {
-    inner: function ({
+    begin: noop,
+    middle: function ({
         ofRealIndex, ofImagIndex,
         withRealIndex, withImagIndex,
         resultRealIndex, resultImagIndex }) {
@@ -40,11 +45,12 @@ export const multiplication = {
             `args.result.data[${resultImagIndex}] = apb * cpd - ac - bd`,
         ].join('\n')
     },
-    outer: function () { return '' }
+    end: noop
 }
 
 export const division = {
-    inner: function ({
+    begin: noop,
+    middle: function ({
         ofRealIndex, ofImagIndex,
         withRealIndex, withImagIndex,
         resultRealIndex, resultImagIndex }) {
@@ -62,11 +68,12 @@ export const division = {
                                                 args.of.data[${ofRealIndex}] * args.with.data[${withImagIndex}]) / mod`,
         ].join('\n')
     },
-    outer: function () { return '' }
+    end: noop
 }
 
 export const assignment = {
-    inner: function ({
+    begin: noop,
+    middle: function ({
         withRealIndex, withImagIndex,
         resultRealIndex, resultImagIndex }) {
         return [
@@ -74,39 +81,48 @@ export const assignment = {
             `args.result.data[${resultImagIndex}] = args.with.data[${withImagIndex}]`,
         ].join('\n')
     },
-    outer: function () { return '' }
+    end: noop
 }
 
 export const min = {
-    inner: function min({
+    begin: function () {
+        return `args.result.data.fill(Number.POSITIVE_INFINITY)`
+    },
+    middle: function ({
         ofRealIndex, ofImagIndex,
         resultRealIndex, resultImagIndex }) {
-
+        return [
+            `if(args.of.data[${ofRealIndex}] < args.result.data[${resultRealIndex}]) {`,
+            `   args.result.data[${resultRealIndex}] = args.of.data[${ofRealIndex}]`,
+            `   args.result.data[${resultImagIndex}] = args.of.data[${ofImagIndex}]`,
+            `}`
+        ].join('\n')
     },
-    outer: function () { return '' }
+    end: noop
 }
 
 export const max = {
-    inner: function max({
+    begin: function () {
+        return `args.result.data.fill(Number.NEGATIVE_INFINITY)`
+    },
+    middle: function ({
         ofRealIndex, ofImagIndex,
         resultRealIndex, resultImagIndex }) {
-
+        return [
+            `if(args.of.data[${ofRealIndex}] > args.result.data[${resultRealIndex}]) {`,
+            `   args.result.data[${resultRealIndex}] = args.of.data[${ofRealIndex}]`,
+            `   args.result.data[${resultImagIndex}] = args.of.data[${ofImagIndex}]`,
+            `}`
+        ].join('\n')
     },
-    outer: function () { return '' }
+    end: noop
 }
 
-
-export const norm = {
-    inner: function ({
-        ofRealIndex, ofImagIndex,
-        resultRealIndex, resultImagIndex }) {
-
+export const sum = {
+    begin: function () {
+        return `args.result.data.fill(0)`
     },
-    outer: function () { return '' }
-}
-
-export const mean = {
-    inner: function ({
+    middle: function ({
         ofRealIndex, ofImagIndex,
         resultRealIndex, resultImagIndex }) {
         return [
@@ -114,19 +130,35 @@ export const mean = {
             `args.result.data[${resultImagIndex}] += args.of.data[${ofImagIndex}]`,
         ].join('\n')
     },
-    outer: function () {
+    end: noop
+}
+
+export const norm = {
+    begin: sum.begin,
+    middle: function ({
+        ofRealIndex, ofImagIndex,
+        resultRealIndex, resultImagIndex }) {
         return [
-            'for (let i = 0; i < args.result.data.length; i++) {',
-            '   args.result.data[i] /= args.result.size',
-            '}',
+            `args.result.data[${resultRealIndex}] += args.of.data[${ofRealIndex}] * args.of.data[${ofRealIndex}] +
+                                                     args.of.data[${ofImagIndex}] * args.of.data[${ofImagIndex}]`,
+        ].join('\n')
+    },
+    end: function () {
+        return [
+            'for (let i = 0; i < args.result.data.length; i++)',
+            '   args.result.data[i] = Math.sqrt(args.result.data[i])',
         ].join('\n')
     }
 }
 
-export const sum = {
-    inner: function ({
-        ofRealIndex, ofImagIndex,
-        resultRealIndex, resultImagIndex }) {
-
-    }, outer: function () { return '' }
+export const mean = {
+    begin: sum.begin,
+    middle: sum.middle,
+    end: function () {
+        return [
+            'for (let i = 0; i < args.result.data.length; i++)',
+            '   args.result.data[i] /= args.meta.axesSize',
+        ].join('\n')
+    }
 }
+

@@ -31,7 +31,7 @@ export const resolveReshape = function (shape, size) {
     const product = shape.reduce(__Math__.multiply, 1)
 
     for (let i = 0; i < shape.length; i++)
-        reshape[i] = shape[i] < 0 ? -size / 2 / product : shape[i]
+        reshape[i] = shape[i] < 0 ? -size / product : shape[i]
 
     return reshape
 }

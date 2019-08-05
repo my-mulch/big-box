@@ -4,11 +4,11 @@ import { litComp } from './utils'
 export default function (operation) {
     return function (args) {
         return new Function('args', [
-            'args.result.data.fill(0)',
+            operation.begin(args),
 
             'for(let i = 0; i < this.indices.result.length; i++){',
 
-            operation.inner({
+            operation.middle({
                 ofRealIndex: `this.indices.of[i]`,
                 ofImagIndex: `this.indices.of[i] + 1`,
 
@@ -16,12 +16,12 @@ export default function (operation) {
                 withImagIndex: `this.indices.with[i] + 1`,
 
                 resultRealIndex: `this.indices.result[i]`,
-                resultImagIndex: `this.indices.result[i + 1]`,
+                resultImagIndex: `this.indices.result[i] + 1`,
             }),
 
             '}',
 
-            operation.outer(),
+            operation.end(args),
 
             'return args.result'
 

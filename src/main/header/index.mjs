@@ -15,13 +15,8 @@ export default class Header {
         this.strides = STRIDES in opts ? opts.strides : getStrides(this.shape)
 
         this.id = `${this.shape}|${this.strides}|${this.offset}`
-        this.size = this.shape.reduce(__Math__.multiply, 1) * 2
+        this.size = this.shape.reduce(__Math__.multiply, 1)
         this.lastStride = this.strides[this.strides.length - 1]
-
-        this.axes = {
-            ALL: AXIS_RESULT_CHARACTER.repeat(this.shape.length),
-            NONE: AXIS_INNER_CHARACTER.repeat(this.shape.length)
-        }
     }
 
     copy() {

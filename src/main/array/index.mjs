@@ -13,7 +13,7 @@ import opsSuite from '../ops'
 
 export default class BigBox {
     constructor({ header, type, init = function () {
-        return new this.type(this.size)
+        return new this.type(this.size * 2) // complex numbers
     } }) {
 
         for (const field in header)
@@ -32,7 +32,7 @@ export default class BigBox {
 
                 if (args.with.constructor === Array) {
                     const flatRaw = args.with.flat(Number.POSITIVE_INFINITY)
-                    const typeRes = new this.type(this.size)
+                    const typeRes = new this.type(this.size * 2) // complex numbers
 
                     for (let i = 0, j = 0; j < typeRes.length; i += 1, j += 2) {
                         const cn = Complex(flatRaw[i])
@@ -45,7 +45,7 @@ export default class BigBox {
                 }
 
                 else if (args.with.constructor === String || args.with.constructor === Number) {
-                    const typeRes = new this.type(this.size)
+                    const typeRes = new this.type(this.size * 2) // complex numbers
 
                     for (let j = 0; j < typeRes.length; j += 2) {
                         const cn = Complex(args.with)
@@ -87,7 +87,7 @@ export default class BigBox {
             type: args.type,
             header: new Header({ shape: args.shape }),
             init: function () {
-                const typeRes = new this.type(this.size)
+                const typeRes = new this.type(this.size * 2) // complex numbers
 
                 for (let i = 0; i < typeRes.length; i += 2)
                     typeRes[i] = 1
@@ -104,7 +104,7 @@ export default class BigBox {
                 shape: [__Math__.round((args.stop - (args.start || 0)) / (args.step || 1))]
             }),
             init: function () {
-                const data = new this.type(this.size)
+                const data = new this.type(this.size * 2) // complex numbers
 
                 for (let i = args.start || 0, j = 0; i < args.stop; i += args.step || 1, j += 2)
                     data[j] = i
@@ -120,7 +120,7 @@ export default class BigBox {
             type: Float32Array,
             header: new Header({ shape: args.shape }),
             init: function () {
-                const data = new this.type(this.size)
+                const data = new this.type(this.size * 2) // complex numbers
 
                 for (let i = 0; i < data.length; i++)
                     data[i] = __Math__.random()
@@ -135,7 +135,7 @@ export default class BigBox {
             type: args.type || Int32Array,
             header: new Header({ shape: args.shape }),
             init: function () {
-                const data = new this.type(this.size)
+                const data = new this.type(this.size * 2) // complex numbers
 
                 for (let i = 0; i < data.length; i++)
                     data[i] = opsSuite.utils.randint({
@@ -153,7 +153,7 @@ export default class BigBox {
             type: args.type,
             header: new Header({ shape: args.shape }),
             init: function () {
-                const data = new this.type(this.size)
+                const data = new this.type(this.size * 2) // complex numbers
                 const diagonal = this.strides.reduce(__Math__.add)
                 const numDiags = __Math__.min(...this.shape)
 
@@ -166,7 +166,7 @@ export default class BigBox {
     }
 
     sanitize(args) {
-        if (args.with && args.with.constructor !== BigBox)
+        if (args.with !== undefined && args.with.constructor !== BigBox)
             args.with = BigBox.array({ with: args.with })
     }
 
@@ -199,36 +199,37 @@ export default class BigBox {
             delta: this.shape.length - args.with.shape.length
         })
 
-        const { resultAxes, resultShape } = pairAxesAndShape.call(this, args)
+        const {
+            axesShape, axesSize,
+            fullShape, fullSize
+        } = pairAxesAndShape.call(this, args)
 
         return opsSuite.call({
             of: this,
             with: args.with,
-            axes: resultAxes,
-            method: method,
-            shape: resultShape,
-            size: this.shape.reduce(__Math__.multiply),
             result: args.result || new BigBox({
                 type: this.type,
-                header: new Header({ shape: resultShape })
-            })
+                header: new Header({ shape: fullShape })
+            }),
+            meta: { method, axesShape, axesSize, fullShape, fullSize }
         })
     }
 
     gself(args, method) {
-        const { resultAxes, resultShape, adjustedShape } = selfAxesAndShape.call(this, args)
+        const {
+            resultShape, alignedShape,
+            axesShape, axesSize,
+            fullShape, fullSize
+        } = selfAxesAndShape.call(this, args)
 
         return opsSuite.call({
             of: this,
             with: { id: '' },
-            axes: resultAxes,
-            shape: this.shape,
-            size: this.shape.reduce(__Math__.multiply),
-            method: method,
             result: args.result || new BigBox({
                 type: this.type,
-                header: new Header({ shape: adjustedShape })
-            })
+                header: new Header({ shape: alignedShape })
+            }),
+            meta: { method, axesShape, axesSize, fullShape, fullSize }
         }).reshape({ shape: resultShape })
     }
 
@@ -249,11 +250,11 @@ export default class BigBox {
         return opsSuite.call({
             of: this,
             with: args.with,
-            method: this.matMult.name,
             result: args.result || new BigBox({
                 type: args.type,
                 header: new Header({ shape: [this.shape[0], args.with.shape[1]] })
-            })
+            }),
+            meta: { method: this.matMult.name }
         })
     }
 
@@ -263,11 +264,11 @@ export default class BigBox {
         return opsSuite.call({
             of: this,
             with: args.with,
-            method: this.cross.name,
             result: args.result || new BigBox({
                 type: args.type,
                 header: new Header({ shape: [3, 1] })
-            })
+            }),
+            meta: { method: this.cross.name }
         })
     }
 
@@ -275,8 +276,25 @@ export default class BigBox {
         return opsSuite.call({
             of: this,
             with: { id: '' },
-            method: this.inverse.name,
-            result: args.result || BigBox.eye({ shape: this.shape })
+            result: args.result || BigBox.eye({ shape: this.shape }),
+            meta: { method: this.inverse.name }
+        })
+    }
+
+    assign(args) {
+        this.sanitize(args)
+
+        return opsSuite.call({
+            of: this,
+            with: args.with,
+            result: this,
+            meta: {
+                axesSize: this.size,
+                fullSize: this.size,
+                axesShape: [...this.shape.keys()],
+                fullShape: this.shape,
+                method: this.assign.name
+            }
         })
     }
 
@@ -306,19 +324,6 @@ export default class BigBox {
             type: this.type,
             header: this.header.reshape(args.shape),
             init: function () { return old.data }
-        })
-    }
-
-    assign(args) {
-        this.sanitize(args)
-
-        return opsSuite.call({
-            of: this,
-            with: args.with,
-            axes: this.axes.ALL,
-            shape: this.shape,
-            method: this.assign.name,
-            result: this
         })
     }
 

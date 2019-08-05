@@ -4,13 +4,13 @@ import { symLoops, symIndices } from './utils'
 export default function (operation) {
     return function (args) {
         return new Function('args', [
-            'args.result.data.fill(0)',
+            operation.begin(args),
 
-            ...args.axes.map(symLoops), // loop heads
+            ...args.meta.axesShape.map(symLoops), // loop heads
 
             ...symIndices(args),
 
-            operation.inner({
+            operation.middle({
                 ofRealIndex: `ofIndex`,
                 ofImagIndex: `ofIndex + 1`,
 
@@ -21,9 +21,9 @@ export default function (operation) {
                 resultImagIndex: `resultIndex + 1`,
             }),
 
-            '}'.repeat(args.shape.length),
+            '}'.repeat(args.meta.fullShape.length),
 
-            operation.outer(),
+            operation.end(args),
 
             'return args.result'
 

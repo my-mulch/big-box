@@ -6,10 +6,10 @@ export default function (operation) {
         let indices = litComp(args)
 
         const pointWiseFunction = new Function('args', [
-            'args.result.data.fill(0)',
+            operation.begin(args),
 
-            ...[...new Array(args.size).keys()].map(function (i) {
-                return operation.inner({
+            ...[...new Array(args.meta.fullSize).keys()].map(function (i) {
+                return operation.middle({
                     ofRealIndex: `${indices.of[i]}`,
                     ofImagIndex: `${indices.of[i] + 1}`,
 
@@ -21,7 +21,7 @@ export default function (operation) {
                 })
             }),
 
-            operation.outer(),
+            operation.end(args),
 
             'return args.result'
 
