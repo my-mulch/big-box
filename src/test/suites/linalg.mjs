@@ -49,17 +49,17 @@ export default function () {
         [21, 2, 2]]]
     })
 
-    jest.expect(B.dot({ with: A })).toEqual(([[2507, 2962, 2523, 983], [2255, 4338, 4719, 1259], [2308, 2758, 2487, 985]]))
-    jest.expect(B.dot({ with: C })).toEqual([[96], [104], [89]])
+    jest.expect(B.matMult({ with: A })).toEqual(([[2507, 2962, 2523, 983], [2255, 4338, 4719, 1259], [2308, 2758, 2487, 985]]))
+    jest.expect(B.matMult({ with: C })).toEqual([[96], [104], [89]])
 
     jest.expect(A.T()).toEqual([[10, 57, 90], [72, 44, 66], [91, 49, 23], [13, 33, 21]])
 
-    jest.expect(nd.inv({ of: D })).toEqual([[-0.5, -0.125, 0.625], [1., 0., -0.5], [0., 0.25, -0.25]])
-    jest.expect(nd.inv({ of: nd.array({ with: [[6, 4], [5, 2]] }) })).toEqual([[-0.25, 0.5], [0.625, -0.75]])
+    jest.expect(D.inverse()).toEqual([[-0.5, -0.125, 0.625], [1., 0., -0.5], [0., 0.25, -0.25]])
+    jest.expect(nd.array({ with: [[6, 4], [5, 2]] }).inverse()).toEqual([[-0.25, 0.5], [0.625, -0.75]])
 
     jest.expect(E.slice({ with: ['1:2', 0, ':'] }).cross({ with: C })).toEqual([[19], [-170], [107]])
 
-    jest.expect(E.slice({ with: [':', 0, ':'] }).dot({ with: C })).toEqual([[26], [74], [109]])
+    jest.expect(E.slice({ with: [':', 0, ':'] }).matMult({ with: C })).toEqual([[26], [74], [109]])
 
 
     console.log('\n\n-------- End Linear Algebra Suite --------\n\n')

@@ -23,7 +23,7 @@ export default function () {
         [21, 2, 2]]]
     })
 
-    jest.expect(A.slice({ with: [0, 0, 0] })).toEqual([10])
+    jest.expect(A.slice({ with: [0, 0, 0] })).toEqual(10)
 
     jest.expect(A.slice({ with: [':', 0, ':'] }))
         .toEqual([
@@ -46,7 +46,7 @@ export default function () {
         ])
 
     jest.expect(A.slice({ with: [':', 0, ':'] })
-        .set({ with: 1 }))
+        .assign({ with: 1 }))
         .toEqual([
             [1, 1, 1],
             [1, 1, 1],

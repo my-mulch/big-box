@@ -1,11 +1,10 @@
 import {
     PARTIAL_SLICE_REGEX, NUMBER_REGEX,
     SLICE_CHARACTER, AXIS_INNER_CHARACTER, AXIS_RESULT_CHARACTER,
-    SHAPE, OFFSET, CONTIG, STRIDES
-} from '../../../resources'
+    SHAPE, OFFSET, CONTIG, STRIDES, __Math__
+} from '../../resources'
 
 import { getStrides, isContiguousSlice, resolveReshape } from './utils'
-import { __Math__ } from '../utils'
 
 export default class Header {
 
@@ -16,13 +15,8 @@ export default class Header {
         this.strides = STRIDES in opts ? opts.strides : getStrides(this.shape)
 
         this.id = `${this.shape}|${this.strides}|${this.offset}`
-        this.size = this.shape.reduce(__Math__.multiply, 1) * 2
+        this.size = this.shape.reduce(__Math__.multiply, 1)
         this.lastStride = this.strides[this.strides.length - 1]
-
-        this.axes = {
-            ALL: AXIS_RESULT_CHARACTER.repeat(this.shape.length),
-            NONE: AXIS_INNER_CHARACTER.repeat(this.shape.length)
-        }
     }
 
     copy() {
@@ -71,14 +65,6 @@ export default class Header {
         }
 
         return new Header({ shape, strides, offset, contig })
-    }
-
-    axisSlice(axes) {
-        return new Header({
-            shape: this.shape.filter(function (_, i) {
-                return axes[i] !== AXIS_INNER_CHARACTER
-            })
-        })
     }
 
     transpose() {
