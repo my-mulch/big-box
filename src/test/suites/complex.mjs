@@ -95,6 +95,8 @@ export default function () {
         ]
     })
 
+    const M = bb.zeros({ shape: [100, 100] }).assign({ with: '1 + i' })
+
     /** Elementwise operations */
     jest.expect(A.min()).toEqual('10 + 2i')
     jest.expect(A.max()).toEqual('50 + i')
@@ -144,6 +146,7 @@ export default function () {
     jest.expect(I.cross({ with: J })).toEqual(['65 + 2i', '-5 - 33i', '-33 - 35i'])
     jest.expect(K.matMult({ with: L })).toEqual(["41 + 191i", "3 + 113i", "39 + 181i", "-34 + 180i", "32 + 213i", "2 + 101i", "6 + 200i", "-2 + 200i", "75 + 135i", "23 + 68i", "62 + 148i", "19 + 131i", "38 + 159i", "13 + 91i", "34 + 144i", "-15 + 173i"])
 
+    jest.expect(M.matMult({ with: M })).toEqual(bb.ones({ shape: [100, 100] }).assign({ with: ['200i'] }))
 
     console.log('\n\n-------- End Complex Suite --------\n\n')
 }
