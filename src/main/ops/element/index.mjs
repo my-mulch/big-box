@@ -5,7 +5,7 @@ import pointwise from './templates/pointwise'
 import {
     min, max, mean, norm, sum, // axis ops
     addition, subtraction, multiplication, division, assignment, // pair ops
-} from './templates/operations'
+} from '../../ops'
 
 export default {
     utils: {},

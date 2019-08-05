@@ -11,14 +11,14 @@ export default function (operation) {
             ...symIndices(args),
 
             operation.middle({
-                ofRealIndex: `ofIndex`,
-                ofImagIndex: `ofIndex + 1`,
+                ofReal: `args.of.data[ofIndex]`,
+                ofImag: `args.of.data[ofIndex + 1]`,
 
-                withRealIndex: `withIndex`,
-                withImagIndex: `withIndex + 1`,
+                withReal: `args.with.data[withIndex]`,
+                withImag: `args.with.data[withIndex + 1]`,
 
-                resultRealIndex: `resultIndex`,
-                resultImagIndex: `resultIndex + 1`,
+                resultReal: `args.result.data[resultIndex]`,
+                resultImag: `args.result.data[resultIndex + 1]`,
             }),
 
             '}'.repeat(args.meta.fullShape.length),

@@ -9,7 +9,7 @@ import util from 'util' // node's
 import Complex from 'complex.js'
 
 import Header from '../header'
-import opsSuite from '../ops'
+import opsSuite from '../ops/suite'
 
 export default class BigBox {
     constructor({ header, type, init = function () {

@@ -10,14 +10,14 @@ export default function (operation) {
 
             ...[...new Array(args.meta.fullSize).keys()].map(function (i) {
                 return operation.middle({
-                    ofRealIndex: `${indices.of[i]}`,
-                    ofImagIndex: `${indices.of[i] + 1}`,
+                    ofReal: `args.of.data[${indices.of[i]}]`,
+                    ofImag: `args.of.data[${indices.of[i] + 1}]`,
 
-                    withRealIndex: `${indices.with[i]}`,
-                    withImagIndex: `${indices.with[i] + 1}`,
+                    withReal: `args.with.data[${indices.with[i]}]`,
+                    withImag: `args.with.data[${indices.with[i] + 1}]`,
 
-                    resultRealIndex: `${indices.result[i]}`,
-                    resultImagIndex: `${indices.result[i] + 1}`,
+                    resultReal: `args.result.data[${indices.result[i]}]`,
+                    resultImag: `args.result.data[${indices.result[i] + 1}]`,
                 })
             }),
 
