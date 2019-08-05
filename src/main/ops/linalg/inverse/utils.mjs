@@ -1,9 +1,16 @@
+import { multiplication, subtraction, assignment } from '../../../ops'
 
 export const cofactorHelper = function cofactorHelper(A) {
     const size = Math.round(Math.sqrt(A.length))
 
     if (size === 1)
-        return `args.of.data[${indexify.call(this, A[0])}]`
+        return assignment.middle({
+            withReal: `args.of.data[${indexify.call(this, A[0])}]`,
+            withImag: `args.of.data[${indexify.call(this, A[0]) + 1}]`,
+            resultReal: `var ar0`,
+            resultImag: `var ai0`,
+        })
+
 
     if (size === 2) {
         const a0 = indexify.call(this, A[0])
@@ -11,11 +18,43 @@ export const cofactorHelper = function cofactorHelper(A) {
         const a2 = indexify.call(this, A[2])
         const a3 = indexify.call(this, A[3])
 
-        return `args.of.data[${a0}] * args.of.data[${a3}] - args.of.data[${a2}] * args.of.data[${a1}]`
+        return [
+            multiplication.middle({
+                ofReal: `args.of.data[${a0}]`,
+                ofImag: `args.of.data[${a0 + 1}]`,
+                withReal: `args.of.data[${a3}]`,
+                withImag: `args.of.data[${a3 + 1}]`,
+                resultReal: `var ar03`,
+                resultImag: `var ai03`,
+            }),
+
+            multiplication.middle({
+                ofReal: `args.of.data[${a2}]`,
+                ofImag: `args.of.data[${a2 + 1}]`,
+                withReal: `args.of.data[${a1}]`,
+                withImag: `args.of.data[${a1 + 1}]`,
+                resultReal: `var ar21`,
+                resultImag: `var ai21`,
+            }),
+
+            subtraction.middle({
+                ofReal: `ar03`,
+                ofImag: `ai03`,
+                withReal: `ar21`,
+                withImag: `ai21`,
+                resultReal: `var ar0123`,
+                resultImag: `var ai0123`,
+            }),
+        ].join('\n')
     }
 
     const cofactors = []
     for (let i = 0; i < size; i++) {
+        multiplication.middle({
+            ofReal: `args.of.data[${indexify.call(this, A[i])}]`,
+            ofImag: `args.of.data[${indexify.call(this, A[i]) + 1}]`,
+            withReal: 
+        })
 
         const sign = Math.pow(-1, i % 2)
         const lead = `args.of.data[${indexify.call(this, A[i])}]`
