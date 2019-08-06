@@ -7,8 +7,8 @@ export const cofactorHelper = function cofactorHelper(A) {
         return assignment.middle({
             withReal: `args.of.data[${indexify.call(this, A[0])}]`,
             withImag: `args.of.data[${indexify.call(this, A[0]) + 1}]`,
-            resultReal: `var core`,
-            resultImag: `var coim`,
+            resultReal: `var corefinal`,
+            resultImag: `var coimfinal`,
         })
 
 
@@ -74,8 +74,8 @@ export const cofactorHelper = function cofactorHelper(A) {
     return sum.middle({
         ofReal: `core${size - 1}`,
         ofImag: `coim${size - 1}`,
-        resultReal,
-        resultImag,
+        resultReal: `var corefinal`,
+        resultImag: `var coimfinal`,
     })
 }
 
