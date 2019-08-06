@@ -110,3 +110,9 @@ export const survivors = function (A, r, c) {
         return true
     })
 }
+
+export const symIndex = function ({ arrayName, indices }) {
+    return `${arrayName}.offset + 
+                ${indices[0]} * ${arrayName}.strides[0] + 
+                ${indices[1]} * ${arrayName}.strides[1]`
+}
