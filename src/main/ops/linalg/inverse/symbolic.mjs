@@ -1,20 +1,20 @@
-import { division, multiplication, subtraction } from '../../../ops'
+import { division, multiplication, subtraction, assignment } from '../../../ops'
 import { symIndex } from './utils'
 
 export default function (args) {
     return new Function('args', [
-        `const dim = Math.floor(Math.sqrt(args.result.data.length))`,
+        `const dim = Math.floor(Math.sqrt(args.result.size))`,
         `const copy = args.of.copy()`,
 
         // Perform elementary row operations
         `for (let i = 0; i < dim; i += 1) {`,
 
         // get the element e on the diagonal
-        `er = copy.data[${symIndex({ arrayName: 'copy', indices: ['i', 'i'] })}]`,
-        `ei = copy.data[${symIndex({ arrayName: 'copy', indices: ['i', 'i'] })} + 1]`,
+        `let er = copy.data[${symIndex({ arrayName: 'copy', indices: ['i', 'i'] })}]`,
+        `let ei = copy.data[${symIndex({ arrayName: 'copy', indices: ['i', 'i'] })} + 1]`,
 
         // if we have a 0 on the diagonal (we'll need to swap with a lower row)
-        `if(er < 1e-5 && ei < 1e-5){
+        `if(Math.abs(er) < 1e-5 && Math.abs(ei < 1e-5)){
             for (ii = i + 1; ii < dim; ii += 1) {
                 let pr = copy.data[${symIndex({ arrayName: 'copy', indices: ['ii', 'i'] })}]
                 let pi = copy.data[${symIndex({ arrayName: 'copy', indices: ['ii', 'i'] })} + 1]
@@ -101,8 +101,8 @@ export default function (args) {
             ofImag: `ei`,
             withReal: `copy.data[${symIndex({ arrayName: 'copy', indices: ['i', 'j'] })}]`,
             withImag: `copy.data[${symIndex({ arrayName: 'copy', indices: ['i', 'j'] })} + 1]`,
-            resultReal: `elimCopyReal`,
-            resultImag: `elimCopyImag`,
+            resultReal: `let elimCopyReal`,
+            resultImag: `let elimCopyImag`,
         }),
 
         subtraction.middle({
@@ -119,8 +119,8 @@ export default function (args) {
             ofImag: `ei`,
             withReal: `args.result.data[${symIndex({ arrayName: 'args.result', indices: ['i', 'j'] })}]`,
             withImag: `args.result.data[${symIndex({ arrayName: 'args.result', indices: ['i', 'j'] })} + 1]`,
-            resultReal: `elimResultReal`,
-            resultImag: `elimResultImag`,
+            resultReal: `let elimResultReal`,
+            resultImag: `let elimResultImag`,
         }),
 
         subtraction.middle({
