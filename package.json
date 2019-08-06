@@ -2,9 +2,9 @@
     "name": "big-box",
     "version": "2.0.0",
     "description": "A suite of methods to manipulate MDA",
-    "main": "src/main/array",
+    "main": "src/js/main/array",
     "scripts": {
-        "test": "node --experimental-modules --es-module-specifier-resolution=node src/test"
+        "test": "node --experimental-modules --es-module-specifier-resolution=node src/js/test"
     },
     "repository": {
         "type": "git",
