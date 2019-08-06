@@ -59,9 +59,7 @@ export default function () {
     jest.expect(nd.array({ with: [[4, 1, 3, 3], [4, 0, 0, 1], [2, 3, 4, 2], [0, 0, 4, 4]] }).inverse()).toEqual([[1.5, -1., -0.5, -0.625], [-5., 4., 2., 1.75], [6., -5., -2., -2.25], [-6., 5., 2., 2.5]])
 
     jest.expect(E.slice({ with: ['1:2', 0, ':'] }).cross({ with: C })).toEqual([[19], [-170], [107]])
-
     jest.expect(E.slice({ with: [':', 0, ':'] }).matMult({ with: C })).toEqual([[26], [74], [109]])
-
 
     console.log('\n\n-------- End Linear Algebra Suite --------\n\n')
 }

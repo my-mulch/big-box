@@ -1,9 +1,16 @@
+import { multiplication, subtraction, assignment } from '../../../ops'
 
 export const cofactorHelper = function cofactorHelper(A) {
     const size = Math.round(Math.sqrt(A.length))
 
     if (size === 1)
-        return `args.of.data[${indexify.call(this, A[0])}]`
+        return assignment.middle({
+            withReal: `args.of.data[${indexify.call(this, A[0])}]`,
+            withImag: `args.of.data[${indexify.call(this, A[0]) + 1}]`,
+            resultReal: `var corefinal`,
+            resultImag: `var coimfinal`,
+        })
+
 
     if (size === 2) {
         const a0 = indexify.call(this, A[0])
@@ -11,20 +18,68 @@ export const cofactorHelper = function cofactorHelper(A) {
         const a2 = indexify.call(this, A[2])
         const a3 = indexify.call(this, A[3])
 
-        return `args.of.data[${a0}] * args.of.data[${a3}] - args.of.data[${a2}] * args.of.data[${a1}]`
+        return [
+            multiplication.middle({
+                ofReal: `args.of.data[${a0}]`,
+                ofImag: `args.of.data[${a0 + 1}]`,
+                withReal: `args.of.data[${a3}]`,
+                withImag: `args.of.data[${a3 + 1}]`,
+                resultReal: `var ar03`,
+                resultImag: `var ai03`,
+            }),
+
+            multiplication.middle({
+                ofReal: `args.of.data[${a2}]`,
+                ofImag: `args.of.data[${a2 + 1}]`,
+                withReal: `args.of.data[${a1}]`,
+                withImag: `args.of.data[${a1 + 1}]`,
+                resultReal: `var ar21`,
+                resultImag: `var ai21`,
+            }),
+
+            subtraction.middle({
+                ofReal: `ar03`,
+                ofImag: `ai03`,
+                withReal: `ar21`,
+                withImag: `ai21`,
+                resultReal: `var corefinal`,
+                resultImag: `var coimfinal`,
+            }),
+        ].join('\n')
     }
 
     const cofactors = []
     for (let i = 0; i < size; i++) {
-
-        const sign = Math.pow(-1, i % 2)
-        const lead = `args.of.data[${indexify.call(this, A[i])}]`
-        const cofactor = cofactorHelper.call(this, survivors(A, 0, i))
-
-        cofactors.push(`${sign} * ${lead} * (${cofactor})`)
+        cofactors.push([
+            cofactorHelper.call(this, survivors(A, 0, i)),
+            multiplication.middle({
+                ofReal: `args.of.data[${indexify.call(this, A[i])}]`,
+                ofImag: `args.of.data[${indexify.call(this, A[i]) + 1}]`,
+                withReal: `corefinal`,
+                withImag: `coimfinal`,
+                resultReal: `corefinal`,
+                resultImag: `coimfinal`,
+            }),
+            multiplication.middle({
+                ofReal: `${Math.pow(-1, i % 2)}`,
+                ofImag: '0',
+                withReal: 'corefinal',
+                withImag: 'coimfinal',
+                resultReal: `core${i}`,
+                resultImag: `coim${i}`,
+            })
+        ].join('\n'))
     }
 
-    return cofactors.join(' + ')
+    return [
+        ...cofactors,
+        assignment.middle({
+            withReal: [...new Array(size).keys()].map(function (i) { return `core${i}` }).join('+'),
+            withImag: [...new Array(size).keys()].map(function (i) { return `coim${i}` }).join('+'),
+            resultReal: `corefinal`,
+            resultImag: `coimfinal`,
+        })
+    ].join('\n')
 }
 
 export const indexify = function (r, c) {
