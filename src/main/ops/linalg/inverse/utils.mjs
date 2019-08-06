@@ -1,4 +1,4 @@
-import { multiplication, subtraction, assignment, sum } from '../../../ops'
+import { multiplication, subtraction, assignment } from '../../../ops'
 
 export const cofactorHelper = function cofactorHelper(A) {
     const size = Math.round(Math.sqrt(A.length))
@@ -42,8 +42,8 @@ export const cofactorHelper = function cofactorHelper(A) {
                 ofImag: `ai03`,
                 withReal: `ar21`,
                 withImag: `ai21`,
-                resultReal: `var ar0123`,
-                resultImag: `var ai0123`,
+                resultReal: `var corefinal`,
+                resultImag: `var coimfinal`,
             }),
         ].join('\n')
     }
@@ -55,28 +55,31 @@ export const cofactorHelper = function cofactorHelper(A) {
             multiplication.middle({
                 ofReal: `args.of.data[${indexify.call(this, A[i])}]`,
                 ofImag: `args.of.data[${indexify.call(this, A[i]) + 1}]`,
-                withReal: `ar0123`,
-                withImag: `ai0123`,
-                resultReal: `var core`,
-                resultReal: `var coim`,
+                withReal: `corefinal`,
+                withImag: `coimfinal`,
+                resultReal: `corefinal`,
+                resultImag: `coimfinal`,
             }),
             multiplication.middle({
                 ofReal: `${Math.pow(-1, i % 2)}`,
                 ofImag: '0',
-                withReal: 'core',
-                withImag: 'coim',
+                withReal: 'corefinal',
+                withImag: 'coimfinal',
                 resultReal: `core${i}`,
-                resultReal: `coim${i}`,
+                resultImag: `coim${i}`,
             })
-        ])
+        ].join('\n'))
     }
 
-    return sum.middle({
-        ofReal: `core${size - 1}`,
-        ofImag: `coim${size - 1}`,
-        resultReal: `var corefinal`,
-        resultImag: `var coimfinal`,
-    })
+    return [
+        ...cofactors,
+        assignment.middle({
+            withReal: [...new Array(size).keys()].map(function (i) { return `core${i}` }).join('+'),
+            withImag: [...new Array(size).keys()].map(function (i) { return `coim${i}` }).join('+'),
+            resultReal: `corefinal`,
+            resultImag: `coimfinal`,
+        })
+    ].join('\n')
 }
 
 export const indexify = function (r, c) {

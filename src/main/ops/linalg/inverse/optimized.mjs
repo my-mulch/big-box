@@ -1,5 +1,5 @@
 import { cofactorHelper, survivors, indexify } from './utils.mjs'
-import { multiplication, division, sum } from '../../../ops'
+import { multiplication, division, sum, assignment } from '../../../ops'
 
 export default function (args) {
     const size = Math.round(Math.sqrt(args.of.size)),
@@ -42,7 +42,7 @@ export default function (args) {
             })
         }),
 
-        `let detReal = detImag = 0`,
+        `let detReal =0,  detImag = 0`,
 
         sum.middle({
             ofReal: [...new Array(size).keys()].map(function (i) { return `dr${i}` }).join('+'),
@@ -57,14 +57,22 @@ export default function (args) {
             const c = i % size
             const ri = indexify.call(args.result, r, c)
 
-            return division.middle({
-                ofReal: `args.result.data[${ri}]`,
-                ofImag: `args.result.data[${ri + 1}]`,
-                withReal: `detReal`,
-                withImag: `detImag`,
-                resultReal: `args.result.data[${ri}]`,
-                resultImag: `args.result.data[${ri + 1}]`,
-            })
+            return [
+                assignment.middle({
+                    withReal: `args.result.data[${ri}]`,
+                    withImag: `args.result.data[${ri + 1}]`,
+                    resultReal: `tempResultReal`,
+                    resultImag: `tempResultImag`,
+                }),
+                division.middle({
+                    ofReal: `tempResultReal`,
+                    ofImag: `tempResultImag`,
+                    withReal: `detReal`,
+                    withImag: `detImag`,
+                    resultReal: `args.result.data[${ri}]`,
+                    resultImag: `args.result.data[${ri + 1}]`,
+                })
+            ].join('\n')
         }),
 
         `return args.result`
