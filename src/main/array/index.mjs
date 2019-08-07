@@ -77,7 +77,11 @@ export default class BigBox {
                     args.with.constructor === Float32Array
                 ) {
                     this.type = args.with.constructor
-                    return args.with
+                    
+                    return {
+                        real: args.with,
+                        imag: new this.type(args.with.length)
+                    }
                 }
 
                 else throw 'Usage: bb.array({ with: rawArray | typedArray, type: typedArrayConstructor })'
