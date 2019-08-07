@@ -9,14 +9,14 @@ export default function (operation) {
             'for(let i = 0; i < this.indices.result.length; i++){',
 
             operation.middle({
-                ofReal: `args.of.data[this.indices.of[i]]`,
-                ofImag: `args.of.data[this.indices.of[i] + 1]`,
+                ofReal: `args.of.data.real[this.indices.of[i]]`,
+                ofImag: `args.of.data.imag[this.indices.of[i]]`,
 
-                withReal: `args.with.data[this.indices.with[i]]`,
-                withImag: `args.with.data[this.indices.with[i] + 1]`,
+                withReal: `args.with.data.real[this.indices.with[i]]`,
+                withImag: `args.with.data.imag[this.indices.with[i]]`,
 
-                resultReal: `args.result.data[this.indices.result[i]]`,
-                resultImag: `args.result.data[this.indices.result[i] + 1]`,
+                resultReal: `args.result.data.real[this.indices.result[i]]`,
+                resultImag: `args.result.data.imag[this.indices.result[i]]`,
             }),
 
             '}',

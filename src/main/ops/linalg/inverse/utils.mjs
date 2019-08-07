@@ -5,8 +5,8 @@ export const cofactorHelper = function cofactorHelper(A) {
 
     if (size === 1)
         return assignment.middle({
-            withReal: `args.of.data[${indexify.call(this, A[0])}]`,
-            withImag: `args.of.data[${indexify.call(this, A[0]) + 1}]`,
+            withReal: `args.of.data.real[${indexify.call(this, A[0])}]`,
+            withImag: `args.of.data.imag[${indexify.call(this, A[0])}]`,
             resultReal: `var corefinal`,
             resultImag: `var coimfinal`,
         })
@@ -20,19 +20,19 @@ export const cofactorHelper = function cofactorHelper(A) {
 
         return [
             multiplication.middle({
-                ofReal: `args.of.data[${a0}]`,
-                ofImag: `args.of.data[${a0 + 1}]`,
-                withReal: `args.of.data[${a3}]`,
-                withImag: `args.of.data[${a3 + 1}]`,
+                ofReal: `args.of.data.real[${a0}]`,
+                ofImag: `args.of.data.imag[${a0}]`,
+                withReal: `args.of.data.real[${a3}]`,
+                withImag: `args.of.data.imag[${a3}]`,
                 resultReal: `var ar03`,
                 resultImag: `var ai03`,
             }),
 
             multiplication.middle({
-                ofReal: `args.of.data[${a2}]`,
-                ofImag: `args.of.data[${a2 + 1}]`,
-                withReal: `args.of.data[${a1}]`,
-                withImag: `args.of.data[${a1 + 1}]`,
+                ofReal: `args.of.data.real[${a2}]`,
+                ofImag: `args.of.data.imag[${a2}]`,
+                withReal: `args.of.data.real[${a1}]`,
+                withImag: `args.of.data.imag[${a1}]`,
                 resultReal: `var ar21`,
                 resultImag: `var ai21`,
             }),
@@ -53,8 +53,8 @@ export const cofactorHelper = function cofactorHelper(A) {
         cofactors.push([
             cofactorHelper.call(this, survivors(A, 0, i)),
             multiplication.middle({
-                ofReal: `args.of.data[${indexify.call(this, A[i])}]`,
-                ofImag: `args.of.data[${indexify.call(this, A[i]) + 1}]`,
+                ofReal: `args.of.data.real[${indexify.call(this, A[i])}]`,
+                ofImag: `args.of.data.imag[${indexify.call(this, A[i])}]`,
                 withReal: `corefinal`,
                 withImag: `coimfinal`,
                 resultReal: `corefinal`,

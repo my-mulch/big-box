@@ -10,19 +10,19 @@ export default {
             return new Function('args', [
                 /** First element of cross */
                 multiplication.middle({
-                    ofReal: `args.of.data[${1 * ofStrides + args.of.offset}]`,
-                    ofImag: `args.of.data[${1 * ofStrides + args.of.offset + 1}]`,
-                    withReal: `args.with.data[${2 * withStrides + args.with.offset}]`,
-                    withImag: `args.with.data[${2 * withStrides + args.with.offset + 1}]`,
+                    ofReal: `args.of.data.real[${1 * ofStrides + args.of.offset}]`,
+                    ofImag: `args.of.data.imag[${1 * ofStrides + args.of.offset}]`,
+                    withReal: `args.with.data.real[${2 * withStrides + args.with.offset}]`,
+                    withImag: `args.with.data.imag[${2 * withStrides + args.with.offset}]`,
                     resultReal: `const cr00`,
                     resultImag: `const ci00`,
                 }),
 
                 multiplication.middle({
-                    ofReal: `args.of.data[${2 * ofStrides + args.of.offset}]`,
-                    ofImag: `args.of.data[${2 * ofStrides + args.of.offset + 1}]`,
-                    withReal: `args.with.data[${1 * withStrides + args.with.offset}]`,
-                    withImag: `args.with.data[${1 * withStrides + args.with.offset + 1}]`,
+                    ofReal: `args.of.data.real[${2 * ofStrides + args.of.offset}]`,
+                    ofImag: `args.of.data.imag[${2 * ofStrides + args.of.offset}]`,
+                    withReal: `args.with.data.real[${1 * withStrides + args.with.offset}]`,
+                    withImag: `args.with.data.imag[${1 * withStrides + args.with.offset}]`,
                     resultReal: `const cr01`,
                     resultImag: `const ci01`,
                 }),
@@ -32,25 +32,25 @@ export default {
                     ofImag: `ci00`,
                     withReal: `cr01`,
                     withImag: `ci01`,
-                    resultReal: `args.result.data[${args.result.offset + 0 * resultStrides}]`,
-                    resultImag: `args.result.data[${args.result.offset + 0 * resultStrides + 1}]`
+                    resultReal: `args.result.data.real[${args.result.offset + 0 * resultStrides}]`,
+                    resultImag: `args.result.data.imag[${args.result.offset + 0 * resultStrides}]`
                 }),
 
                 /** Second element of cross */
                 multiplication.middle({
-                    ofReal: `args.of.data[${2 * ofStrides + args.of.offset}]`,
-                    ofImag: `args.of.data[${2 * ofStrides + args.of.offset + 1}]`,
-                    withReal: `args.with.data[${0 * withStrides + args.with.offset}]`,
-                    withImag: `args.with.data[${0 * withStrides + args.with.offset + 1}]`,
+                    ofReal: `args.of.data.real[${2 * ofStrides + args.of.offset}]`,
+                    ofImag: `args.of.data.imag[${2 * ofStrides + args.of.offset}]`,
+                    withReal: `args.with.data.real[${0 * withStrides + args.with.offset}]`,
+                    withImag: `args.with.data.imag[${0 * withStrides + args.with.offset}]`,
                     resultReal: `const cr10`,
                     resultImag: `const ci10`,
                 }),
 
                 multiplication.middle({
-                    ofReal: `args.of.data[${0 * ofStrides + args.of.offset}]`,
-                    ofImag: `args.of.data[${0 * ofStrides + args.of.offset + 1}]`,
-                    withReal: `args.with.data[${2 * withStrides + args.with.offset}]`,
-                    withImag: `args.with.data[${2 * withStrides + args.with.offset + 1}]`,
+                    ofReal: `args.of.data.real[${0 * ofStrides + args.of.offset}]`,
+                    ofImag: `args.of.data.imag[${0 * ofStrides + args.of.offset}]`,
+                    withReal: `args.with.data.real[${2 * withStrides + args.with.offset}]`,
+                    withImag: `args.with.data.imag[${2 * withStrides + args.with.offset}]`,
                     resultReal: `const cr11`,
                     resultImag: `const ci11`,
                 }),
@@ -60,25 +60,25 @@ export default {
                     ofImag: `ci10`,
                     withReal: `cr11`,
                     withImag: `ci11`,
-                    resultReal: `args.result.data[${args.result.offset + 1 * resultStrides}]`,
-                    resultImag: `args.result.data[${args.result.offset + 1 * resultStrides + 1}]`
+                    resultReal: `args.result.data.real[${args.result.offset + 1 * resultStrides}]`,
+                    resultImag: `args.result.data.imag[${args.result.offset + 1 * resultStrides}]`
                 }),
 
                 /** Third element of cross */
                 multiplication.middle({
-                    ofReal: `args.of.data[${0 * ofStrides + args.of.offset}]`,
-                    ofImag: `args.of.data[${0 * ofStrides + args.of.offset + 1}]`,
-                    withReal: `args.with.data[${1 * withStrides + args.with.offset}]`,
-                    withImag: `args.with.data[${1 * withStrides + args.with.offset + 1}]`,
+                    ofReal: `args.of.data.real[${0 * ofStrides + args.of.offset}]`,
+                    ofImag: `args.of.data.imag[${0 * ofStrides + args.of.offset}]`,
+                    withReal: `args.with.data.real[${1 * withStrides + args.with.offset}]`,
+                    withImag: `args.with.data.imag[${1 * withStrides + args.with.offset}]`,
                     resultReal: `const cr20`,
                     resultImag: `const ci20`,
                 }),
 
                 multiplication.middle({
-                    ofReal: `args.of.data[${1 * ofStrides + args.of.offset}]`,
-                    ofImag: `args.of.data[${1 * ofStrides + args.of.offset + 1}]`,
-                    withReal: `args.with.data[${0 * withStrides + args.with.offset}]`,
-                    withImag: `args.with.data[${0 * withStrides + args.with.offset + 1}]`,
+                    ofReal: `args.of.data.real[${1 * ofStrides + args.of.offset}]`,
+                    ofImag: `args.of.data.imag[${1 * ofStrides + args.of.offset}]`,
+                    withReal: `args.with.data.real[${0 * withStrides + args.with.offset}]`,
+                    withImag: `args.with.data.imag[${0 * withStrides + args.with.offset}]`,
                     resultReal: `const cr21`,
                     resultImag: `const ci21`,
                 }),
@@ -88,8 +88,8 @@ export default {
                     ofImag: `ci20`,
                     withReal: `cr21`,
                     withImag: `ci21`,
-                    resultReal: `args.result.data[${args.result.offset + 2 * resultStrides}]`,
-                    resultImag: `args.result.data[${args.result.offset + 2 * resultStrides + 1}]`
+                    resultReal: `args.result.data.real[${args.result.offset + 2 * resultStrides}]`,
+                    resultImag: `args.result.data.imag[${args.result.offset + 2 * resultStrides}]`
                 }),
 
                 `return args.result`

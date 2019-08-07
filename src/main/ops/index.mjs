@@ -64,7 +64,7 @@ export const assignment = {
 }
 
 export const min = {
-    begin: function () { return `args.result.data.fill(Number.POSITIVE_INFINITY)` },
+    begin: function () { return `args.result.data.real.fill(Number.POSITIVE_INFINITY)` },
     middle: function ({ ofReal, ofImag, resultReal, resultImag }) {
         return [
             `if(${ofReal} < ${resultReal}) {`,
@@ -77,7 +77,7 @@ export const min = {
 }
 
 export const max = {
-    begin: function () { return `args.result.data.fill(Number.NEGATIVE_INFINITY)` },
+    begin: function () { return `args.result.data.real.fill(Number.NEGATIVE_INFINITY)` },
     middle: function ({ ofReal, ofImag, resultReal, resultImag }) {
         return [
             `if(${ofReal} > ${resultReal}) {`,
@@ -90,7 +90,12 @@ export const max = {
 }
 
 export const sum = {
-    begin: function () { return `args.result.data.fill(0)` },
+    begin: function () {
+        return [
+            `args.result.data.real.fill(0)`,
+            `args.result.data.imag.fill(0)`,
+        ]
+    },
     middle: function ({ ofReal, ofImag, resultReal, resultImag }) {
         return [
             `${resultReal} += ${ofReal}`,
@@ -106,7 +111,10 @@ export const norm = {
         return `${resultReal} += ${ofReal} * ${ofReal} + ${ofImag} * ${ofImag}`
     },
     end: function () {
-        return 'for (let i = 0; i < args.result.data.length; i++) args.result.data[i] = Math.sqrt(args.result.data[i])'
+        return `
+            for (let i = 0; i < args.result.data.real.length; i++) 
+                args.result.data.real[i] = Math.sqrt(args.result.data.real[i])
+        `
     }
 }
 
@@ -114,7 +122,12 @@ export const mean = {
     begin: sum.begin,
     middle: sum.middle,
     end: function () {
-        return 'for (let i = 0; i < args.result.data.length; i++) args.result.data[i] /= args.meta.axesSize'
+        return `
+            for (let i = 0; i < args.result.data.real.length; i++){
+                args.result.data.real[i] /= args.meta.axesSize
+                args.result.data.imag[i] /= args.meta.axesSize
+            }
+        `
     }
 }
 

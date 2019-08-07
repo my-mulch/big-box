@@ -16,10 +16,10 @@ export default function () {
 
 
         multiplication.middle({
-            ofReal: `args.of.data[r * args.of.strides[0] + s * args.of.strides[1] + args.of.offset]`,
-            ofImag: `args.of.data[r * args.of.strides[0] + s * args.of.strides[1] + args.of.offset + 1]`,
-            withReal: `args.with.data[r * args.with.strides[0] + s * args.with.strides[1] + args.with.offset]`,
-            withImag: `args.with.data[r * args.with.strides[0] + s * args.with.strides[1] + args.with.offset + 1]`,
+            ofReal: `args.of.data.real[r * args.of.strides[0] + s * args.of.strides[1] + args.of.offset]`,
+            ofImag: `args.of.data.imag[r * args.of.strides[0] + s * args.of.strides[1] + args.of.offset]`,
+            withReal: `args.with.data.real[r * args.with.strides[0] + s * args.with.strides[1] + args.with.offset]`,
+            withImag: `args.with.data.imag[r * args.with.strides[0] + s * args.with.strides[1] + args.with.offset]`,
             resultReal: `const re`,
             resultImag: `const im`,
         }),
@@ -27,8 +27,8 @@ export default function () {
         sum.middle({
             ofReal: `re`,
             ofImag: `im`,
-            resultReal: `args.result.data[r * args.result.strides[0] + c * args.result.strides[1]]`,
-            resultImag: `args.result.data[r * args.result.strides[0] + c * args.result.strides[1] + 1]`,
+            resultReal: `args.result.data.real[r * args.result.strides[0] + c * args.result.strides[1]]`,
+            resultImag: `args.result.data.imag[r * args.result.strides[0] + c * args.result.strides[1]]`,
         }),
 
         `}`,

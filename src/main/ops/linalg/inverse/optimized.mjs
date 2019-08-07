@@ -20,8 +20,8 @@ export default function (args) {
                     ofImag: `0`,
                     withReal: `corefinal`,
                     withImag: `coimfinal`,
-                    resultReal: `args.result.data[${ri}]`,
-                    resultImag: `args.result.data[${ri + 1}]`,
+                    resultReal: `args.result.data.real[${ri}]`,
+                    resultImag: `args.result.data.imag[${ri}]`,
                 })
             ].join('\n')
 
@@ -33,10 +33,10 @@ export default function (args) {
             const ri = indexify.call(args.result, i, 0)
 
             return multiplication.middle({
-                ofReal: `args.of.data[${ai}]`,
-                ofImag: `args.of.data[${ai + 1}]`,
-                withReal: `args.result.data[${ri}]`,
-                withImag: `args.result.data[${ri + 1}]`,
+                ofReal: `args.of.data.real[${ai}]`,
+                ofImag: `args.of.data.imag[${ai}]`,
+                withReal: `args.result.data.real[${ri}]`,
+                withImag: `args.result.data.imag[${ri}]`,
                 resultReal: `dr${i}`,
                 resultImag: `di${i}`,
             })
@@ -59,8 +59,8 @@ export default function (args) {
 
             return [
                 assignment.middle({
-                    withReal: `args.result.data[${ri}]`,
-                    withImag: `args.result.data[${ri + 1}]`,
+                    withReal: `args.result.data.real[${ri}]`,
+                    withImag: `args.result.data.imag[${ri}]`,
                     resultReal: `tempResultReal`,
                     resultImag: `tempResultImag`,
                 }),
@@ -69,8 +69,8 @@ export default function (args) {
                     ofImag: `tempResultImag`,
                     withReal: `detReal`,
                     withImag: `detImag`,
-                    resultReal: `args.result.data[${ri}]`,
-                    resultImag: `args.result.data[${ri + 1}]`,
+                    resultReal: `args.result.data.real[${ri}]`,
+                    resultImag: `args.result.data.imag[${ri}]`,
                 })
             ].join('\n')
         }),
