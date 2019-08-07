@@ -8,11 +8,6 @@ export default class Jest {
                 if (stuff.header) stuff = stuff.toRaw()
                 if (otherStuff.header) otherStuff = otherStuff.toRaw()
 
-                if (otherStuff.constructor === Array && stuff.constructor === Array) {
-                    stuff = stuff.flat(Number.POSITIVE_INFINITY).map(String)
-                    otherStuff = otherStuff.flat(Number.POSITIVE_INFINITY).map(String)
-                }
-
                 stuff = stuff.constructor !== String
                     ? JSON.stringify(stuff)
                     : stuff

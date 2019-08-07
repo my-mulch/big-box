@@ -17,7 +17,7 @@ export const isContiguousSlice = function (index) {
 export const getStrides = function (shape, startStride) {
     const strides = new Array(shape.length)
 
-    let stride = startStride || 2
+    let stride = startStride || 1
     strides[strides.length - 1] = stride
 
     for (let i = shape.length - 1; i > 0; i--)

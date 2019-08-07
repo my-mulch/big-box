@@ -13,7 +13,10 @@ import opsSuite from '../ops/suite'
 
 export default class BigBox {
     constructor({ header, type, init = function () {
-        return new this.type(this.size * 2) // complex numbers
+        return {
+            real: new this.type(this.size),
+            imag: new this.type(this.size),
+        }
     } }) {
 
         for (const field in header)
@@ -32,29 +35,36 @@ export default class BigBox {
 
                 if (args.with.constructor === Array) {
                     const flatRaw = args.with.flat(Number.POSITIVE_INFINITY)
-                    const typeRes = new this.type(this.size * 2) // complex numbers
 
-                    for (let i = 0, j = 0; j < typeRes.length; i += 1, j += 2) {
-                        const cn = Complex(flatRaw[i])
-
-                        typeRes[j] = cn.re
-                        typeRes[j + 1] = cn.im
+                    const data = {
+                        real: new this.type(this.size),
+                        imag: new this.type(this.size),
                     }
 
-                    return typeRes
+                    for (let i = 0; i < data.real.length; i++) {
+                        const cn = Complex(flatRaw[i])
+
+                        data.real[i] = cn.re
+                        data.imag[i] = cn.im
+                    }
+
+                    return data
                 }
 
                 else if (args.with.constructor === String || args.with.constructor === Number) {
-                    const typeRes = new this.type(this.size * 2) // complex numbers
-
-                    for (let j = 0; j < typeRes.length; j += 2) {
-                        const cn = Complex(args.with)
-
-                        typeRes[j] = cn.re
-                        typeRes[j + 1] = cn.im
+                    const data = {
+                        real: new this.type(this.size),
+                        imag: new this.type(this.size),
                     }
 
-                    return typeRes
+                    for (let i = 0; i < data.real.length; i++) {
+                        const cn = Complex(args.with)
+
+                        data.real[i] = cn.re
+                        data.imag[i] = cn.im
+                    }
+
+                    return data
                 }
 
                 else if (args.with.constructor === Int8Array ||
@@ -87,12 +97,10 @@ export default class BigBox {
             type: args.type,
             header: new Header({ shape: args.shape }),
             init: function () {
-                const typeRes = new this.type(this.size * 2) // complex numbers
-
-                for (let i = 0; i < typeRes.length; i += 2)
-                    typeRes[i] = 1
-
-                return typeRes
+                return {
+                    real: new this.type(this.size).fill(1),
+                    imag: new this.type(this.size),
+                }
             }
         })
     }
@@ -104,10 +112,13 @@ export default class BigBox {
                 shape: [__Math__.round((args.stop - (args.start || 0)) / (args.step || 1))]
             }),
             init: function () {
-                const data = new this.type(this.size * 2) // complex numbers
+                const data = {
+                    real: new this.type(this.size),
+                    imag: new this.type(this.size),
+                }
 
-                for (let i = args.start || 0, j = 0; i < args.stop; i += args.step || 1, j += 2)
-                    data[j] = i
+                for (let i = args.start || 0, j = 0; i < args.stop; i += args.step || 1, j++)
+                    data.real[j] = i
 
                 return data
             }
@@ -120,10 +131,13 @@ export default class BigBox {
             type: Float32Array,
             header: new Header({ shape: args.shape }),
             init: function () {
-                const data = new this.type(this.size * 2) // complex numbers
+                const data = {
+                    real: new this.type(this.size),
+                    imag: new this.type(this.size),
+                }
 
-                for (let i = 0; i < data.length; i++)
-                    data[i] = __Math__.random()
+                for (let i = 0; i < data.real.length; i++)
+                    data.real[i] = __Math__.random() - 1
 
                 return data
             }
@@ -135,10 +149,13 @@ export default class BigBox {
             type: args.type || Int32Array,
             header: new Header({ shape: args.shape }),
             init: function () {
-                const data = new this.type(this.size * 2) // complex numbers
+                const data = {
+                    real: new this.type(this.size),
+                    imag: new this.type(this.size),
+                }
 
-                for (let i = 0; i < data.length; i++)
-                    data[i] = opsSuite.utils.randint({
+                for (let i = 0; i < data.real.length; i++)
+                    data.real[i] = opsSuite.utils.randint({
                         low: args.low,
                         high: args.high
                     })
@@ -153,12 +170,16 @@ export default class BigBox {
             type: args.type,
             header: new Header({ shape: args.shape }),
             init: function () {
-                const data = new this.type(this.size * 2) // complex numbers
+                const data = {
+                    real: new this.type(this.size),
+                    imag: new this.type(this.size),
+                }
+
                 const diagonal = this.strides.reduce(__Math__.add)
                 const numDiags = __Math__.min(...this.shape)
 
                 for (let i = 0; i < numDiags * diagonal; i += diagonal)
-                    data[i] = 1
+                    data.real[i] = 1
 
                 return data
             }
@@ -172,7 +193,9 @@ export default class BigBox {
 
     astype(args) {
         this.type = args.type
-        this.data = new this.type(this.data)
+
+        this.data.real = new this.type(this.data.real)
+        this.data.imag = new this.type(this.data.imag)
 
         return this
     }
@@ -181,7 +204,12 @@ export default class BigBox {
         return new BigBox({
             type: this.type,
             header: this.header,
-            init: function () { return old.data.slice() }
+            init: function () {
+                return {
+                    real: old.data.real.slice(),
+                    imag: old.data.imag.slice()
+                }
+            }
         })
     }
 
@@ -330,15 +358,15 @@ export default class BigBox {
     toRaw(index = this.offset, depth = 0) {
         if (!this.shape.length || depth === this.shape.length)
             return Complex(
-                this.data[index],
-                this.data[index + 1]).toString()
+                this.data.real[index],
+                this.data.imag[index]).toString()
 
         return [...new Array(this.shape[depth]).keys()].map(function (i) {
             return this.toRaw(i * this.strides[depth] + index, depth + 1)
         }, this)
     }
 
-    valueOf() { return this.data[this.offset] }
-    toString() { return this.toRaw() }
+    valueOf() { return this.data.real[this.offset] }
+    toString() { return JSON.stringify(this.toRaw()) }
     [util.inspect.custom]() { return this.toString() }
 }
