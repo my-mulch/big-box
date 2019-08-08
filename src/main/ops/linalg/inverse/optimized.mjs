@@ -1,5 +1,5 @@
 import { cofactorHelper, survivors, indexify } from './utils.mjs'
-import { multiplication, division, sum, assignment } from '../../../ops'
+import { multiplication, division, assignment } from '../../../ops'
 
 export default function (args) {
     const size = Math.round(Math.sqrt(args.of.size)),
@@ -44,9 +44,9 @@ export default function (args) {
 
         `let detReal =0,  detImag = 0`,
 
-        sum.middle({
-            ofReal: [...new Array(size).keys()].map(function (i) { return `dr${i}` }).join('+'),
-            ofImag: [...new Array(size).keys()].map(function (i) { return `di${i}` }).join('+'),
+        assignment.middle({
+            withReal: [...new Array(size).keys()].map(function (i) { return `dr${i}` }).join('+'),
+            withImag: [...new Array(size).keys()].map(function (i) { return `di${i}` }).join('+'),
             resultReal: `detReal`,
             resultImag: `detImag`,
         }),

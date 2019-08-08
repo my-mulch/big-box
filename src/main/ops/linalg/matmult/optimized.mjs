@@ -1,4 +1,4 @@
-import { sum, multiplication } from '../../../ops'
+import { assignment, multiplication } from '../../../ops'
 
 export default function (args) {
     const rows = args.of.shape[0],
@@ -27,9 +27,9 @@ export default function (args) {
                     })
                 }),
 
-                sum.middle({
-                    ofReal: [...new Array(shared).keys()].map(function (s) { return `sr${s}` }).join('+'),
-                    ofImag: [...new Array(shared).keys()].map(function (s) { return `si${s}` }).join('+'),
+                assignment.middle({
+                    withReal: [...new Array(shared).keys()].map(function (s) { return `sr${s}` }).join('+'),
+                    withImag: [...new Array(shared).keys()].map(function (s) { return `si${s}` }).join('+'),
                     resultReal: `args.result.data.real[${ri}]`,
                     resultImag: `args.result.data.imag[${ri}]`,
                 })
