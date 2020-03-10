@@ -1,23 +1,19 @@
 {
-    "name": "big-box",
-    "version": "2.0.4",
-    "description": "A suite of methods to manipulate MDA",
-    "main": "src/main/array",
-    "scripts": {
-        "test": "node --experimental-modules --es-module-specifier-resolution=node src/test"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/trumanpurnell/big-box.git"
-    },
-    "author": "Truman Purnell",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/trumanpurnell/big-box/issues"
-    },
-    "homepage": "https://github.com/trumanpurnell/big-box#readme",
-    "dependencies": {
-        "complex.js": "^2.0.11",
-        "radley": "^6.0.3"
-    }
+  "name": "big-box",
+  "version": "1.0.0",
+  "description": "A home-grown, browser-based NumPy in pure JavaScript",
+  "main": "index.mjs",
+  "scripts": {
+    "test": "node --experimental-modules --es-module-specifier-resolution=node test/index.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/my-mulch/big-box.git"
+  },
+  "author": "Truman Purnell",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/my-mulch/big-box.git/issues"
+  },
+  "homepage": "https://github.com/my-mulch/big-box.git#readme"
 }

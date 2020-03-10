@@ -1,0 +1,5 @@
+export { default as cross } from './cross.mjs'
+export { default as inverse } from './inverse.mjs'
+export { default as matMult } from './matMult.mjs'
+export { default as adjugate } from './adjugate.mjs'
+export { default as determinant } from './determinant.mjs'
