@@ -1,6 +1,6 @@
 {
   "name": "big-box",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "A home-grown, browser-based NumPy in pure JavaScript",
   "main": "index.mjs",
   "scripts": {
