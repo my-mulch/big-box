@@ -152,7 +152,7 @@ export default class Tensor {
         if (shape === undefined)
             throw "Attempting to create tensor with undefined shape"
 
-        type = Tensor.Float32 || type
+        type = type || Tensor.Float32
         const size = shape.reduce(__Math__.multiply, 1)
 
         const tensor = new Tensor(
