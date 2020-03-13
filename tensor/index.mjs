@@ -148,11 +148,11 @@ export default class Tensor {
         return tensor
     }
 
-    static rand(shape) {
+    static rand(shape, type) {
         if (shape === undefined)
             throw "Attempting to create tensor with undefined shape"
 
-        const type = Tensor.Float32
+        type = Tensor.Float32 || type
         const size = shape.reduce(__Math__.multiply, 1)
 
         const tensor = new Tensor(
