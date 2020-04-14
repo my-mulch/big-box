@@ -2,12 +2,12 @@
 
 NumPy browser clone
 
-#### Installation
+## Installation
 
 ```sh
 npm install big-box
 ```
-#### Tensor Creation
+## Tensor Creation
 
 The tensors may be of type: real, complex, and quaternion. The size of the last dimension indicates the type. For example, each of the arrays below are complex.
 
@@ -28,7 +28,7 @@ const K = bb.tensor([
 ])
 ```
 
-#### Cached Operations
+## Cached Operations
 
 `Cached Operations` allow big-box to generate ultra-efficient templated code that can then be called with any inputs provided they are the same size and type
 
@@ -43,11 +43,11 @@ const result = multiplyBy10.invoke()
 
 ```
 
-#### Many of the NumPy friends
+## Many of the NumPy friends
 
 ```js
 bb.arange(0, 10)
 bb.linspace(0, 2 * Math.PI, 4)
 bb.ones([100, 100], bb.ComplexFloat32)
 ```
-and many more
+and many more!
