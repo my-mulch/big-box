@@ -1,6 +1,6 @@
 # big-box
 
-That numpy stuff in the browser, feel?
+NumPy browser clone
 
 #### Installation
 
