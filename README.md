@@ -50,3 +50,4 @@ bb.arange(0, 10)
 bb.linspace(0, 2 * Math.PI, 4)
 bb.ones([100, 100], bb.ComplexFloat32)
 ```
+and many more
