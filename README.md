@@ -8,10 +8,6 @@ That numpy stuff in the browser, feel?
 npm install big-box
 ```
 
-## Basics
-
-#### Array Creation
-
 ```js
 import bb from 'big-box'
 ```
